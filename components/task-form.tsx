@@ -30,6 +30,7 @@ export default function TaskForm() {
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState("18691")
+  const [requiredDate, setRequiredDate] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -49,13 +50,13 @@ export default function TaskForm() {
   const [tableRows, setTableRows] = useState([
     {
       id: 1,
-      departman: "Yönetim",
-      itemCode: "NB-LEN-E15",
-      itemName: "Lenovo E15 Notebook",
-      requiredDate: "18.10.2025",
-      quantity: "1",
-      uomCode: "AD",
-      vendor: "Satıcı A",
+      departman: "",
+      itemCode: "",
+      itemName: "",
+      requiredDate: "",
+      quantity: "",
+      uomCode: "",
+      vendor: "",
       description: "",
       file: null as File | null,
     },
@@ -89,7 +90,44 @@ export default function TaskForm() {
     })
   }, [tableRows, filters])
 
+  const validateForm = () => {
+    const errors: string[] = []
+
+    // Gerekli Tarih kontrolü (üst form)
+    if (!requiredDate) {
+      errors.push("Gerekli Tarih alanı zorunludur")
+    }
+
+    // Satırları kontrol et
+    tableRows.forEach((row, index) => {
+      if (!row.itemCode) {
+        errors.push(`${index + 1}. satır: Kalem Kodu zorunludur`)
+      }
+      if (!row.requiredDate) {
+        errors.push(`${index + 1}. satır: Gerekli Tarih zorunludur`)
+      }
+      if (!row.quantity) {
+        errors.push(`${index + 1}. satır: Miktar zorunludur`)
+      }
+      if (!row.uomCode) {
+        errors.push(`${index + 1}. satır: Ölçü Birimi Kodu zorunludur`)
+      }
+      if (!row.departman) {
+        errors.push(`${index + 1}. satır: Departman zorunludur`)
+      }
+    })
+
+    return errors
+  }
+
   const handleSubmit = () => {
+    // Validasyon kontrolü
+    const errors = validateForm()
+    if (errors.length > 0) {
+      alert("Lütfen zorunlu alanları doldurun:\n\n" + errors.join("\n"))
+      return
+    }
+
     // Talebi oluştur
     const newRequest = {
       id: Date.now(),
@@ -111,6 +149,18 @@ export default function TaskForm() {
 
     // Talep listesi sayfasına yönlendir
     router.push("/talep-listesi")
+  }
+
+  const handleSave = () => {
+    // Validasyon kontrolü
+    const errors = validateForm()
+    if (errors.length > 0) {
+      alert("Lütfen zorunlu alanları doldurun:\n\n" + errors.join("\n"))
+      return
+    }
+
+    // Değişiklikleri kaydet (localStorage'a veya başka bir yere)
+    alert("Değişiklikler kaydedildi!")
   }
 
   return (
@@ -259,7 +309,12 @@ export default function TaskForm() {
                     Gerekli Tarih <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <Input type="date" className="bg-background border-border text-foreground" />
+                    <Input
+                      type="date"
+                      value={requiredDate}
+                      onChange={(e) => setRequiredDate(e.target.value)}
+                      className="bg-background border-border text-foreground"
+                    />
                   </div>
                 </div>
               </div>
@@ -616,6 +671,7 @@ export default function TaskForm() {
 
               <div className="flex justify-end mb-4">
                 <Button
+                  onClick={handleSave}
                   className="text-sm text-white shadow-md hover:opacity-90"
                   style={{ backgroundColor: "rgba(237, 124, 30)" }}
                 >
