@@ -301,7 +301,7 @@ export default function TalepListesi() {
                 <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                   {/* Filter Row */}
                   <div className="bg-white border-b border-border">
-                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_120px_150px_100px]">
+                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_150px_100px]">
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -363,12 +363,6 @@ export default function TalepListesi() {
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">Tutar</span>
-                        </div>
-                      </div>
-                      <div className="px-3 py-2 border-r border-border">
-                        <div className="flex items-center gap-1">
-                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                           <select
                             className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
                             value={filters.status}
@@ -391,7 +385,7 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border">
-                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_120px_150px_100px]">
+                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_150px_100px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
                       </div>
@@ -410,9 +404,6 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
                         Kalem Sayısı
                       </div>
-                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-right">
-                        Toplam Tutar
-                      </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">Durum</div>
                       <div className="px-3 py-3 text-sm font-medium text-[#181C14] text-center">İşlemler</div>
                     </div>
@@ -422,7 +413,7 @@ export default function TalepListesi() {
                   {filteredRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_120px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                      className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                     >
                       <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requestSummary || "-"}</div>
@@ -430,9 +421,6 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.createdDate}</div>
                       <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
-                      <div className="px-3 py-3 border-r border-border text-sm text-right">
-                        ₺{request.totalAmount.toLocaleString("tr-TR")}
-                      </div>
                       <div className="px-3 py-3 border-r border-border">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[request.status]}`}

@@ -137,7 +137,6 @@ export default function TaskForm() {
       department: tableRows[0]?.departman || "Yönetim",
       createdDate: new Date().toLocaleDateString("tr-TR"),
       itemCount: tableRows.length,
-      totalAmount: Math.floor(Math.random() * 50000) + 10000, // Mock tutar
       status: "Onay Bekliyor",
       requestSummary,
       items: tableRows,
