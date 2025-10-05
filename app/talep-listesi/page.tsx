@@ -126,7 +126,7 @@ const statusColors: Record<RequestStatus, string> = {
 export default function TalepListesi() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [requests, setRequests] = useState<PurchaseRequest[]>(mockRequests)
+  const [requests, setRequests] = useState<PurchaseRequest[]>([])
   const [selectedRequest, setSelectedRequest] = useState<PurchaseRequest | null>(null)
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
   const [filters, setFilters] = useState({
@@ -137,11 +137,11 @@ export default function TalepListesi() {
   })
 
   useEffect(() => {
-    // localStorage'dan talepleri oku
+    // localStorage'dan talepleri oku - sadece yeni eklenenler
     const savedRequests = localStorage.getItem("purchaseRequests")
     if (savedRequests) {
       const parsedRequests = JSON.parse(savedRequests)
-      setRequests([...mockRequests, ...parsedRequests])
+      setRequests(parsedRequests)
     }
   }, [])
 
