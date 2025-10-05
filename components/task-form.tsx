@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -37,6 +37,7 @@ export default function TaskForm() {
     uomCode: "",
     vendor: "",
     description: "",
+    hasFile: "",
   })
 
   const [tableRows, setTableRows] = useState([
@@ -65,6 +66,22 @@ export default function TaskForm() {
   const handleRowFieldChange = (rowId: number, field: string, value: string) => {
     setTableRows(tableRows.map((row) => (row.id === rowId ? { ...row, [field]: value } : row)))
   }
+
+  const filteredRows = useMemo(() => {
+    return tableRows.filter((row) => {
+      if (filters.itemCode && !row.itemCode.toLowerCase().includes(filters.itemCode.toLowerCase())) return false
+      if (filters.itemName && !row.itemName.toLowerCase().includes(filters.itemName.toLowerCase())) return false
+      if (filters.requiredDate && row.requiredDate !== filters.requiredDate) return false
+      if (filters.quantity && !row.quantity.includes(filters.quantity)) return false
+      if (filters.uomCode && row.uomCode !== filters.uomCode) return false
+      if (filters.vendor && row.vendor !== filters.vendor) return false
+      if (filters.departman && row.departman !== filters.departman) return false
+      if (filters.description && !row.description.toLowerCase().includes(filters.description.toLowerCase())) return false
+      if (filters.hasFile === "var" && !row.file) return false
+      if (filters.hasFile === "yok" && row.file) return false
+      return true
+    })
+  }, [tableRows, filters])
 
   return (
     <div className="flex h-screen bg-background">
@@ -240,7 +257,7 @@ export default function TaskForm() {
                   <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                     {/* Filter Row */}
                     <div className="bg-white border-b border-border">
-                      <div className="grid grid-cols-[120px_200px_150px_80px_120px_140px_120px_180px_120px]">
+                      <div className="grid grid-cols-[220px_200px_150px_80px_120px_140px_120px_180px_120px]">
                         <div className="px-3 py-2 border-r border-border">
                           <div className="flex items-center gap-1">
                             <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -347,15 +364,26 @@ export default function TaskForm() {
                             />
                           </div>
                         </div>
-                        <div className="px-3 py-2 flex items-center justify-center">
-                          <span className="text-xs text-muted-foreground">Ek Dosya</span>
+                        <div className="px-3 py-2">
+                          <div className="flex items-center gap-1">
+                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                            <select
+                              className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
+                              value={filters.hasFile}
+                              onChange={(e) => setFilters({ ...filters, hasFile: e.target.value })}
+                            >
+                              <option value="">Tümü</option>
+                              <option value="var">Var</option>
+                              <option value="yok">Yok</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Header Row */}
                     <div className="bg-[#ECF2FF] border-b border-border">
-                      <div className="grid grid-cols-[120px_200px_150px_80px_120px_140px_120px_180px_120px]">
+                      <div className="grid grid-cols-[220px_200px_150px_80px_120px_140px_120px_180px_120px]">
                         <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                           Kalem Kodu <span className="text-red-500">*</span>
                         </div>
@@ -385,10 +413,10 @@ export default function TaskForm() {
                     </div>
 
                     {/* Data Rows */}
-                    {tableRows.map((row) => (
+                    {filteredRows.map((row) => (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[120px_200px_150px_80px_120px_140px_120px_180px_120px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                        className="grid grid-cols-[220px_200px_150px_80px_120px_140px_120px_180px_120px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                       >
                         <div className="px-3 py-3 border-r border-border">
                           <div className="flex items-center gap-1">
@@ -521,7 +549,7 @@ export default function TaskForm() {
 
                     {/* Footer */}
                     <div className="px-4 py-3 text-sm text-muted-foreground flex justify-end bg-muted/30">
-                      <span>Toplam {tableRows.length} öğe var</span>
+                      <span>Toplam {filteredRows.length} öğe var</span>
                     </div>
                   </div>
                 </div>
