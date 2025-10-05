@@ -19,6 +19,8 @@ import {
   DollarSign,
   Upload,
   List,
+  Menu,
+  X,
 } from "lucide-react"
 
 export default function TaskForm() {
@@ -27,6 +29,7 @@ export default function TaskForm() {
   const [documentNumber, setDocumentNumber] = useState("18691")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const [filters, setFilters] = useState({
     departman: "",
@@ -85,7 +88,7 @@ export default function TaskForm() {
 
   return (
     <div className="flex h-screen bg-background">
-      <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
+      <aside className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}>
         {/* Logo */}
         <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
           <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
@@ -143,12 +146,25 @@ export default function TaskForm() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
-          <nav className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent"
+              aria-label="Toggle sidebar"
+            >
+              {isSidebarOpen ? (
+                <X className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <Menu className="w-5 h-5 text-muted-foreground" />
+              )}
+            </button>
+            <nav className="flex items-center gap-6 text-sm">
             <span className="text-muted-foreground hover:text-foreground cursor-pointer">Görev Listesi</span>
             <span className="text-muted-foreground hover:text-foreground cursor-pointer">Anasayfa</span>
             <span className="text-muted-foreground hover:text-foreground cursor-pointer">Ayarlar</span>
             <span className="text-muted-foreground hover:text-foreground cursor-pointer">Yardım</span>
-          </nav>
+            </nav>
+          </div>
           <div className="flex items-center gap-3">
             <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent relative">
               <Bell className="w-5 h-5 text-muted-foreground" />
@@ -257,7 +273,7 @@ export default function TaskForm() {
                   <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                     {/* Filter Row */}
                     <div className="bg-white border-b border-border">
-                      <div className="grid grid-cols-[220px_200px_150px_80px_120px_140px_120px_180px_120px]">
+                      <div className="grid grid-cols-[180px_minmax(200px,1fr)_130px_80px_100px_120px_100px_150px_100px]">
                         <div className="px-3 py-2 border-r border-border">
                           <div className="flex items-center gap-1">
                             <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -383,7 +399,7 @@ export default function TaskForm() {
 
                     {/* Header Row */}
                     <div className="bg-[#ECF2FF] border-b border-border">
-                      <div className="grid grid-cols-[220px_200px_150px_80px_120px_140px_120px_180px_120px]">
+                      <div className="grid grid-cols-[180px_minmax(200px,1fr)_130px_80px_100px_120px_100px_150px_100px]">
                         <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                           Kalem Kodu <span className="text-red-500">*</span>
                         </div>
@@ -416,7 +432,7 @@ export default function TaskForm() {
                     {filteredRows.map((row) => (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[220px_200px_150px_80px_120px_140px_120px_180px_120px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                        className="grid grid-cols-[180px_minmax(200px,1fr)_130px_80px_100px_120px_100px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                       >
                         <div className="px-3 py-3 border-r border-border">
                           <div className="flex items-center gap-1">
