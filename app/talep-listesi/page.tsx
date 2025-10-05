@@ -1,9 +1,23 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table"
 import {
   Home,
   Package,
@@ -22,6 +36,19 @@ import {
 
 type RequestStatus = "Taslak" | "Onay Bekliyor" | "Onaylandı" | "Reddedildi" | "Tamamlandı"
 
+type RequestItem = {
+  id: number
+  departman: string
+  itemCode: string
+  itemName: string
+  requiredDate: string
+  quantity: string
+  uomCode: string
+  vendor: string
+  description: string
+  file: File | null
+}
+
 type PurchaseRequest = {
   id: number
   documentNumber: string
@@ -31,6 +58,8 @@ type PurchaseRequest = {
   itemCount: number
   totalAmount: number
   status: RequestStatus
+  items?: RequestItem[]
+  notes?: string
 }
 
 const mockRequests: PurchaseRequest[] = [
@@ -97,6 +126,9 @@ const statusColors: Record<RequestStatus, string> = {
 export default function TalepListesi() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [requests, setRequests] = useState<PurchaseRequest[]>(mockRequests)
+  const [selectedRequest, setSelectedRequest] = useState<PurchaseRequest | null>(null)
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
   const [filters, setFilters] = useState({
     documentNumber: "",
     requester: "",
@@ -104,8 +136,17 @@ export default function TalepListesi() {
     status: "",
   })
 
+  useEffect(() => {
+    // localStorage'dan talepleri oku
+    const savedRequests = localStorage.getItem("purchaseRequests")
+    if (savedRequests) {
+      const parsedRequests = JSON.parse(savedRequests)
+      setRequests([...mockRequests, ...parsedRequests])
+    }
+  }, [])
+
   const filteredRequests = useMemo(() => {
-    return mockRequests.filter((request) => {
+    return requests.filter((request) => {
       const searchMatch =
         request.documentNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         request.requester.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -120,7 +161,12 @@ export default function TalepListesi() {
 
       return true
     })
-  }, [searchQuery, filters])
+  }, [requests, searchQuery, filters])
+
+  const handleViewDetails = (request: PurchaseRequest) => {
+    setSelectedRequest(request)
+    setIsDetailDialogOpen(true)
+  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -384,7 +430,12 @@ export default function TalepListesi() {
                         </span>
                       </div>
                       <div className="px-3 py-3 flex items-center justify-center">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleViewDetails(request)}
+                        >
                           <Eye className="w-4 h-4" />
                         </Button>
                       </div>
@@ -405,6 +456,87 @@ export default function TalepListesi() {
           </div>
         </main>
       </div>
+
+      {/* Kalem Detayları Dialog */}
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <DialogContent className="max-w-5xl max-h-[80vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>Talep Detayları - {selectedRequest?.documentNumber}</DialogTitle>
+          </DialogHeader>
+          {selectedRequest && (
+            <div className="space-y-4">
+              {/* Genel Bilgiler */}
+              <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+                <div>
+                  <span className="text-sm font-medium text-muted-foreground">Talep Eden:</span>
+                  <p className="text-sm font-semibold">{selectedRequest.requester}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-muted-foreground">Departman:</span>
+                  <p className="text-sm font-semibold">{selectedRequest.department}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-muted-foreground">Kayıt Tarihi:</span>
+                  <p className="text-sm font-semibold">{selectedRequest.createdDate}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-muted-foreground">Durum:</span>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[selectedRequest.status]}`}
+                  >
+                    {selectedRequest.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Kalem Listesi */}
+              {selectedRequest.items && selectedRequest.items.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold mb-3">Kalem Listesi ({selectedRequest.items.length} kalem)</h4>
+                  <div className="border border-border rounded-lg overflow-hidden">
+                    <Table>
+                      <TableHeader className="bg-[#ECF2FF]">
+                        <TableRow>
+                          <TableHead className="text-[#181C14]">Kalem Kodu</TableHead>
+                          <TableHead className="text-[#181C14]">Kalem Tanımı</TableHead>
+                          <TableHead className="text-[#181C14]">Departman</TableHead>
+                          <TableHead className="text-[#181C14]">Miktar</TableHead>
+                          <TableHead className="text-[#181C14]">Birim</TableHead>
+                          <TableHead className="text-[#181C14]">Satıcı</TableHead>
+                          <TableHead className="text-[#181C14]">Gerekli Tarih</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {selectedRequest.items.map((item) => (
+                          <TableRow key={item.id}>
+                            <TableCell className="font-medium">{item.itemCode}</TableCell>
+                            <TableCell>{item.itemName}</TableCell>
+                            <TableCell>{item.departman}</TableCell>
+                            <TableCell>{item.quantity}</TableCell>
+                            <TableCell>{item.uomCode}</TableCell>
+                            <TableCell>{item.vendor || "-"}</TableCell>
+                            <TableCell>{item.requiredDate}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+
+              {/* Notlar */}
+              {selectedRequest.notes && (
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Açıklamalar</h4>
+                  <div className="p-3 bg-muted/30 rounded-lg">
+                    <p className="text-sm">{selectedRequest.notes}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

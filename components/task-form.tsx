@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,6 +26,7 @@ import {
 } from "lucide-react"
 
 export default function TaskForm() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState("18691")
@@ -86,6 +88,30 @@ export default function TaskForm() {
       return true
     })
   }, [tableRows, filters])
+
+  const handleSubmit = () => {
+    // Talebi oluştur
+    const newRequest = {
+      id: Date.now(),
+      documentNumber,
+      requester: "Selim Aksu",
+      department: tableRows[0]?.departman || "Yönetim",
+      createdDate: new Date().toLocaleDateString("tr-TR"),
+      itemCount: tableRows.length,
+      totalAmount: Math.floor(Math.random() * 50000) + 10000, // Mock tutar
+      status: "Onay Bekliyor",
+      items: tableRows,
+      notes,
+    }
+
+    // localStorage'a kaydet
+    const existingRequests = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
+    existingRequests.push(newRequest)
+    localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
+
+    // Talep listesi sayfasına yönlendir
+    router.push("/talep-listesi")
+  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -600,7 +626,9 @@ export default function TaskForm() {
 
             <div className="flex gap-2">
               <Button className="text-sm bg-[#f1556c] hover:bg-[#f1556c]/90 text-white">İptal</Button>
-              <Button className="text-sm bg-[#4fc6e1] hover:bg-[#4fc6e1]/90 text-white border-0">Onaya Gönder</Button>
+              <Button onClick={handleSubmit} className="text-sm bg-[#4fc6e1] hover:bg-[#4fc6e1]/90 text-white border-0">
+                Onaya Gönder
+              </Button>
             </div>
 
             <div className="mt-6 text-xs text-muted-foreground text-center">
