@@ -58,6 +58,7 @@ type PurchaseRequest = {
   itemCount: number
   totalAmount: number
   status: RequestStatus
+  requestSummary?: string
   items?: RequestItem[]
   notes?: string
 }
@@ -300,7 +301,7 @@ export default function TalepListesi() {
                 <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                   {/* Filter Row */}
                   <div className="bg-white border-b border-border">
-                    <div className="grid grid-cols-[150px_180px_150px_120px_100px_120px_150px_100px]">
+                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_120px_150px_100px]">
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -310,6 +311,12 @@ export default function TalepListesi() {
                             value={filters.documentNumber}
                             onChange={(e) => setFilters({ ...filters, documentNumber: e.target.value })}
                           />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground">Özet</span>
                         </div>
                       </div>
                       <div className="px-3 py-2 border-r border-border">
@@ -384,9 +391,12 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border">
-                    <div className="grid grid-cols-[150px_180px_150px_120px_100px_120px_150px_100px]">
+                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_120px_150px_100px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Talep Özeti
                       </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Talep Eden
@@ -412,9 +422,10 @@ export default function TalepListesi() {
                   {filteredRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[150px_180px_150px_120px_100px_120px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                      className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_120px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                     >
                       <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.requestSummary || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.createdDate}</div>
@@ -449,10 +460,6 @@ export default function TalepListesi() {
                 </div>
               </div>
             </div>
-
-            <div className="mt-6 text-xs text-muted-foreground text-center">
-              2025 Netcad® Yazılımı. Her hakkı saklıdır.
-            </div>
           </div>
         </main>
       </div>
@@ -466,27 +473,35 @@ export default function TalepListesi() {
           {selectedRequest && (
             <div className="space-y-4">
               {/* Genel Bilgiler */}
-              <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
-                <div>
-                  <span className="text-sm font-medium text-muted-foreground">Talep Eden:</span>
-                  <p className="text-sm font-semibold">{selectedRequest.requester}</p>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+                  <div>
+                    <span className="text-sm font-medium text-muted-foreground">Talep Eden:</span>
+                    <p className="text-sm font-semibold">{selectedRequest.requester}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-muted-foreground">Departman:</span>
+                    <p className="text-sm font-semibold">{selectedRequest.department}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-muted-foreground">Kayıt Tarihi:</span>
+                    <p className="text-sm font-semibold">{selectedRequest.createdDate}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-muted-foreground">Durum:</span>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[selectedRequest.status]}`}
+                    >
+                      {selectedRequest.status}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-sm font-medium text-muted-foreground">Departman:</span>
-                  <p className="text-sm font-semibold">{selectedRequest.department}</p>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-muted-foreground">Kayıt Tarihi:</span>
-                  <p className="text-sm font-semibold">{selectedRequest.createdDate}</p>
-                </div>
-                <div>
-                  <span className="text-sm font-medium text-muted-foreground">Durum:</span>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[selectedRequest.status]}`}
-                  >
-                    {selectedRequest.status}
-                  </span>
-                </div>
+                {selectedRequest.requestSummary && (
+                  <div className="p-4 bg-muted/30 rounded-lg">
+                    <span className="text-sm font-medium text-muted-foreground">Talep Özeti:</span>
+                    <p className="text-sm font-semibold mt-1">{selectedRequest.requestSummary}</p>
+                  </div>
+                )}
               </div>
 
               {/* Kalem Listesi */}

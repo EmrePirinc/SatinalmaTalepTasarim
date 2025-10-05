@@ -31,6 +31,7 @@ export default function TaskForm() {
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState("18691")
   const [requiredDate, setRequiredDate] = useState("")
+  const [requestSummary, setRequestSummary] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -138,6 +139,7 @@ export default function TaskForm() {
       itemCount: tableRows.length,
       totalAmount: Math.floor(Math.random() * 50000) + 10000, // Mock tutar
       status: "Onay Bekliyor",
+      requestSummary,
       items: tableRows,
       notes,
     }
@@ -317,6 +319,16 @@ export default function TaskForm() {
                     />
                   </div>
                 </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="text-sm font-medium text-card-foreground mb-2 block">Talep Özeti</label>
+                <Input
+                  value={requestSummary}
+                  onChange={(e) => setRequestSummary(e.target.value)}
+                  placeholder="Talep özetini giriniz..."
+                  className="bg-background border-border text-foreground"
+                />
               </div>
 
               <div className="mb-4">
@@ -685,10 +697,6 @@ export default function TaskForm() {
               <Button onClick={handleSubmit} className="text-sm bg-[#4fc6e1] hover:bg-[#4fc6e1]/90 text-white border-0">
                 Onaya Gönder
               </Button>
-            </div>
-
-            <div className="mt-6 text-xs text-muted-foreground text-center">
-              2025 Netcad® Yazılımı. Her hakkı saklıdır.
             </div>
           </div>
         </main>
