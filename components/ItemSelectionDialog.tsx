@@ -93,7 +93,7 @@ export default function ItemSelectionDialog({ open, onOpenChange, onItemSelected
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+      <DialogContent className="w-[90vw] max-w-[90vw] h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Kalem Seçimi</DialogTitle>
         </DialogHeader>
@@ -110,10 +110,10 @@ export default function ItemSelectionDialog({ open, onOpenChange, onItemSelected
           <Table>
             <TableHeader className="sticky top-0 bg-muted">
               <TableRow>
-                <TableHead className="w-1/4">Kalem Kodu</TableHead>
-                <TableHead className="w-1/2">Kalem Tanımı</TableHead>
-                <TableHead className="w-1/4 cursor-pointer" onClick={handleSort}>
-                  <div className="flex items-center gap-2">
+                <TableHead className="w-[300px]">Kalem Kodu</TableHead>
+                <TableHead>Kalem Tanımı</TableHead>
+                <TableHead className="w-[150px] cursor-pointer text-right" onClick={handleSort}>
+                  <div className="flex items-center justify-end gap-2">
                     Stok
                     <ArrowUpDown className="w-4 h-4" />
                   </div>
@@ -125,7 +125,7 @@ export default function ItemSelectionDialog({ open, onOpenChange, onItemSelected
                 <TableRow key={item.itemCode} onClick={() => handleSelect(item)} className="cursor-pointer">
                   <TableCell>{item.itemCode}</TableCell>
                   <TableCell>{item.itemName}</TableCell>
-                  <TableCell>{item.stock}</TableCell>
+                  <TableCell className="text-right">{item.stock}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
