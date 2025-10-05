@@ -34,7 +34,7 @@ import {
   Eye,
 } from "lucide-react"
 
-type RequestStatus = "Taslak" | "Onay Bekliyor" | "Onaylandı" | "Reddedildi" | "Tamamlandı"
+type RequestStatus = "Taslak" | "Satınalmacıda" | "Revize İstendi" | "Reddedildi" | "SAP'te" | "Tamamlandı"
 
 type RequestItem = {
   id: number
@@ -53,10 +53,10 @@ type PurchaseRequest = {
   id: number
   documentNumber: string
   requester: string
+  requesterRole?: string
   department: string
   createdDate: string
   itemCount: number
-  totalAmount: number
   status: RequestStatus
   requestSummary?: string
   items?: RequestItem[]
@@ -118,10 +118,11 @@ const mockRequests: PurchaseRequest[] = [
 
 const statusColors: Record<RequestStatus, string> = {
   "Taslak": "bg-gray-100 text-gray-800 border-gray-300",
-  "Onay Bekliyor": "bg-yellow-100 text-yellow-800 border-yellow-300",
-  "Onaylandı": "bg-green-100 text-green-800 border-green-300",
+  "Satınalmacıda": "bg-yellow-100 text-yellow-800 border-yellow-300",
+  "Revize İstendi": "bg-orange-100 text-orange-800 border-orange-300",
   "Reddedildi": "bg-red-100 text-red-800 border-red-300",
-  "Tamamlandı": "bg-blue-100 text-blue-800 border-blue-300",
+  "SAP'te": "bg-purple-100 text-purple-800 border-purple-300",
+  "Tamamlandı": "bg-green-100 text-green-800 border-green-300",
 }
 
 export default function TalepListesi() {
@@ -378,9 +379,10 @@ export default function TalepListesi() {
                           >
                             <option value="">Tümü</option>
                             <option value="Taslak">Taslak</option>
-                            <option value="Onay Bekliyor">Onay Bekliyor</option>
-                            <option value="Onaylandı">Onaylandı</option>
+                            <option value="Satınalmacıda">Satınalmacıda</option>
+                            <option value="Revize İstendi">Revize İstendi</option>
                             <option value="Reddedildi">Reddedildi</option>
+                            <option value="SAP'te">SAP'te</option>
                             <option value="Tamamlandı">Tamamlandı</option>
                           </select>
                         </div>

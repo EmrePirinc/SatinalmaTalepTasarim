@@ -129,15 +129,16 @@ export default function TaskForm() {
       return
     }
 
-    // Talebi oluştur
+    // Talebi oluştur - Satınalmacıya gönder
     const newRequest = {
       id: Date.now(),
       documentNumber,
       requester: "Selim Aksu",
+      requesterRole: "Talep Açan",
       department: tableRows[0]?.departman || "Yönetim",
       createdDate: new Date().toLocaleDateString("tr-TR"),
       itemCount: tableRows.length,
-      status: "Onay Bekliyor",
+      status: "Satınalmacıda",
       requestSummary,
       items: tableRows,
       notes,
@@ -148,20 +149,34 @@ export default function TaskForm() {
     existingRequests.push(newRequest)
     localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
 
+    alert("Talep satınalmacıya gönderildi!")
     // Talep listesi sayfasına yönlendir
     router.push("/talep-listesi")
   }
 
   const handleSave = () => {
-    // Validasyon kontrolü
-    const errors = validateForm()
-    if (errors.length > 0) {
-      alert("Lütfen zorunlu alanları doldurun:\n\n" + errors.join("\n"))
-      return
+    // Taslak olarak kaydet - validasyon gerekmez
+    const newRequest = {
+      id: Date.now(),
+      documentNumber,
+      requester: "Selim Aksu",
+      requesterRole: "Talep Açan",
+      department: tableRows[0]?.departman || "Yönetim",
+      createdDate: new Date().toLocaleDateString("tr-TR"),
+      itemCount: tableRows.length,
+      status: "Taslak",
+      requestSummary,
+      items: tableRows,
+      notes,
     }
 
-    // Değişiklikleri kaydet (localStorage'a veya başka bir yere)
-    alert("Değişiklikler kaydedildi!")
+    // localStorage'a kaydet
+    const existingRequests = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
+    existingRequests.push(newRequest)
+    localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
+
+    alert("Talep taslak olarak kaydedildi!")
+    router.push("/talep-listesi")
   }
 
   return (
@@ -680,22 +695,22 @@ export default function TaskForm() {
                 />
               </div>
 
-              <div className="flex justify-end mb-4">
-                <Button
-                  onClick={handleSave}
-                  className="text-sm text-white shadow-md hover:opacity-90"
-                  style={{ backgroundColor: "rgba(237, 124, 30)" }}
-                >
-                  Değişiklikleri Kaydet
-                </Button>
-              </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button className="text-sm bg-[#f1556c] hover:bg-[#f1556c]/90 text-white">İptal</Button>
-              <Button onClick={handleSubmit} className="text-sm bg-[#4fc6e1] hover:bg-[#4fc6e1]/90 text-white border-0">
-                Onaya Gönder
+            <div className="flex justify-between mb-4">
+              <Button
+                onClick={handleSave}
+                variant="outline"
+                className="text-sm"
+              >
+                Taslak Olarak Kaydet
               </Button>
+              <div className="flex gap-2">
+                <Button className="text-sm bg-[#f1556c] hover:bg-[#f1556c]/90 text-white">İptal</Button>
+                <Button onClick={handleSubmit} className="text-sm bg-[#4fc6e1] hover:bg-[#4fc6e1]/90 text-white border-0">
+                  Satınalmacıya Onaya Gönder
+                </Button>
+              </div>
             </div>
           </div>
         </main>
