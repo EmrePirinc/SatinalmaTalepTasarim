@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import ItemSelectionDialog from "@/components/ItemSelectionDialog"
 import {
   Home,
   Package,
@@ -17,12 +18,15 @@ import {
   User,
   DollarSign,
   Upload,
+  List,
 } from "lucide-react"
 
 export default function TaskForm() {
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState("18691")
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
 
   const [filters, setFilters] = useState({
     departman: "",
@@ -387,20 +391,46 @@ export default function TaskForm() {
                         className="grid grid-cols-[120px_200px_150px_80px_120px_140px_120px_180px_120px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                       >
                         <div className="px-3 py-3 border-r border-border">
-                          <Input
-                            value={row.itemCode}
-                            onChange={(e) => handleRowFieldChange(row.id, "itemCode", e.target.value)}
-                            placeholder="Kalem kodu..."
-                            className="h-8 text-xs bg-background border-border"
-                          />
+                          <div className="flex items-center gap-1">
+                            <Input
+                              value={row.itemCode}
+                              onChange={(e) => handleRowFieldChange(row.id, "itemCode", e.target.value)}
+                              placeholder="Kalem kodu..."
+                              className="h-8 text-xs bg-background border-border flex-1"
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => {
+                                setSelectedRowId(row.id)
+                                setIsDialogOpen(true)
+                              }}
+                            >
+                              <List className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
                         <div className="px-3 py-3 border-r border-border">
-                          <Input
-                            value={row.itemName}
-                            onChange={(e) => handleRowFieldChange(row.id, "itemName", e.target.value)}
-                            placeholder="Kalem tanımı..."
-                            className="h-8 text-xs bg-background border-border"
-                          />
+                          <div className="flex items-center gap-1">
+                            <Input
+                              value={row.itemName}
+                              onChange={(e) => handleRowFieldChange(row.id, "itemName", e.target.value)}
+                              placeholder="Kalem tanımı..."
+                              className="h-8 text-xs bg-background border-border flex-1"
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => {
+                                setSelectedRowId(row.id)
+                                setIsDialogOpen(true)
+                              }}
+                            >
+                              <List className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
                         <div className="px-3 py-3 border-r border-border">
                           <Input
@@ -528,6 +558,21 @@ export default function TaskForm() {
           </div>
         </main>
       </div>
+      <ItemSelectionDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onItemSelected={(item) => {
+          if (selectedRowId !== null) {
+            setTableRows((currentRows) =>
+              currentRows.map((row) =>
+                row.id === selectedRowId
+                  ? { ...row, itemCode: item.itemCode, itemName: item.itemName }
+                  : row
+              )
+            )
+          }
+        }}
+      />
     </div>
   )
 }
