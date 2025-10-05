@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import {
   Table,
@@ -171,6 +172,48 @@ export default function TalepListesi() {
   const handleViewDetails = (request: PurchaseRequest) => {
     setSelectedRequest(request)
     setIsDetailDialogOpen(true)
+  }
+
+  const handleSendToSAP = () => {
+    if (!selectedRequest) return
+
+    const updatedRequests = requests.map((req) =>
+      req.id === selectedRequest.id ? { ...req, status: "SAP'te" as RequestStatus } : req
+    )
+    setRequests(updatedRequests)
+    localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+    alert("Talep SAP'ye gönderildi!")
+    setIsDetailDialogOpen(false)
+  }
+
+  const handleReject = () => {
+    if (!selectedRequest) return
+
+    const reason = prompt("Reddetme sebebini giriniz:")
+    if (!reason) return
+
+    const updatedRequests = requests.map((req) =>
+      req.id === selectedRequest.id ? { ...req, status: "Reddedildi" as RequestStatus, notes: (req.notes || "") + "\n\nRed Sebebi: " + reason } : req
+    )
+    setRequests(updatedRequests)
+    localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+    alert("Talep reddedildi!")
+    setIsDetailDialogOpen(false)
+  }
+
+  const handleRevise = () => {
+    if (!selectedRequest) return
+
+    const revisionNote = prompt("Revize notunu giriniz:")
+    if (!revisionNote) return
+
+    const updatedRequests = requests.map((req) =>
+      req.id === selectedRequest.id ? { ...req, status: "Revize İstendi" as RequestStatus, notes: (req.notes || "") + "\n\nRevize Notu: " + revisionNote } : req
+    )
+    setRequests(updatedRequests)
+    localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+    alert("Revize talebi gönderildi!")
+    setIsDetailDialogOpen(false)
   }
 
   return (
@@ -547,6 +590,31 @@ export default function TalepListesi() {
                 </div>
               )}
             </div>
+          )}
+          {selectedRequest && selectedRequest.status === "Satınalmacıda" && (
+            <DialogFooter className="gap-2">
+              <Button
+                onClick={handleReject}
+                variant="destructive"
+                className="text-sm"
+              >
+                Reddet
+              </Button>
+              <Button
+                onClick={handleRevise}
+                variant="outline"
+                className="text-sm"
+              >
+                Revize İste
+              </Button>
+              <Button
+                onClick={handleSendToSAP}
+                className="text-sm"
+                style={{ backgroundColor: "rgba(237, 124, 30)" }}
+              >
+                SAP'ye Gönder
+              </Button>
+            </DialogFooter>
           )}
         </DialogContent>
       </Dialog>
