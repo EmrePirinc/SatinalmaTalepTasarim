@@ -132,6 +132,7 @@ export default function TalepListesi() {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
   const [filters, setFilters] = useState({
     documentNumber: "",
+    requestSummary: "",
     requester: "",
     department: "",
     status: "",
@@ -151,10 +152,12 @@ export default function TalepListesi() {
       const searchMatch =
         request.documentNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         request.requester.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        request.department.toLowerCase().includes(searchQuery.toLowerCase())
+        request.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (request.requestSummary && request.requestSummary.toLowerCase().includes(searchQuery.toLowerCase()))
 
       if (!searchMatch) return false
-      if (filters.documentNumber && !request.documentNumber.includes(filters.documentNumber)) return false
+      if (filters.documentNumber && !request.documentNumber.toLowerCase().includes(filters.documentNumber.toLowerCase())) return false
+      if (filters.requestSummary && (!request.requestSummary || !request.requestSummary.toLowerCase().includes(filters.requestSummary.toLowerCase()))) return false
       if (filters.requester && !request.requester.toLowerCase().includes(filters.requester.toLowerCase()))
         return false
       if (filters.department && request.department !== filters.department) return false
@@ -316,7 +319,12 @@ export default function TalepListesi() {
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">Özet</span>
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border"
+                            value={filters.requestSummary}
+                            onChange={(e) => setFilters({ ...filters, requestSummary: e.target.value })}
+                          />
                         </div>
                       </div>
                       <div className="px-3 py-2 border-r border-border">
