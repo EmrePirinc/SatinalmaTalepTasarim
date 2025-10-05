@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -125,6 +126,12 @@ export default function TaskForm() {
                 <div className="w-1.5 h-1.5 rounded-full bg-white" />
                 Satınalma Talep Formu
               </button>
+              <Link href="/talep-listesi">
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                  Talep Listesi
+                </button>
+              </Link>
             </div>
 
             <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">

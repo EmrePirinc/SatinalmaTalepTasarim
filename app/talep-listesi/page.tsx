@@ -1,0 +1,410 @@
+"use client"
+
+import { useState, useMemo } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Home,
+  Package,
+  Bell,
+  Calendar,
+  Filter,
+  Search,
+  Settings,
+  User,
+  DollarSign,
+  ChevronDown,
+  Menu,
+  X,
+  Eye,
+} from "lucide-react"
+
+type RequestStatus = "Taslak" | "Onay Bekliyor" | "Onaylandı" | "Reddedildi" | "Tamamlandı"
+
+type PurchaseRequest = {
+  id: number
+  documentNumber: string
+  requester: string
+  department: string
+  createdDate: string
+  itemCount: number
+  totalAmount: number
+  status: RequestStatus
+}
+
+const mockRequests: PurchaseRequest[] = [
+  {
+    id: 1,
+    documentNumber: "18691",
+    requester: "Selim Aksu",
+    department: "Yönetim",
+    createdDate: "01.10.2025",
+    itemCount: 1,
+    totalAmount: 25000,
+    status: "Onay Bekliyor",
+  },
+  {
+    id: 2,
+    documentNumber: "18692",
+    requester: "Ahmet Yılmaz",
+    department: "Bakır",
+    createdDate: "02.10.2025",
+    itemCount: 5,
+    totalAmount: 15000,
+    status: "Onaylandı",
+  },
+  {
+    id: 3,
+    documentNumber: "18693",
+    requester: "Mehmet Demir",
+    department: "İzole",
+    createdDate: "03.10.2025",
+    itemCount: 3,
+    totalAmount: 8500,
+    status: "Taslak",
+  },
+  {
+    id: 4,
+    documentNumber: "18694",
+    requester: "Ayşe Kaya",
+    department: "Konsol",
+    createdDate: "04.10.2025",
+    itemCount: 2,
+    totalAmount: 12000,
+    status: "Reddedildi",
+  },
+  {
+    id: 5,
+    documentNumber: "18695",
+    requester: "Fatma Şahin",
+    department: "Bakımhane",
+    createdDate: "05.10.2025",
+    itemCount: 4,
+    totalAmount: 18500,
+    status: "Tamamlandı",
+  },
+]
+
+const statusColors: Record<RequestStatus, string> = {
+  "Taslak": "bg-gray-100 text-gray-800 border-gray-300",
+  "Onay Bekliyor": "bg-yellow-100 text-yellow-800 border-yellow-300",
+  "Onaylandı": "bg-green-100 text-green-800 border-green-300",
+  "Reddedildi": "bg-red-100 text-red-800 border-red-300",
+  "Tamamlandı": "bg-blue-100 text-blue-800 border-blue-300",
+}
+
+export default function TalepListesi() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filters, setFilters] = useState({
+    documentNumber: "",
+    requester: "",
+    department: "",
+    status: "",
+  })
+
+  const filteredRequests = useMemo(() => {
+    return mockRequests.filter((request) => {
+      const searchMatch =
+        request.documentNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        request.requester.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        request.department.toLowerCase().includes(searchQuery.toLowerCase())
+
+      if (!searchMatch) return false
+      if (filters.documentNumber && !request.documentNumber.includes(filters.documentNumber)) return false
+      if (filters.requester && !request.requester.toLowerCase().includes(filters.requester.toLowerCase()))
+        return false
+      if (filters.department && request.department !== filters.department) return false
+      if (filters.status && request.status !== filters.status) return false
+
+      return true
+    })
+  }, [searchQuery, filters])
+
+  return (
+    <div className="flex h-screen bg-background">
+      <aside
+        className={`${isSidebarOpen ? "w-64" : "w-0"} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}
+      >
+        {/* Logo */}
+        <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
+          <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
+            ANADOLU BAKIR
+          </div>
+        </div>
+
+        {/* Menu */}
+        <nav className="flex-1 py-4">
+          <div className="px-4 mb-2">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">ANADOLU BAKIR</div>
+          </div>
+
+          <div className="space-y-1 px-2">
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
+              <Home className="w-5 h-5" />
+              <span className="text-sm">Anasayfa</span>
+            </button>
+
+            <button
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium"
+              style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}
+            >
+              <Package className="w-5 h-5" />
+              <span>Satınalma</span>
+              <ChevronDown className="w-4 h-4 ml-auto" />
+            </button>
+
+            <div className="pl-8 space-y-1">
+              <Link href="/">
+                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                  Satınalma Talep Formu
+                </button>
+              </Link>
+              <button
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-white text-sm font-medium"
+                style={{ backgroundColor: "rgba(237, 124, 30)" }}
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                Talep Listesi
+              </button>
+            </div>
+
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
+              <DollarSign className="w-5 h-5" />
+              <span className="text-sm">Finans</span>
+              <ChevronDown className="w-4 h-4 ml-auto" />
+            </button>
+
+            <div className="pl-8 space-y-1">
+              <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-sm">
+                <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                Ödeme Süreci
+              </button>
+            </div>
+          </div>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent"
+              aria-label="Toggle sidebar"
+            >
+              {isSidebarOpen ? (
+                <X className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <Menu className="w-5 h-5 text-muted-foreground" />
+              )}
+            </button>
+            <nav className="flex items-center gap-6 text-sm">
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Görev Listesi</span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Anasayfa</span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Ayarlar</span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Yardım</span>
+            </nav>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent relative">
+              <Bell className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent">
+              <Settings className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button className="flex items-center gap-2 hover:bg-accent rounded-md px-2 py-1">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, rgba(237, 124, 30) 0%, rgba(200, 100, 20) 100%)" }}
+              >
+                <User className="w-4 h-4 text-white" />
+              </div>
+            </button>
+          </div>
+        </header>
+
+        {/* Content Area */}
+        <main className="flex-1 overflow-auto p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-card rounded-lg border border-border shadow-sm p-6">
+              <h3
+                className="text-2xl font-bold mb-6 pb-3 border-b-2"
+                style={{ color: "rgba(237, 124, 30)", borderColor: "rgba(237, 124, 30, 0.2)" }}
+              >
+                Satınalma Talep Listesi
+              </h3>
+
+              {/* Search */}
+              <div className="relative mb-6">
+                <Input
+                  placeholder="Doküman numarası, talep eden veya departmana göre ara..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <div className="border border-border rounded-lg overflow-hidden shadow-sm">
+                  {/* Filter Row */}
+                  <div className="bg-white border-b border-border">
+                    <div className="grid grid-cols-[150px_180px_150px_120px_100px_120px_150px_100px]">
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border"
+                            value={filters.documentNumber}
+                            onChange={(e) => setFilters({ ...filters, documentNumber: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border"
+                            value={filters.requester}
+                            onChange={(e) => setFilters({ ...filters, requester: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <select
+                            className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
+                            value={filters.department}
+                            onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="Konsol">Konsol</option>
+                            <option value="Bakır">Bakır</option>
+                            <option value="İzole">İzole</option>
+                            <option value="Yönetim">Yönetim</option>
+                            <option value="Bakımhane">Bakımhane</option>
+                            <option value="Depo">Depo</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground">Tarih</span>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground">Kalem</span>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground">Tutar</span>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <select
+                            className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
+                            value={filters.status}
+                            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="Taslak">Taslak</option>
+                            <option value="Onay Bekliyor">Onay Bekliyor</option>
+                            <option value="Onaylandı">Onaylandı</option>
+                            <option value="Reddedildi">Reddedildi</option>
+                            <option value="Tamamlandı">Tamamlandı</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground">İşlem</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Header Row */}
+                  <div className="bg-[#ECF2FF] border-b border-border">
+                    <div className="grid grid-cols-[150px_180px_150px_120px_100px_120px_150px_100px]">
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Doküman No
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Talep Eden
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Departman
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Kayıt Tarihi
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
+                        Kalem Sayısı
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-right">
+                        Toplam Tutar
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">Durum</div>
+                      <div className="px-3 py-3 text-sm font-medium text-[#181C14] text-center">İşlemler</div>
+                    </div>
+                  </div>
+
+                  {/* Data Rows */}
+                  {filteredRequests.map((request) => (
+                    <div
+                      key={request.id}
+                      className="grid grid-cols-[150px_180px_150px_120px_100px_120px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.createdDate}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm text-right">
+                        ₺{request.totalAmount.toLocaleString("tr-TR")}
+                      </div>
+                      <div className="px-3 py-3 border-r border-border">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[request.status]}`}
+                        >
+                          {request.status}
+                        </span>
+                      </div>
+                      <div className="px-3 py-3 flex items-center justify-center">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Footer */}
+                  <div className="px-4 py-3 text-sm text-muted-foreground flex justify-end bg-muted/30">
+                    <span>Toplam {filteredRequests.length} talep var</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 text-xs text-muted-foreground text-center">
+              2025 Netcad® Yazılımı. Her hakkı saklıdır.
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  )
+}
