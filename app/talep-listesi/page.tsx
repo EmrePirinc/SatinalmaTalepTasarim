@@ -35,7 +35,19 @@ import {
   Eye,
 } from "lucide-react"
 
-type RequestStatus = "Taslak" | "Satınalmacıda" | "Revize İstendi" | "Reddedildi" | "SAP'te" | "Tamamlandı"
+type RequestStatus =
+  | "Taslak"
+  | "Satınalmacıda"
+  | "Revize İstendi"
+  | "Reddedildi"
+  | "Satınalma Teklifi"
+  | "Satınalma Talebi"
+  | "Satınalma Siparişi"
+  | "Mal Girişi"
+  | "Satıcı Faturası"
+  | "Ödeme Yapıldı"
+  | "İade"
+  | "Tamamlandı"
 
 type RequestItem = {
   id: number
@@ -122,7 +134,13 @@ const statusColors: Record<RequestStatus, string> = {
   "Satınalmacıda": "bg-yellow-100 text-yellow-800 border-yellow-300",
   "Revize İstendi": "bg-orange-100 text-orange-800 border-orange-300",
   "Reddedildi": "bg-red-100 text-red-800 border-red-300",
-  "SAP'te": "bg-purple-100 text-purple-800 border-purple-300",
+  "Satınalma Teklifi": "bg-blue-100 text-blue-800 border-blue-300",
+  "Satınalma Talebi": "bg-indigo-100 text-indigo-800 border-indigo-300",
+  "Satınalma Siparişi": "bg-cyan-100 text-cyan-800 border-cyan-300",
+  "Mal Girişi": "bg-teal-100 text-teal-800 border-teal-300",
+  "Satıcı Faturası": "bg-purple-100 text-purple-800 border-purple-300",
+  "Ödeme Yapıldı": "bg-emerald-100 text-emerald-800 border-emerald-300",
+  "İade": "bg-rose-100 text-rose-800 border-rose-300",
   "Tamamlandı": "bg-green-100 text-green-800 border-green-300",
 }
 
@@ -178,11 +196,11 @@ export default function TalepListesi() {
     if (!selectedRequest) return
 
     const updatedRequests = requests.map((req) =>
-      req.id === selectedRequest.id ? { ...req, status: "SAP'te" as RequestStatus } : req
+      req.id === selectedRequest.id ? { ...req, status: "Satınalma Teklifi" as RequestStatus } : req
     )
     setRequests(updatedRequests)
     localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
-    alert("Talep SAP'ye gönderildi!")
+    alert("Talep SAP'ye gönderildi! (Satınalma Teklifi)")
     setIsDetailDialogOpen(false)
   }
 
@@ -425,7 +443,13 @@ export default function TalepListesi() {
                             <option value="Satınalmacıda">Satınalmacıda</option>
                             <option value="Revize İstendi">Revize İstendi</option>
                             <option value="Reddedildi">Reddedildi</option>
-                            <option value="SAP'te">SAP'te</option>
+                            <option value="Satınalma Teklifi">Satınalma Teklifi</option>
+                            <option value="Satınalma Talebi">Satınalma Talebi</option>
+                            <option value="Satınalma Siparişi">Satınalma Siparişi</option>
+                            <option value="Mal Girişi">Mal Girişi</option>
+                            <option value="Satıcı Faturası">Satıcı Faturası</option>
+                            <option value="Ödeme Yapıldı">Ödeme Yapıldı</option>
+                            <option value="İade">İade</option>
                             <option value="Tamamlandı">Tamamlandı</option>
                           </select>
                         </div>
