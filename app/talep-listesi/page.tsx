@@ -400,7 +400,7 @@ export default function TalepListesi() {
 
               {/* Table */}
               <div className="overflow-x-auto">
-                <div className="border border-border rounded-lg overflow-hidden shadow-sm">
+                <div className="border border-border rounded-lg overflow-hidden shadow-sm min-w-[1400px]">
                   {/* Filter Row */}
                   <div className="bg-white border-b border-border">
                     <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px]">
@@ -409,7 +409,7 @@ export default function TalepListesi() {
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                           <Input
                             placeholder="Filtrele..."
-                            className="h-8 text-xs bg-muted border-border"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                             value={filters.documentNumber}
                             onChange={(e) => setFilters({ ...filters, documentNumber: e.target.value })}
                           />
@@ -420,7 +420,7 @@ export default function TalepListesi() {
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                           <Input
                             placeholder="Filtrele..."
-                            className="h-8 text-xs bg-muted border-border"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                             value={filters.requestSummary}
                             onChange={(e) => setFilters({ ...filters, requestSummary: e.target.value })}
                           />
@@ -431,7 +431,7 @@ export default function TalepListesi() {
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                           <Input
                             placeholder="Filtrele..."
-                            className="h-8 text-xs bg-muted border-border"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                             value={filters.requester}
                             onChange={(e) => setFilters({ ...filters, requester: e.target.value })}
                           />
@@ -460,7 +460,7 @@ export default function TalepListesi() {
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                           <Input
                             type="date"
-                            className="h-8 text-xs bg-muted border-border"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                             value={filters.documentDate}
                             onChange={(e) => setFilters({ ...filters, documentDate: e.target.value })}
                           />
@@ -471,7 +471,7 @@ export default function TalepListesi() {
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                           <Input
                             type="date"
-                            className="h-8 text-xs bg-muted border-border"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                             value={filters.requiredDate}
                             onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
                           />
@@ -482,7 +482,7 @@ export default function TalepListesi() {
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                           <Input
                             placeholder="GG.AA.YYYY"
-                            className="h-8 text-xs bg-muted border-border"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                             value={filters.createdDate}
                             onChange={(e) => setFilters({ ...filters, createdDate: e.target.value })}
                           />
@@ -494,7 +494,7 @@ export default function TalepListesi() {
                           <Input
                             type="number"
                             placeholder="Filtrele..."
-                            className="h-8 text-xs bg-muted border-border"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                             value={filters.itemCount}
                             onChange={(e) => setFilters({ ...filters, itemCount: e.target.value })}
                           />

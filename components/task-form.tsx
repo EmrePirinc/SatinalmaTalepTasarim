@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import ItemSelectionDialog from "@/components/ItemSelectionDialog"
+import SAPDateInput from "@/components/SAPDateInput"
 import {
   Home,
   Package,
@@ -32,13 +33,61 @@ export default function TaskForm() {
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState("18691")
-  const [documentDate, setDocumentDate] = useState(new Date().toISOString().split('T')[0])
+  const [documentDate, setDocumentDate] = useState(() => {
+    const today = new Date()
+    return `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`
+  })
   const [requiredDate, setRequiredDate] = useState("")
   const [requestSummary, setRequestSummary] = useState("")
   const [isUrgent, setIsUrgent] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const isFirstRender = useRef(true)
+  const previousRequiredDate = useRef("")
+
+  // Başlık Gerekli Tarih değiştiğinde satırları güncelle
+  useEffect(() => {
+    // İlk render'da veya requiredDate değişmediyse kontrol etme
+    if (isFirstRender.current || previousRequiredDate.current === requiredDate) {
+      isFirstRender.current = false
+      previousRequiredDate.current = requiredDate
+      return
+    }
+
+    // requiredDate boşsa güncelleme
+    if (!requiredDate) {
+      previousRequiredDate.current = requiredDate
+      return
+    }
+
+    // Dolu requiredDate'e sahip satırlar var mı kontrol et
+    const rowsWithDate = tableRows.filter(row => row.requiredDate && row.requiredDate.trim() !== "")
+
+    if (rowsWithDate.length > 0) {
+      // Uyarı göster
+      const shouldUpdate = window.confirm(
+        "Mevcut tablo satırlarını gerekli yeni tarih ile güncellemek istiyor musunuz?"
+      )
+
+      if (shouldUpdate) {
+        // Tüm satırları güncelle
+        setTableRows(prevRows =>
+          prevRows.map(row => ({ ...row, requiredDate }))
+        )
+      }
+      // Hayır denirse hiçbir şey yapma, yeni satırlar için requiredDate kullanılacak
+    } else {
+      // Hiç dolu satır yoksa, tüm boş satırları güncelle
+      setTableRows(prevRows =>
+        prevRows.map(row =>
+          row.requiredDate ? row : { ...row, requiredDate }
+        )
+      )
+    }
+
+    previousRequiredDate.current = requiredDate
+  }, [requiredDate, tableRows])
 
   useEffect(() => {
     // Kullanıcı kontrolü
@@ -336,28 +385,21 @@ export default function TaskForm() {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="text-sm font-medium text-card-foreground mb-2 block">Belge Tarihi <span className="text-red-500">*</span></label>
-                  <div className="relative">
-                    <Input
-                      type="date"
-                      value={documentDate}
-                      onChange={(e) => setDocumentDate(e.target.value)}
-                      className="bg-background border-border text-foreground pr-10"
-                    />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  </div>
+                  <SAPDateInput
+                    value={documentDate}
+                    onChange={(value) => setDocumentDate(value)}
+                    className="bg-background border-border text-foreground"
+                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-card-foreground mb-2 block">
                     Gerekli Tarih <span className="text-red-500">*</span>
                   </label>
-                  <div className="relative">
-                    <Input
-                      type="date"
-                      value={requiredDate}
-                      onChange={(e) => setRequiredDate(e.target.value)}
-                      className="bg-background border-border text-foreground"
-                    />
-                  </div>
+                  <SAPDateInput
+                    value={requiredDate}
+                    onChange={(value) => setRequiredDate(value)}
+                    className="bg-background border-border text-foreground"
+                  />
                 </div>
               </div>
 
@@ -431,7 +473,7 @@ export default function TaskForm() {
                         departman: "",
                         itemCode: "",
                         itemName: "",
-                        requiredDate: "",
+                        requiredDate: requiredDate, // Başlıktaki gerekli tarihi kullan
                         quantity: "",
                         uomCode: "",
                         vendor: "",
@@ -450,7 +492,7 @@ export default function TaskForm() {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <div className="border border-border rounded-lg overflow-hidden shadow-sm">
+                  <div className="border border-border rounded-lg overflow-hidden shadow-sm min-w-[1200px]">
                     {/* Filter Row */}
                     <div className="bg-white border-b border-border">
                       <div className="grid grid-cols-[180px_minmax(200px,1fr)_130px_80px_100px_120px_100px_150px_100px]">
@@ -459,7 +501,7 @@ export default function TaskForm() {
                             <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                             <Input
                               placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border"
+                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                               value={filters.itemCode}
                               onChange={(e) => setFilters({ ...filters, itemCode: e.target.value })}
                             />
@@ -470,7 +512,7 @@ export default function TaskForm() {
                             <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                             <Input
                               placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border"
+                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                               value={filters.itemName}
                               onChange={(e) => setFilters({ ...filters, itemName: e.target.value })}
                             />
@@ -481,7 +523,7 @@ export default function TaskForm() {
                             <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                             <Input
                               type="date"
-                              className="h-8 text-xs bg-muted border-border"
+                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                               value={filters.requiredDate}
                               onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
                             />
@@ -492,7 +534,7 @@ export default function TaskForm() {
                             <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                             <Input
                               placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border"
+                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                               value={filters.quantity}
                               onChange={(e) => setFilters({ ...filters, quantity: e.target.value })}
                             />
@@ -554,7 +596,7 @@ export default function TaskForm() {
                             <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                             <Input
                               placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border"
+                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
                               value={filters.description}
                               onChange={(e) => setFilters({ ...filters, description: e.target.value })}
                             />
@@ -657,10 +699,9 @@ export default function TaskForm() {
                           </div>
                         </div>
                         <div className="px-3 py-3 border-r border-border">
-                          <Input
-                            type="date"
+                          <SAPDateInput
                             value={row.requiredDate}
-                            onChange={(e) => handleRowFieldChange(row.id, "requiredDate", e.target.value)}
+                            onChange={(value) => handleRowFieldChange(row.id, "requiredDate", value)}
                             className="h-8 text-xs bg-background border-border"
                           />
                         </div>
