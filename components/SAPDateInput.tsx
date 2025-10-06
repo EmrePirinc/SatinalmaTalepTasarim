@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import { Calendar } from "lucide-react"
@@ -12,7 +14,12 @@ interface SAPDateInputProps {
   placeholder?: string
 }
 
-export default function SAPDateInput({ value, onChange, className = "", placeholder = "DD/MM/YYYY veya SAP format" }: SAPDateInputProps) {
+export default function SAPDateInput({
+  value,
+  onChange,
+  className = "",
+  placeholder = "DD/MM/YYYY veya SAP format",
+}: SAPDateInputProps) {
   const [textValue, setTextValue] = useState("")
   const [showCalendar, setShowCalendar] = useState(false)
   const dateInputRef = useRef<HTMLInputElement>(null)
@@ -35,12 +42,18 @@ export default function SAPDateInput({ value, onChange, className = "", placehol
 
   const handleCalendarClick = () => {
     if (dateInputRef.current) {
-      // Modern tarayıcılar için showPicker kullan
-      if ('showPicker' in dateInputRef.current) {
-        dateInputRef.current.showPicker()
-      } else {
-        // Fallback: input'a tıkla
-        dateInputRef.current.click()
+      try {
+        // Modern tarayıcılar için showPicker kullan
+        if ("showPicker" in dateInputRef.current && typeof dateInputRef.current.showPicker === "function") {
+          dateInputRef.current.showPicker()
+        } else {
+          // Fallback: input'a focus ver
+          dateInputRef.current.focus()
+        }
+      } catch (error) {
+        // showPicker() bazı durumlarda hata verebilir, fallback olarak focus kullan
+        console.warn("showPicker() failed, using focus fallback:", error)
+        dateInputRef.current.focus()
       }
     }
   }

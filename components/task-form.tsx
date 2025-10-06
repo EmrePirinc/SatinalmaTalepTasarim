@@ -12,7 +12,6 @@ import {
   Home,
   Package,
   Bell,
-  Calendar,
   Filter,
   Plus,
   ChevronDown,
@@ -62,32 +61,29 @@ export default function TaskForm() {
     }
 
     // Dolu requiredDate'e sahip satırlar var mı kontrol et
-    const rowsWithDate = tableRows.filter(row => row.requiredDate && row.requiredDate.trim() !== "")
+    setTableRows((currentRows) => {
+      const rowsWithDate = currentRows.filter((row) => row.requiredDate && row.requiredDate.trim() !== "")
 
-    if (rowsWithDate.length > 0) {
-      // Uyarı göster
-      const shouldUpdate = window.confirm(
-        "Mevcut tablo satırlarını gerekli yeni tarih ile güncellemek istiyor musunuz?"
-      )
-
-      if (shouldUpdate) {
-        // Tüm satırları güncelle
-        setTableRows(prevRows =>
-          prevRows.map(row => ({ ...row, requiredDate }))
+      if (rowsWithDate.length > 0) {
+        // Uyarı göster
+        const shouldUpdate = window.confirm(
+          "Mevcut tablo satırlarını gerekli yeni tarih ile güncellemek istiyor musunuz?",
         )
+
+        if (shouldUpdate) {
+          // Tüm satırları güncelle
+          return currentRows.map((row) => ({ ...row, requiredDate }))
+        }
+        // Hayır denirse hiçbir şey yapma, yeni satırlar için requiredDate kullanılacak
+        return currentRows
+      } else {
+        // Hiç dolu satır yoksa, tüm boş satırları güncelle
+        return currentRows.map((row) => (row.requiredDate ? row : { ...row, requiredDate }))
       }
-      // Hayır denirse hiçbir şey yapma, yeni satırlar için requiredDate kullanılacak
-    } else {
-      // Hiç dolu satır yoksa, tüm boş satırları güncelle
-      setTableRows(prevRows =>
-        prevRows.map(row =>
-          row.requiredDate ? row : { ...row, requiredDate }
-        )
-      )
-    }
+    })
 
     previousRequiredDate.current = requiredDate
-  }, [requiredDate, tableRows])
+  }, [requiredDate])
 
   useEffect(() => {
     // Kullanıcı kontrolü
@@ -161,7 +157,8 @@ export default function TaskForm() {
       if (filters.uomCode && row.uomCode !== filters.uomCode) return false
       if (filters.vendor && row.vendor !== filters.vendor) return false
       if (filters.departman && row.departman !== filters.departman) return false
-      if (filters.description && !row.description.toLowerCase().includes(filters.description.toLowerCase())) return false
+      if (filters.description && !row.description.toLowerCase().includes(filters.description.toLowerCase()))
+        return false
       if (filters.hasFile === "var" && !row.file) return false
       if (filters.hasFile === "yok" && row.file) return false
       return true
@@ -236,7 +233,9 @@ export default function TaskForm() {
 
   return (
     <div className="flex h-screen bg-background">
-      <aside className={`${isSidebarOpen ? 'w-48' : 'w-0'} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}>
+      <aside
+        className={`${isSidebarOpen ? "w-48" : "w-0"} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}
+      >
         {/* Logo */}
         <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
           <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
@@ -313,10 +312,10 @@ export default function TaskForm() {
               )}
             </button>
             <nav className="flex items-center gap-6 text-sm">
-            <span className="text-muted-foreground hover:text-foreground cursor-pointer">Görev Listesi</span>
-            <span className="text-muted-foreground hover:text-foreground cursor-pointer">Anasayfa</span>
-            <span className="text-muted-foreground hover:text-foreground cursor-pointer">Ayarlar</span>
-            <span className="text-muted-foreground hover:text-foreground cursor-pointer">Yardım</span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Görev Listesi</span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Anasayfa</span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Ayarlar</span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Yardım</span>
             </nav>
           </div>
           <div className="flex items-center gap-3">
@@ -339,13 +338,7 @@ export default function TaskForm() {
                   {currentUser?.role === "purchaser" ? "Satınalmacı" : "Talep Açan"}
                 </span>
               </div>
-              <Button
-                onClick={handleLogout}
-                variant="ghost"
-                size="icon"
-                className="w-8 h-8 ml-2"
-                title="Çıkış Yap"
-              >
+              <Button onClick={handleLogout} variant="ghost" size="icon" className="w-8 h-8 ml-2" title="Çıkış Yap">
                 <LogOut className="w-4 h-4" />
               </Button>
             </div>
@@ -384,7 +377,9 @@ export default function TaskForm() {
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="text-sm font-medium text-card-foreground mb-2 block">Belge Tarihi <span className="text-red-500">*</span></label>
+                  <label className="text-sm font-medium text-card-foreground mb-2 block">
+                    Belge Tarihi <span className="text-red-500">*</span>
+                  </label>
                   <SAPDateInput
                     value={documentDate}
                     onChange={(value) => setDocumentDate(value)}
@@ -418,35 +413,35 @@ export default function TaskForm() {
                   type="button"
                   onClick={() => setIsUrgent(!isUrgent)}
                   className={`w-full p-4 rounded-lg border-2 transition-all duration-200 ${
-                    isUrgent
-                      ? "bg-red-50 border-red-400 shadow-md"
-                      : "bg-gray-50 border-gray-200 hover:border-gray-300"
+                    isUrgent ? "bg-red-50 border-red-400 shadow-md" : "bg-gray-50 border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                        isUrgent ? "bg-red-500" : "bg-gray-300"
-                      }`}>
+                      <div
+                        className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                          isUrgent ? "bg-red-500" : "bg-gray-300"
+                        }`}
+                      >
                         <span className="text-xl">⚠️</span>
                       </div>
                       <div className="text-left">
-                        <div className={`font-semibold text-base ${
-                          isUrgent ? "text-red-700" : "text-gray-700"
-                        }`}>
+                        <div className={`font-semibold text-base ${isUrgent ? "text-red-700" : "text-gray-700"}`}>
                           Acil Talep
                         </div>
-                        <div className="text-xs text-gray-600">
-                          Bu talebin öncelikli olarak işlenmesi gerekiyor
-                        </div>
+                        <div className="text-xs text-gray-600">Bu talebin öncelikli olarak işlenmesi gerekiyor</div>
                       </div>
                     </div>
-                    <div className={`w-12 h-6 rounded-full relative transition-colors ${
-                      isUrgent ? "bg-red-500" : "bg-gray-300"
-                    }`}>
-                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                        isUrgent ? "right-1" : "left-1"
-                      }`}></div>
+                    <div
+                      className={`w-12 h-6 rounded-full relative transition-colors ${
+                        isUrgent ? "bg-red-500" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                          isUrgent ? "right-1" : "left-1"
+                        }`}
+                      ></div>
                     </div>
                   </div>
                 </button>
@@ -801,15 +796,10 @@ export default function TaskForm() {
                   className="bg-muted border-border text-foreground min-h-[100px]"
                 />
               </div>
-
             </div>
 
             <div className="flex justify-end gap-2 mb-4">
-              <Button
-                onClick={handleSubmit}
-                className="text-sm"
-                style={{ backgroundColor: "rgba(237, 124, 30)" }}
-              >
+              <Button onClick={handleSubmit} className="text-sm" style={{ backgroundColor: "rgba(237, 124, 30)" }}>
                 SAP'ye Gönder (Satınalma Talebi)
               </Button>
             </div>
@@ -825,8 +815,8 @@ export default function TaskForm() {
               currentRows.map((row) =>
                 row.id === selectedRowId
                   ? { ...row, itemCode: item.itemCode, itemName: item.itemName, isDummy: item.itemCode === "DUMMY" }
-                  : row
-              )
+                  : row,
+              ),
             )
           }
         }}
