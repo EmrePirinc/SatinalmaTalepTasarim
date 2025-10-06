@@ -383,7 +383,7 @@ export default function TalepListesi() {
                 <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                   {/* Filter Row */}
                   <div className="bg-white border-b border-border">
-                    <div className="grid grid-cols-[120px_minmax(150px,1fr)_140px_110px_110px_110px_110px_80px_130px_200px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_140px_80px]">
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -511,7 +511,7 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border">
-                    <div className="grid grid-cols-[120px_minmax(150px,1fr)_140px_110px_110px_110px_110px_80px_130px_200px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_140px_80px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
                       </div>
@@ -545,58 +545,32 @@ export default function TalepListesi() {
                   {filteredRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[120px_minmax(150px,1fr)_140px_110px_110px_110px_110px_80px_130px_200px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_140px_80px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                     >
-                      <div className="px-2 py-3 border-r border-border text-xs">{request.documentNumber}</div>
-                      <div className="px-2 py-3 border-r border-border text-xs truncate">{request.requestSummary || "-"}</div>
-                      <div className="px-2 py-3 border-r border-border text-xs">{request.requester}</div>
-                      <div className="px-2 py-3 border-r border-border text-xs">{request.department}</div>
-                      <div className="px-2 py-3 border-r border-border text-xs">{request.documentDate || "-"}</div>
-                      <div className="px-2 py-3 border-r border-border text-xs">{request.requiredDate || "-"}</div>
-                      <div className="px-2 py-3 border-r border-border text-xs">{request.createdDate}</div>
-                      <div className="px-2 py-3 border-r border-border text-xs text-center">{request.itemCount}</div>
-                      <div className="px-2 py-3 border-r border-border">
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm truncate">{request.requestSummary || "-"}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentDate || "-"}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.requiredDate || "-"}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.createdDate}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
+                      <div className="px-3 py-3 border-r border-border">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusColors[request.status]}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[request.status]}`}
                         >
                           {request.status}
                         </span>
                       </div>
-                      <div className="px-2 py-2 flex items-center gap-1">
+                      <div className="px-2 py-2 flex items-center justify-center">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-8 w-8"
                           onClick={() => handleViewDetails(request)}
                         >
-                          <Eye className="w-3.5 h-3.5" />
+                          <Eye className="w-4 h-4" />
                         </Button>
-                        {currentUser?.role === "purchaser" && (request.status === "Satınalmacıda" || request.status === "Satınalma Talebi") && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-7 text-xs px-2"
-                              onClick={() => {
-                                setSelectedRequest(request)
-                                handleRevise()
-                              }}
-                            >
-                              Revize
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="h-7 text-xs px-2"
-                              onClick={() => {
-                                setSelectedRequest(request)
-                                handleReject()
-                              }}
-                            >
-                              Red
-                            </Button>
-                          </>
-                        )}
                       </div>
                     </div>
                   ))}
