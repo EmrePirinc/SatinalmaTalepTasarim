@@ -27,6 +27,7 @@ type Item = {
 }
 
 const mockItems: Item[] = [
+  { itemCode: "DUMMY", itemName: "🔸 BİLİNMEYEN KALEM (Dummy Kalem - Detaylar açıklamada belirtilecek)", stock: 999 },
   { itemCode: "05.13.E05.02.127.1.0.B9.50N", itemName: "9 mm OTTOCOOL KAUÇUK MAKS 1/2\" x 0.71 mm BY 50 MT", stock: 0 },
   { itemCode: "05.13.E05.02.147.1.0.B9.50N", itemName: "9 mm OTTOCOOL KAUÇUK MAKS 3/4\" x 0.71 mm BY 50 MT", stock: 120 },
   { itemCode: "05.13.E05.02.349.0.0.B9.50N", itemName: "9 mm OTTOCOOL KAUÇUK MAKS 3/4\" x 0.89 mm BY 50 MT", stock: 50 },

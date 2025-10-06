@@ -68,6 +68,7 @@ type RequestItem = {
   vendor: string
   description: string
   file: File | null
+  isDummy?: boolean
 }
 
 type PurchaseRequest = {
@@ -81,6 +82,7 @@ type PurchaseRequest = {
   createdDate: string
   itemCount: number
   status: RequestStatus
+  isUrgent?: boolean
   requestSummary?: string
   items?: RequestItem[]
   notes?: string
@@ -547,7 +549,12 @@ export default function TalepListesi() {
                       key={request.id}
                       className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_140px_80px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                     >
-                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">
+                        <div className="flex items-center gap-1">
+                          {request.isUrgent && <span className="text-red-600 font-bold" title="Acil Talep">⚠️</span>}
+                          <span>{request.documentNumber}</span>
+                        </div>
+                      </div>
                       <div className="px-3 py-3 border-r border-border text-sm truncate">{request.requestSummary || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
@@ -613,6 +620,14 @@ export default function TalepListesi() {
                       {selectedRequest.status}
                     </span>
                   </div>
+                  {selectedRequest.isUrgent && (
+                    <div className="col-span-2">
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-semibold bg-red-100 text-red-800 border border-red-300">
+                        <span>⚠️</span>
+                        <span>ACİL TALEP</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tarihler Bölümü */}
@@ -677,7 +692,10 @@ export default function TalepListesi() {
                       <TableBody>
                         {selectedRequest.items.map((item) => (
                           <TableRow key={item.id}>
-                            <TableCell className="font-medium">{item.itemCode}</TableCell>
+                            <TableCell className="font-medium">
+                              {item.isDummy && <span className="text-orange-600 mr-1" title="Dummy Kalem">🔸</span>}
+                              {item.itemCode}
+                            </TableCell>
                             <TableCell>{item.itemName}</TableCell>
                             <TableCell>{item.departman}</TableCell>
                             <TableCell>{item.quantity}</TableCell>

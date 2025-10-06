@@ -35,6 +35,7 @@ export default function TaskForm() {
   const [documentDate, setDocumentDate] = useState(new Date().toISOString().split('T')[0])
   const [requiredDate, setRequiredDate] = useState("")
   const [requestSummary, setRequestSummary] = useState("")
+  const [isUrgent, setIsUrgent] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -86,6 +87,7 @@ export default function TaskForm() {
       vendor: "",
       description: "",
       file: null as File | null,
+      isDummy: false,
     },
   ])
 
@@ -167,6 +169,7 @@ export default function TaskForm() {
       createdDate: new Date().toLocaleDateString("tr-TR"),
       itemCount: tableRows.length,
       status: "Satınalma Talebi",
+      isUrgent,
       requestSummary,
       items: tableRows,
       notes,
@@ -369,6 +372,21 @@ export default function TaskForm() {
               </div>
 
               <div className="mb-4">
+                <label className="flex items-center gap-2 text-sm font-medium text-card-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isUrgent}
+                    onChange={(e) => setIsUrgent(e.target.checked)}
+                    className="w-4 h-4 rounded border-border"
+                  />
+                  <span className="flex items-center gap-1">
+                    <span className="text-red-600 font-bold">⚠️ ACİL TALEP</span>
+                    <span className="text-xs text-muted-foreground">(Bu talebin acil olarak işlenmesi gerekiyor)</span>
+                  </span>
+                </label>
+              </div>
+
+              <div className="mb-4">
                 <label className="text-sm font-medium text-card-foreground mb-2 block">Satırlar</label>
 
                 <div className="relative mb-3">
@@ -395,6 +413,7 @@ export default function TaskForm() {
                         vendor: "",
                         description: "",
                         file: null as File | null,
+                        isDummy: false,
                       }
                       setTableRows([...tableRows, newRow])
                     }}
@@ -740,7 +759,7 @@ export default function TaskForm() {
             setTableRows((currentRows) =>
               currentRows.map((row) =>
                 row.id === selectedRowId
-                  ? { ...row, itemCode: item.itemCode, itemName: item.itemName }
+                  ? { ...row, itemCode: item.itemCode, itemName: item.itemName, isDummy: item.itemCode === "DUMMY" }
                   : row
               )
             )
