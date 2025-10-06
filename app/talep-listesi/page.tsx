@@ -21,6 +21,12 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
   Home,
   Package,
   Bell,
@@ -35,6 +41,7 @@ import {
   X,
   Eye,
   LogOut,
+  Info,
 } from "lucide-react"
 
 type RequestStatus =
@@ -221,6 +228,23 @@ export default function TalepListesi() {
     setRequests(updatedRequests)
     localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
     alert("Revize talebi gönderildi!")
+    setIsDetailDialogOpen(false)
+  }
+
+  const handleResubmitAfterRevision = () => {
+    if (!selectedRequest) return
+
+    const confirmMessage = "Talebi güncellemek ve tekrar göndermek istiyor musunuz?"
+    if (!confirm(confirmMessage)) return
+
+    const updatedRequests = requests.map((req) =>
+      req.id === selectedRequest.id
+        ? { ...req, status: "Satınalma Talebi" as RequestStatus, notes: (req.notes || "") + "\n\n[Revize sonrası tekrar gönderildi: " + new Date().toLocaleDateString("tr-TR") + "]" }
+        : req
+    )
+    setRequests(updatedRequests)
+    localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+    alert("Talep güncellenerek tekrar gönderildi!")
     setIsDetailDialogOpen(false)
   }
 
@@ -563,20 +587,42 @@ export default function TalepListesi() {
                     <p className="text-sm font-semibold">{selectedRequest.department}</p>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-muted-foreground">Belge Tarihi:</span>
-                    <p className="text-sm font-semibold">{selectedRequest.documentDate || "-"}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-muted-foreground">Kayıt Tarihi:</span>
-                    <p className="text-sm font-semibold">{selectedRequest.createdDate}</p>
-                  </div>
-                  <div>
                     <span className="text-sm font-medium text-muted-foreground">Durum:</span>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[selectedRequest.status]}`}
                     >
                       {selectedRequest.status}
                     </span>
+                  </div>
+                </div>
+
+                {/* Tarihler Bölümü */}
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm font-semibold">Tarihler</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="w-4 h-4 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs">
+                            <strong>Belge Tarihi:</strong> Talebin belge üzerindeki tarihi (kullanıcı tarafından belirlenir)<br />
+                            <strong>Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih (otomatik)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Belge Tarihi</span>
+                      <p className="text-sm font-semibold">{selectedRequest.documentDate || "-"}</p>
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Kayıt Tarihi</span>
+                      <p className="text-sm font-semibold">{selectedRequest.createdDate}</p>
+                    </div>
                   </div>
                 </div>
                 {selectedRequest.requestSummary && (
@@ -633,6 +679,7 @@ export default function TalepListesi() {
               )}
             </div>
           )}
+          {/* Satınalmacı Butonları */}
           {selectedRequest && currentUser?.role === "purchaser" && selectedRequest.status !== "Reddedildi" && selectedRequest.status !== "Tamamlandı" && (
             <DialogFooter className="gap-2">
               {(selectedRequest.status === "Satınalmacıda" || selectedRequest.status === "Satınalma Talebi") && (
@@ -659,6 +706,19 @@ export default function TalepListesi() {
                 style={{ backgroundColor: "rgba(237, 124, 30)" }}
               >
                 SAP'de İlerlet
+              </Button>
+            </DialogFooter>
+          )}
+
+          {/* Talep Sahibi - Revize Durumu Butonu */}
+          {selectedRequest && currentUser?.role === "user" && selectedRequest.status === "Revize İstendi" && selectedRequest.requester === currentUser?.name && (
+            <DialogFooter className="gap-2">
+              <Button
+                onClick={handleResubmitAfterRevision}
+                className="text-sm"
+                style={{ backgroundColor: "rgba(237, 124, 30)" }}
+              >
+                Güncelle ve Tekrar Gönder
               </Button>
             </DialogFooter>
           )}
