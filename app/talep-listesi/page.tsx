@@ -66,6 +66,7 @@ type RequestItem = {
 type PurchaseRequest = {
   id: number
   documentNumber: string
+  documentDate?: string
   requester: string
   requesterRole?: string
   department: string
@@ -354,7 +355,7 @@ export default function TalepListesi() {
                 <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                   {/* Filter Row */}
                   <div className="bg-white border-b border-border">
-                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_150px_100px]">
+                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_120px_100px_150px_100px]">
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -409,7 +410,13 @@ export default function TalepListesi() {
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">Tarih</span>
+                          <span className="text-xs text-muted-foreground">Belge Tarihi</span>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground">Kayıt Tarihi</span>
                         </div>
                       </div>
                       <div className="px-3 py-2 border-r border-border">
@@ -449,7 +456,7 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border">
-                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_150px_100px]">
+                    <div className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_120px_100px_150px_100px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
                       </div>
@@ -461,6 +468,9 @@ export default function TalepListesi() {
                       </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Departman
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Belge Tarihi
                       </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Kayıt Tarihi
@@ -477,12 +487,13 @@ export default function TalepListesi() {
                   {filteredRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_100px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                      className="grid grid-cols-[150px_minmax(200px,1fr)_160px_130px_120px_120px_100px_150px_100px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                     >
                       <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requestSummary || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentDate || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.createdDate}</div>
                       <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
                       <div className="px-3 py-3 border-r border-border">
@@ -534,6 +545,10 @@ export default function TalepListesi() {
                   <div>
                     <span className="text-sm font-medium text-muted-foreground">Departman:</span>
                     <p className="text-sm font-semibold">{selectedRequest.department}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-muted-foreground">Belge Tarihi:</span>
+                    <p className="text-sm font-semibold">{selectedRequest.documentDate || "-"}</p>
                   </div>
                   <div>
                     <span className="text-sm font-medium text-muted-foreground">Kayıt Tarihi:</span>
