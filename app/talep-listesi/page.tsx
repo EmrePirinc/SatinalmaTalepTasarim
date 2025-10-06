@@ -113,6 +113,10 @@ export default function TalepListesi() {
     requestSummary: "",
     requester: "",
     department: "",
+    documentDate: "",
+    requiredDate: "",
+    createdDate: "",
+    itemCount: "",
     status: "",
   })
 
@@ -130,7 +134,13 @@ export default function TalepListesi() {
     // localStorage'dan talepleri oku
     const savedRequests = localStorage.getItem("purchaseRequests")
     if (savedRequests) {
-      const parsedRequests = JSON.parse(savedRequests)
+      let parsedRequests = JSON.parse(savedRequests)
+
+      // Taslak kayıtları temizle (artık taslak süreci yok)
+      parsedRequests = parsedRequests.filter((req: PurchaseRequest) => req.status !== "Taslak")
+
+      // Temizlenmiş listeyi geri kaydet
+      localStorage.setItem("purchaseRequests", JSON.stringify(parsedRequests))
 
       // Kullanıcı rolüne göre filtreleme
       if (parsedUser.role === "user") {
@@ -158,6 +168,10 @@ export default function TalepListesi() {
       if (filters.requester && !request.requester.toLowerCase().includes(filters.requester.toLowerCase()))
         return false
       if (filters.department && request.department !== filters.department) return false
+      if (filters.documentDate && request.documentDate !== filters.documentDate) return false
+      if (filters.requiredDate && request.requiredDate !== filters.requiredDate) return false
+      if (filters.createdDate && !request.createdDate.includes(filters.createdDate)) return false
+      if (filters.itemCount && request.itemCount.toString() !== filters.itemCount) return false
       if (filters.status && request.status !== filters.status) return false
 
       return true
@@ -424,25 +438,46 @@ export default function TalepListesi() {
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">Belge Tarihi</span>
+                          <Input
+                            type="date"
+                            className="h-8 text-xs bg-muted border-border"
+                            value={filters.documentDate}
+                            onChange={(e) => setFilters({ ...filters, documentDate: e.target.value })}
+                          />
                         </div>
                       </div>
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">Gerekli Tarih</span>
+                          <Input
+                            type="date"
+                            className="h-8 text-xs bg-muted border-border"
+                            value={filters.requiredDate}
+                            onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
+                          />
                         </div>
                       </div>
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">Kayıt Tarihi</span>
+                          <Input
+                            placeholder="GG.AA.YYYY"
+                            className="h-8 text-xs bg-muted border-border"
+                            value={filters.createdDate}
+                            onChange={(e) => setFilters({ ...filters, createdDate: e.target.value })}
+                          />
                         </div>
                       </div>
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                          <span className="text-xs text-muted-foreground">Kalem</span>
+                          <Input
+                            type="number"
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border"
+                            value={filters.itemCount}
+                            onChange={(e) => setFilters({ ...filters, itemCount: e.target.value })}
+                          />
                         </div>
                       </div>
                       <div className="px-3 py-2 border-r border-border">
