@@ -160,6 +160,7 @@ export default function TaskForm() {
       id: Date.now(),
       documentNumber,
       documentDate,
+      requiredDate,
       requester: currentUser?.name || "Selim Aksu",
       requesterRole: "Talep Açan",
       department: tableRows[0]?.departman || "Yönetim",
