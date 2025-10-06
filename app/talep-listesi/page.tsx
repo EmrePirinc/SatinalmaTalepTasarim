@@ -38,7 +38,6 @@ import {
 } from "lucide-react"
 
 type RequestStatus =
-  | "Taslak"
   | "Satınalmacıda"
   | "Revize İstendi"
   | "Reddedildi"
@@ -79,7 +78,6 @@ type PurchaseRequest = {
 }
 
 const statusColors: Record<RequestStatus, string> = {
-  "Taslak": "bg-gray-100 text-gray-800 border-gray-300",
   "Satınalmacıda": "bg-yellow-100 text-yellow-800 border-yellow-300",
   "Revize İstendi": "bg-orange-100 text-orange-800 border-orange-300",
   "Reddedildi": "bg-red-100 text-red-800 border-red-300",
@@ -118,19 +116,22 @@ export default function TalepListesi() {
     }
 
     const parsedUser = JSON.parse(user)
-    if (parsedUser.role !== "purchaser" && parsedUser.role !== "admin") {
-      alert("Bu sayfaya erişim yetkiniz yok!")
-      router.push("/")
-      return
-    }
-
     setCurrentUser(parsedUser)
 
-    // localStorage'dan talepleri oku - sadece yeni eklenenler
+    // localStorage'dan talepleri oku
     const savedRequests = localStorage.getItem("purchaseRequests")
     if (savedRequests) {
       const parsedRequests = JSON.parse(savedRequests)
-      setRequests(parsedRequests)
+
+      // Kullanıcı rolüne göre filtreleme
+      if (parsedUser.role === "user") {
+        // Talep açan sadece kendi taleplerini görsün
+        const userRequests = parsedRequests.filter((req: PurchaseRequest) => req.requester === parsedUser.name)
+        setRequests(userRequests)
+      } else {
+        // Satınalmacı ve Admin tüm talepleri görsün
+        setRequests(parsedRequests)
+      }
     }
   }, [router])
 
@@ -426,7 +427,6 @@ export default function TalepListesi() {
                             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                           >
                             <option value="">Tümü</option>
-                            <option value="Taslak">Taslak</option>
                             <option value="Satınalmacıda">Satınalmacıda</option>
                             <option value="Revize İstendi">Revize İstendi</option>
                             <option value="Reddedildi">Reddedildi</option>

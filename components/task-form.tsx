@@ -32,6 +32,7 @@ export default function TaskForm() {
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState("18691")
+  const [documentDate, setDocumentDate] = useState(new Date().toISOString().split('T')[0])
   const [requiredDate, setRequiredDate] = useState("")
   const [requestSummary, setRequestSummary] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -146,21 +147,6 @@ export default function TaskForm() {
     return errors
   }
 
-  const validateDraft = () => {
-    const errors: string[] = []
-
-    // Taslak belge için: Kalem kodu veya tanımı yoksa, açıklama zorunludur
-    tableRows.forEach((row, index) => {
-      if (!row.itemCode || !row.itemName) {
-        if (!row.description || row.description.trim() === "") {
-          errors.push(`${index + 1}. satır: Kalem Kodu veya Tanımı olmadan Açıklama alanı zorunludur`)
-        }
-      }
-    })
-
-    return errors
-  }
-
   const handleSubmit = () => {
     // Validasyon kontrolü
     const errors = validateForm()
@@ -173,6 +159,7 @@ export default function TaskForm() {
     const newRequest = {
       id: Date.now(),
       documentNumber,
+      documentDate,
       requester: currentUser?.name || "Selim Aksu",
       requesterRole: "Talep Açan",
       department: tableRows[0]?.departman || "Yönetim",
@@ -191,38 +178,6 @@ export default function TaskForm() {
 
     alert("Talep satınalmacıya gönderildi!")
     // Talep listesi sayfasına yönlendir
-    router.push("/talep-listesi")
-  }
-
-  const handleSave = () => {
-    // Taslak validasyonu
-    const errors = validateDraft()
-    if (errors.length > 0) {
-      alert("Taslak belge oluştururken:\n\n" + errors.join("\n"))
-      return
-    }
-
-    // Taslak olarak kaydet
-    const newRequest = {
-      id: Date.now(),
-      documentNumber,
-      requester: currentUser?.name || "Selim Aksu",
-      requesterRole: "Talep Açan",
-      department: tableRows[0]?.departman || "Yönetim",
-      createdDate: new Date().toLocaleDateString("tr-TR"),
-      itemCount: tableRows.length,
-      status: "Taslak",
-      requestSummary,
-      items: tableRows,
-      notes,
-    }
-
-    // localStorage'a kaydet
-    const existingRequests = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
-    existingRequests.push(newRequest)
-    localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
-
-    alert("Taslak belge başarıyla oluşturuldu!")
     router.push("/talep-listesi")
   }
 
@@ -376,9 +331,14 @@ export default function TaskForm() {
 
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="text-sm font-medium text-card-foreground mb-2 block">Kayıt Tarihi</label>
+                  <label className="text-sm font-medium text-card-foreground mb-2 block">Belge Tarihi <span className="text-red-500">*</span></label>
                   <div className="relative">
-                    <Input value="01.10.2025" readOnly className="bg-muted border-border text-foreground pr-10" />
+                    <Input
+                      type="date"
+                      value={documentDate}
+                      onChange={(e) => setDocumentDate(e.target.value)}
+                      className="bg-background border-border text-foreground pr-10"
+                    />
                     <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
                 </div>
@@ -761,21 +721,12 @@ export default function TaskForm() {
 
             <div className="flex justify-end gap-2 mb-4">
               <Button
-                onClick={handleSave}
-                variant="outline"
+                onClick={handleSubmit}
                 className="text-sm"
+                style={{ backgroundColor: "rgba(237, 124, 30)" }}
               >
-                Taslak Belge Oluştur
+                Satınalmacıya Gönder
               </Button>
-              {currentUser?.role === "purchaser" && (
-                <Button
-                  onClick={handleSubmit}
-                  className="text-sm"
-                  style={{ backgroundColor: "rgba(237, 124, 30)" }}
-                >
-                  SAP'ye Direkt Gönder
-                </Button>
-              )}
             </div>
           </div>
         </main>
