@@ -385,7 +385,7 @@ export default function TalepListesi() {
                 <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                   {/* Filter Row */}
                   <div className="bg-white border-b border-border">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_140px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px]">
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -482,6 +482,9 @@ export default function TalepListesi() {
                           />
                         </div>
                       </div>
+                      <div className="px-2 py-2 border-r border-border flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground">⚠️</span>
+                      </div>
                       <div className="px-3 py-2 border-r border-border">
                         <div className="flex items-center gap-1">
                           <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -513,7 +516,7 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_140px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
                       </div>
@@ -538,6 +541,9 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
                         Kalem Sayısı
                       </div>
+                      <div className="px-2 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
+                        Acil
+                      </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">Durum</div>
                       <div className="px-3 py-3 text-sm font-medium text-[#181C14] text-center">İşlemler</div>
                     </div>
@@ -547,14 +553,9 @@ export default function TalepListesi() {
                   {filteredRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_140px_80px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                     >
-                      <div className="px-3 py-3 border-r border-border text-sm">
-                        <div className="flex items-center gap-1">
-                          {request.isUrgent && <span className="text-red-600 font-bold" title="Acil Talep">⚠️</span>}
-                          <span>{request.documentNumber}</span>
-                        </div>
-                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
                       <div className="px-3 py-3 border-r border-border text-sm truncate">{request.requestSummary || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
@@ -562,6 +563,15 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requiredDate || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.createdDate}</div>
                       <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
+                      <div className="px-2 py-3 border-r border-border flex items-center justify-center">
+                        {request.isUrgent ? (
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white text-sm font-bold shadow-md" title="Acil Talep">
+                            ⚠️
+                          </span>
+                        ) : (
+                          <span className="text-gray-300">—</span>
+                        )}
+                      </div>
                       <div className="px-3 py-3 border-r border-border">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[request.status]}`}

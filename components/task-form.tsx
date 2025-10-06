@@ -372,18 +372,42 @@ export default function TaskForm() {
               </div>
 
               <div className="mb-4">
-                <label className="flex items-center gap-2 text-sm font-medium text-card-foreground cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isUrgent}
-                    onChange={(e) => setIsUrgent(e.target.checked)}
-                    className="w-4 h-4 rounded border-border"
-                  />
-                  <span className="flex items-center gap-1">
-                    <span className="text-red-600 font-bold">⚠️ ACİL TALEP</span>
-                    <span className="text-xs text-muted-foreground">(Bu talebin acil olarak işlenmesi gerekiyor)</span>
-                  </span>
-                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsUrgent(!isUrgent)}
+                  className={`w-full p-4 rounded-lg border-2 transition-all duration-200 ${
+                    isUrgent
+                      ? "bg-red-50 border-red-400 shadow-md"
+                      : "bg-gray-50 border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                        isUrgent ? "bg-red-500" : "bg-gray-300"
+                      }`}>
+                        <span className="text-xl">⚠️</span>
+                      </div>
+                      <div className="text-left">
+                        <div className={`font-semibold text-base ${
+                          isUrgent ? "text-red-700" : "text-gray-700"
+                        }`}>
+                          Acil Talep
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Bu talebin öncelikli olarak işlenmesi gerekiyor
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`w-12 h-6 rounded-full relative transition-colors ${
+                      isUrgent ? "bg-red-500" : "bg-gray-300"
+                    }`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                        isUrgent ? "right-1" : "left-1"
+                      }`}></div>
+                    </div>
+                  </div>
+                </button>
               </div>
 
               <div className="mb-4">
