@@ -155,7 +155,7 @@ export default function TaskForm() {
       return
     }
 
-    // Talebi oluştur - Satınalmacıya gönder
+    // Talebi oluştur - SAP'ye gönder
     const newRequest = {
       id: Date.now(),
       documentNumber,
@@ -165,7 +165,7 @@ export default function TaskForm() {
       department: tableRows[0]?.departman || "Yönetim",
       createdDate: new Date().toLocaleDateString("tr-TR"),
       itemCount: tableRows.length,
-      status: "Satınalmacıda",
+      status: "Satınalma Talebi",
       requestSummary,
       items: tableRows,
       notes,
@@ -176,7 +176,7 @@ export default function TaskForm() {
     existingRequests.push(newRequest)
     localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
 
-    alert("Talep satınalmacıya gönderildi!")
+    alert("Satınalma talebi başarıyla oluşturuldu!")
     // Talep listesi sayfasına yönlendir
     router.push("/talep-listesi")
   }
@@ -725,7 +725,7 @@ export default function TaskForm() {
                 className="text-sm"
                 style={{ backgroundColor: "rgba(237, 124, 30)" }}
               >
-                Satınalmacıya Gönder
+                SAP'ye Gönder (Satınalma Talebi)
               </Button>
             </div>
           </div>
