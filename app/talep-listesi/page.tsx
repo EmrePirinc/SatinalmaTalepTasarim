@@ -607,86 +607,97 @@ export default function TalepListesi() {
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-5xl max-h-[80vh] overflow-auto">
           <DialogHeader>
-            <DialogTitle>Talep Detayları - {selectedRequest?.documentNumber}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <span>Doküman No: {selectedRequest?.documentNumber}</span>
+            </DialogTitle>
           </DialogHeader>
           {selectedRequest && (
-            <div className="space-y-4">
-              {/* Genel Bilgiler */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
-                  <div>
-                    <span className="text-sm font-medium text-muted-foreground">Talep Eden:</span>
-                    <p className="text-sm font-semibold">{selectedRequest.requester}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-muted-foreground">Departman:</span>
-                    <p className="text-sm font-semibold">{selectedRequest.department}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-muted-foreground">Durum:</span>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[selectedRequest.status]}`}
-                    >
-                      {selectedRequest.status}
-                    </span>
-                  </div>
-                  {selectedRequest.isUrgent && (
-                    <div className="col-span-2">
-                      <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-semibold bg-red-100 text-red-800 border border-red-300">
-                        <span>⚠️</span>
-                        <span>ACİL TALEP</span>
-                      </span>
-                    </div>
-                  )}
+            <div className="space-y-5">
+              {/* Talep Özeti - Başlık */}
+              {selectedRequest.requestSummary && (
+                <div className="border-l-4 border-blue-500 bg-blue-50/50 p-4 rounded-r-lg">
+                  <h3 className="text-lg font-bold text-gray-800 mb-1">Talep Özeti</h3>
+                  <p className="text-base text-gray-700">{selectedRequest.requestSummary}</p>
                 </div>
+              )}
 
-                {/* Tarihler Bölümü */}
-                <div className="p-4 bg-muted/30 rounded-lg">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-sm font-semibold">Tarihler</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="w-4 h-4 text-muted-foreground cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs">
-                          <p className="text-xs">
-                            <strong>Belge Tarihi:</strong> Talebin belge üzerindeki tarihi (kullanıcı tarafından belirlenir)<br />
-                            <strong>Gerekli Tarih:</strong> Malzemenin ihtiyaç duyulduğu tarih<br />
-                            <strong>Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih (otomatik)
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <span className="text-xs text-muted-foreground">Belge Tarihi</span>
-                      <p className="text-sm font-semibold">{selectedRequest.documentDate || "-"}</p>
-                    </div>
-                    <div>
-                      <span className="text-xs text-muted-foreground">Gerekli Tarih</span>
-                      <p className="text-sm font-semibold">{selectedRequest.requiredDate || "-"}</p>
-                    </div>
-                    <div>
-                      <span className="text-xs text-muted-foreground">Kayıt Tarihi</span>
-                      <p className="text-sm font-semibold">{selectedRequest.createdDate}</p>
-                    </div>
-                  </div>
+              {/* Durum ve Acil Talep Badges */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground">Durum:</span>
+                  <span
+                    className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold border-2 ${statusColors[selectedRequest.status]}`}
+                  >
+                    {selectedRequest.status}
+                  </span>
                 </div>
-                {selectedRequest.requestSummary && (
-                  <div className="p-4 bg-muted/30 rounded-lg">
-                    <span className="text-sm font-medium text-muted-foreground">Talep Özeti:</span>
-                    <p className="text-sm font-semibold mt-1">{selectedRequest.requestSummary}</p>
+                {selectedRequest.isUrgent && (
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg bg-red-500 text-white font-semibold shadow-lg">
+                    <span className="text-lg">⚠️</span>
+                    <span>ACİL TALEP</span>
                   </div>
                 )}
+              </div>
+
+              {/* Genel Bilgiler */}
+              <div className="grid grid-cols-2 gap-4 p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Talep Eden</span>
+                  <p className="text-sm font-semibold text-gray-800">{selectedRequest.requester}</p>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Departman</span>
+                  <p className="text-sm font-semibold text-gray-800">{selectedRequest.department}</p>
+                </div>
+              </div>
+
+              {/* Tarihler Bölümü */}
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                  <span className="text-base font-bold text-gray-800">Tarihler</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="w-4 h-4 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="text-xs">
+                          <strong>Belge Tarihi:</strong> Talebin belge üzerindeki tarihi (kullanıcı tarafından belirlenir)<br />
+                          <strong>Gerekli Tarih:</strong> Malzemenin ihtiyaç duyulduğu tarih<br />
+                          <strong>Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih (otomatik)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600">Belge Tarihi</span>
+                    <p className="text-sm font-semibold text-gray-800">{selectedRequest.documentDate || "-"}</p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600">Gerekli Tarih</span>
+                    <p className="text-sm font-semibold text-gray-800">{selectedRequest.requiredDate || "-"}</p>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-medium text-gray-600">Kayıt Tarihi</span>
+                    <p className="text-sm font-semibold text-gray-800">{selectedRequest.createdDate}</p>
+                  </div>
+                </div>
               </div>
 
               {/* Kalem Listesi */}
               {selectedRequest.items && selectedRequest.items.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-semibold mb-3">Kalem Listesi ({selectedRequest.items.length} kalem)</h4>
-                  <div className="border border-border rounded-lg overflow-hidden">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Package className="w-5 h-5 text-green-600" />
+                    <h4 className="text-base font-bold text-gray-800">Kalem Listesi</h4>
+                    <span className="px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                      {selectedRequest.items.length} kalem
+                    </span>
+                  </div>
+                  <div className="border border-border rounded-lg overflow-hidden shadow-sm">
                     <Table>
                       <TableHeader className="bg-[#ECF2FF]">
                         <TableRow>
@@ -722,10 +733,12 @@ export default function TalepListesi() {
 
               {/* Notlar */}
               {selectedRequest.notes && (
-                <div>
-                  <h4 className="text-sm font-semibold mb-2">Açıklamalar</h4>
-                  <div className="p-3 bg-muted/30 rounded-lg">
-                    <p className="text-sm">{selectedRequest.notes}</p>
+                <div className="border-l-4 border-orange-500 bg-orange-50/50 p-4 rounded-r-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-base font-bold text-gray-800">📝 Açıklamalar ve Notlar</span>
+                  </div>
+                  <div className="p-3 bg-white rounded-lg border border-orange-200">
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedRequest.notes}</p>
                   </div>
                 </div>
               )}
