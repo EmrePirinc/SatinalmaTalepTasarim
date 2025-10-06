@@ -187,7 +187,7 @@ export default function TaskForm() {
 
   return (
     <div className="flex h-screen bg-background">
-      <aside className={`${isSidebarOpen ? 'w-64' : 'w-0'} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}>
+      <aside className={`${isSidebarOpen ? 'w-48' : 'w-0'} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}>
         {/* Logo */}
         <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
           <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
@@ -250,7 +250,7 @@ export default function TaskForm() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
+        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -304,8 +304,8 @@ export default function TaskForm() {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-6">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-auto p-4">
+          <div className="w-full">
             <div className="bg-card rounded-lg border border-border shadow-sm p-6 mb-6">
               <h3
                 className="text-2xl font-bold mb-6 pb-3 border-b-2"

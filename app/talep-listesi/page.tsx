@@ -102,6 +102,24 @@ const statusColors: Record<RequestStatus, string> = {
   "Tamamlandı": "bg-green-100 text-green-800 border-green-300",
 }
 
+// Tarih formatlama fonksiyonu: YYYY-MM-DD veya DD.MM.YYYY -> DD/MM/YYYY
+const formatDate = (dateStr: string | undefined): string => {
+  if (!dateStr) return "-"
+
+  // Eğer zaten DD.MM.YYYY formatındaysa (toLocaleDateString'den geliyorsa)
+  if (dateStr.includes(".")) {
+    return dateStr.replace(/\./g, "/")
+  }
+
+  // YYYY-MM-DD formatından DD/MM/YYYY'ye çevir
+  if (dateStr.includes("-")) {
+    const [year, month, day] = dateStr.split("-")
+    return `${day}/${month}/${year}`
+  }
+
+  return dateStr
+}
+
 export default function TalepListesi() {
   const router = useRouter()
   const [currentUser, setCurrentUser] = useState<any>(null)
@@ -241,7 +259,7 @@ export default function TalepListesi() {
   return (
     <div className="flex h-screen bg-background">
       <aside
-        className={`${isSidebarOpen ? "w-52" : "w-0"} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}
+        className={`${isSidebarOpen ? "w-48" : "w-0"} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}
       >
         {/* Logo */}
         <div className="h-14 flex items-center justify-center border-b border-sidebar-border">
@@ -559,9 +577,9 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm truncate">{request.requestSummary || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
-                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentDate || "-"}</div>
-                      <div className="px-3 py-3 border-r border-border text-sm">{request.requiredDate || "-"}</div>
-                      <div className="px-3 py-3 border-r border-border text-sm">{request.createdDate}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.documentDate)}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.requiredDate)}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.createdDate)}</div>
                       <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
                       <div className="px-2 py-3 border-r border-border flex items-center justify-center">
                         {request.isUrgent ? (
@@ -671,15 +689,15 @@ export default function TalepListesi() {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="flex flex-col gap-2">
                     <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Belge Tarihi</span>
-                    <p className="text-base font-semibold text-gray-900">{selectedRequest.documentDate || "-"}</p>
+                    <p className="text-base font-semibold text-gray-900">{formatDate(selectedRequest.documentDate)}</p>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Gerekli Tarih</span>
-                    <p className="text-base font-semibold text-gray-900">{selectedRequest.requiredDate || "-"}</p>
+                    <p className="text-base font-semibold text-gray-900">{formatDate(selectedRequest.requiredDate)}</p>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Kayıt Tarihi</span>
-                    <p className="text-base font-semibold text-gray-900">{selectedRequest.createdDate}</p>
+                    <p className="text-base font-semibold text-gray-900">{formatDate(selectedRequest.createdDate)}</p>
                   </div>
                 </div>
               </div>
@@ -719,7 +737,7 @@ export default function TalepListesi() {
                             <TableCell>{item.quantity}</TableCell>
                             <TableCell>{item.uomCode}</TableCell>
                             <TableCell>{item.vendor || "-"}</TableCell>
-                            <TableCell>{item.requiredDate}</TableCell>
+                            <TableCell>{formatDate(item.requiredDate)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
