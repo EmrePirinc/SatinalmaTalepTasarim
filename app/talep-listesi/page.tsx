@@ -239,11 +239,11 @@ export default function TalepListesi() {
   return (
     <div className="flex h-screen bg-background">
       <aside
-        className={`${isSidebarOpen ? "w-64" : "w-0"} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}
+        className={`${isSidebarOpen ? "w-52" : "w-0"} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
-          <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
+        <div className="h-14 flex items-center justify-center border-b border-sidebar-border">
+          <div className="text-base font-bold" style={{ color: "rgba(237, 124, 30)" }}>
             ANADOLU BAKIR
           </div>
         </div>
@@ -255,45 +255,45 @@ export default function TalepListesi() {
           </div>
 
           <div className="space-y-1 px-2">
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
-              <Home className="w-5 h-5" />
-              <span className="text-sm">Anasayfa</span>
+            <button className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
+              <Home className="w-4 h-4" />
+              <span className="text-xs">Anasayfa</span>
             </button>
 
             <button
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium"
+              className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium"
               style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}
             >
-              <Package className="w-5 h-5" />
+              <Package className="w-4 h-4" />
               <span>Satınalma</span>
-              <ChevronDown className="w-4 h-4 ml-auto" />
+              <ChevronDown className="w-3 h-3 ml-auto" />
             </button>
 
-            <div className="pl-8 space-y-1">
+            <div className="pl-6 space-y-1">
               <Link href="/">
-                <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                <button className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-xs">
+                  <div className="w-1 h-1 rounded-full bg-muted-foreground" />
                   Satınalma Talep Formu
                 </button>
               </Link>
               <button
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-white text-sm font-medium"
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-white text-xs font-medium"
                 style={{ backgroundColor: "rgba(237, 124, 30)" }}
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                <div className="w-1 h-1 rounded-full bg-white" />
                 Talep Listesi
               </button>
             </div>
 
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
-              <DollarSign className="w-5 h-5" />
-              <span className="text-sm">Finans</span>
-              <ChevronDown className="w-4 h-4 ml-auto" />
+            <button className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
+              <DollarSign className="w-4 h-4" />
+              <span className="text-xs">Finans</span>
+              <ChevronDown className="w-3 h-3 ml-auto" />
             </button>
 
-            <div className="pl-8 space-y-1">
-              <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-sm">
-                <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+            <div className="pl-6 space-y-1">
+              <button className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-xs">
+                <div className="w-1 h-1 rounded-full bg-muted-foreground" />
                 Ödeme Süreci
               </button>
             </div>
@@ -303,7 +303,7 @@ export default function TalepListesi() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
+        <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -357,9 +357,9 @@ export default function TalepListesi() {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-card rounded-lg border border-border shadow-sm p-6">
+        <main className="flex-1 overflow-auto p-4">
+          <div className="w-full">
+            <div className="bg-card rounded-lg border border-border shadow-sm p-4">
               <h3
                 className="text-2xl font-bold mb-6 pb-3 border-b-2"
                 style={{ color: "rgba(237, 124, 30)", borderColor: "rgba(237, 124, 30, 0.2)" }}
