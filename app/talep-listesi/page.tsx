@@ -169,12 +169,28 @@ export default function TalepListesi() {
   const handleSendToSAP = () => {
     if (!selectedRequest) return
 
+    // SAP iş akışı durumları sıralaması
+    const statusFlow: Record<RequestStatus, RequestStatus> = {
+      "Satınalmacıda": "Satınalma Teklifi",
+      "Satınalma Talebi": "Satınalma Teklifi",
+      "Satınalma Teklifi": "Satınalma Siparişi",
+      "Satınalma Siparişi": "Mal Girişi",
+      "Mal Girişi": "Satıcı Faturası",
+      "Satıcı Faturası": "Ödeme Yapıldı",
+      "Ödeme Yapıldı": "Tamamlandı",
+      "Tamamlandı": "Tamamlandı",
+      "Revize İstendi": "Satınalma Talebi",
+      "Reddedildi": "Reddedildi",
+      "İade": "İade",
+    }
+
+    const nextStatus = statusFlow[selectedRequest.status]
     const updatedRequests = requests.map((req) =>
-      req.id === selectedRequest.id ? { ...req, status: "Satınalma Teklifi" as RequestStatus } : req
+      req.id === selectedRequest.id ? { ...req, status: nextStatus } : req
     )
     setRequests(updatedRequests)
     localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
-    alert("Talep SAP'ye gönderildi! (Satınalma Teklifi)")
+    alert(`Talep durumu güncellendi: ${nextStatus}`)
     setIsDetailDialogOpen(false)
   }
 
@@ -617,28 +633,32 @@ export default function TalepListesi() {
               )}
             </div>
           )}
-          {selectedRequest && selectedRequest.status === "Satınalmacıda" && (
+          {selectedRequest && currentUser?.role === "purchaser" && selectedRequest.status !== "Reddedildi" && selectedRequest.status !== "Tamamlandı" && (
             <DialogFooter className="gap-2">
-              <Button
-                onClick={handleReject}
-                variant="destructive"
-                className="text-sm"
-              >
-                Reddet
-              </Button>
-              <Button
-                onClick={handleRevise}
-                variant="outline"
-                className="text-sm"
-              >
-                Revize İste
-              </Button>
+              {(selectedRequest.status === "Satınalmacıda" || selectedRequest.status === "Satınalma Talebi") && (
+                <>
+                  <Button
+                    onClick={handleReject}
+                    variant="destructive"
+                    className="text-sm"
+                  >
+                    Reddet
+                  </Button>
+                  <Button
+                    onClick={handleRevise}
+                    variant="outline"
+                    className="text-sm"
+                  >
+                    Revize İste
+                  </Button>
+                </>
+              )}
               <Button
                 onClick={handleSendToSAP}
                 className="text-sm"
                 style={{ backgroundColor: "rgba(237, 124, 30)" }}
               >
-                SAP'ye Gönder
+                SAP'de İlerlet
               </Button>
             </DialogFooter>
           )}
