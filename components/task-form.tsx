@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -23,10 +23,12 @@ import {
   List,
   Menu,
   X,
+  LogOut,
 } from "lucide-react"
 
 export default function TaskForm() {
   const router = useRouter()
+  const [currentUser, setCurrentUser] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState("18691")
@@ -35,6 +37,29 @@ export default function TaskForm() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+
+  useEffect(() => {
+    // Kullanıcı kontrolü
+    const user = localStorage.getItem("currentUser")
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const parsedUser = JSON.parse(user)
+    if (parsedUser.role !== "user" && parsedUser.role !== "purchaser") {
+      alert("Bu sayfaya erişim yetkiniz yok!")
+      router.push("/login")
+      return
+    }
+
+    setCurrentUser(parsedUser)
+  }, [router])
+
+  const handleLogout = () => {
+    localStorage.removeItem("currentUser")
+    router.push("/login")
+  }
 
   const [filters, setFilters] = useState({
     departman: "",
@@ -121,6 +146,21 @@ export default function TaskForm() {
     return errors
   }
 
+  const validateDraft = () => {
+    const errors: string[] = []
+
+    // Taslak belge için: Kalem kodu veya tanımı yoksa, açıklama zorunludur
+    tableRows.forEach((row, index) => {
+      if (!row.itemCode || !row.itemName) {
+        if (!row.description || row.description.trim() === "") {
+          errors.push(`${index + 1}. satır: Kalem Kodu veya Tanımı olmadan Açıklama alanı zorunludur`)
+        }
+      }
+    })
+
+    return errors
+  }
+
   const handleSubmit = () => {
     // Validasyon kontrolü
     const errors = validateForm()
@@ -133,7 +173,7 @@ export default function TaskForm() {
     const newRequest = {
       id: Date.now(),
       documentNumber,
-      requester: "Selim Aksu",
+      requester: currentUser?.name || "Selim Aksu",
       requesterRole: "Talep Açan",
       department: tableRows[0]?.departman || "Yönetim",
       createdDate: new Date().toLocaleDateString("tr-TR"),
@@ -155,11 +195,18 @@ export default function TaskForm() {
   }
 
   const handleSave = () => {
-    // Taslak olarak kaydet - validasyon gerekmez
+    // Taslak validasyonu
+    const errors = validateDraft()
+    if (errors.length > 0) {
+      alert("Taslak belge oluştururken:\n\n" + errors.join("\n"))
+      return
+    }
+
+    // Taslak olarak kaydet
     const newRequest = {
       id: Date.now(),
       documentNumber,
-      requester: "Selim Aksu",
+      requester: currentUser?.name || "Selim Aksu",
       requesterRole: "Talep Açan",
       department: tableRows[0]?.departman || "Yönetim",
       createdDate: new Date().toLocaleDateString("tr-TR"),
@@ -175,7 +222,7 @@ export default function TaskForm() {
     existingRequests.push(newRequest)
     localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
 
-    alert("Talep taslak olarak kaydedildi!")
+    alert("Taslak belge başarıyla oluşturuldu!")
     router.push("/talep-listesi")
   }
 
@@ -271,14 +318,29 @@ export default function TaskForm() {
             <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent">
               <Settings className="w-5 h-5 text-muted-foreground" />
             </button>
-            <button className="flex items-center gap-2 hover:bg-accent rounded-md px-2 py-1">
+            <div className="flex items-center gap-2 border-l pl-3">
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center"
                 style={{ background: "linear-gradient(135deg, rgba(237, 124, 30) 0%, rgba(200, 100, 20) 100%)" }}
               >
                 <User className="w-4 h-4 text-white" />
               </div>
-            </button>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium">{currentUser?.name}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {currentUser?.role === "purchaser" ? "Satınalmacı" : "Talep Açan"}
+                </span>
+              </div>
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 ml-2"
+                title="Çıkış Yap"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -697,20 +759,23 @@ export default function TaskForm() {
 
             </div>
 
-            <div className="flex justify-between mb-4">
+            <div className="flex justify-end gap-2 mb-4">
               <Button
                 onClick={handleSave}
                 variant="outline"
                 className="text-sm"
               >
-                Taslak Olarak Kaydet
+                Taslak Belge Oluştur
               </Button>
-              <div className="flex gap-2">
-                <Button className="text-sm bg-[#f1556c] hover:bg-[#f1556c]/90 text-white">İptal</Button>
-                <Button onClick={handleSubmit} className="text-sm bg-[#4fc6e1] hover:bg-[#4fc6e1]/90 text-white border-0">
-                  Satınalmacıya Onaya Gönder
+              {currentUser?.role === "purchaser" && (
+                <Button
+                  onClick={handleSubmit}
+                  className="text-sm"
+                  style={{ backgroundColor: "rgba(237, 124, 30)" }}
+                >
+                  SAP'ye Direkt Gönder
                 </Button>
-              </div>
+              )}
             </div>
           </div>
         </main>

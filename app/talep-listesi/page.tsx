@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -33,6 +34,7 @@ import {
   Menu,
   X,
   Eye,
+  LogOut,
 } from "lucide-react"
 
 type RequestStatus =
@@ -76,59 +78,6 @@ type PurchaseRequest = {
   notes?: string
 }
 
-const mockRequests: PurchaseRequest[] = [
-  {
-    id: 1,
-    documentNumber: "18691",
-    requester: "Selim Aksu",
-    department: "Yönetim",
-    createdDate: "01.10.2025",
-    itemCount: 1,
-    totalAmount: 25000,
-    status: "Onay Bekliyor",
-  },
-  {
-    id: 2,
-    documentNumber: "18692",
-    requester: "Ahmet Yılmaz",
-    department: "Bakır",
-    createdDate: "02.10.2025",
-    itemCount: 5,
-    totalAmount: 15000,
-    status: "Onaylandı",
-  },
-  {
-    id: 3,
-    documentNumber: "18693",
-    requester: "Mehmet Demir",
-    department: "İzole",
-    createdDate: "03.10.2025",
-    itemCount: 3,
-    totalAmount: 8500,
-    status: "Taslak",
-  },
-  {
-    id: 4,
-    documentNumber: "18694",
-    requester: "Ayşe Kaya",
-    department: "Konsol",
-    createdDate: "04.10.2025",
-    itemCount: 2,
-    totalAmount: 12000,
-    status: "Reddedildi",
-  },
-  {
-    id: 5,
-    documentNumber: "18695",
-    requester: "Fatma Şahin",
-    department: "Bakımhane",
-    createdDate: "05.10.2025",
-    itemCount: 4,
-    totalAmount: 18500,
-    status: "Tamamlandı",
-  },
-]
-
 const statusColors: Record<RequestStatus, string> = {
   "Taslak": "bg-gray-100 text-gray-800 border-gray-300",
   "Satınalmacıda": "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -145,6 +94,8 @@ const statusColors: Record<RequestStatus, string> = {
 }
 
 export default function TalepListesi() {
+  const router = useRouter()
+  const [currentUser, setCurrentUser] = useState<any>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [requests, setRequests] = useState<PurchaseRequest[]>([])
@@ -159,13 +110,29 @@ export default function TalepListesi() {
   })
 
   useEffect(() => {
+    // Kullanıcı kontrolü
+    const user = localStorage.getItem("currentUser")
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const parsedUser = JSON.parse(user)
+    if (parsedUser.role !== "purchaser" && parsedUser.role !== "admin") {
+      alert("Bu sayfaya erişim yetkiniz yok!")
+      router.push("/")
+      return
+    }
+
+    setCurrentUser(parsedUser)
+
     // localStorage'dan talepleri oku - sadece yeni eklenenler
     const savedRequests = localStorage.getItem("purchaseRequests")
     if (savedRequests) {
       const parsedRequests = JSON.parse(savedRequests)
       setRequests(parsedRequests)
     }
-  }, [])
+  }, [router])
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
@@ -186,6 +153,11 @@ export default function TalepListesi() {
       return true
     })
   }, [requests, searchQuery, filters])
+
+  const handleLogout = () => {
+    localStorage.removeItem("currentUser")
+    router.push("/login")
+  }
 
   const handleViewDetails = (request: PurchaseRequest) => {
     setSelectedRequest(request)
@@ -328,14 +300,29 @@ export default function TalepListesi() {
             <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent">
               <Settings className="w-5 h-5 text-muted-foreground" />
             </button>
-            <button className="flex items-center gap-2 hover:bg-accent rounded-md px-2 py-1">
+            <div className="flex items-center gap-2 border-l pl-3">
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center"
                 style={{ background: "linear-gradient(135deg, rgba(237, 124, 30) 0%, rgba(200, 100, 20) 100%)" }}
               >
                 <User className="w-4 h-4 text-white" />
               </div>
-            </button>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium">{currentUser?.name}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {currentUser?.role === "purchaser" ? "Satınalmacı" : "Admin"}
+                </span>
+              </div>
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 ml-2"
+                title="Çıkış Yap"
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </header>
 
