@@ -542,18 +542,20 @@ export default function TalepListesi() {
       {/* Kalem Detayları Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-[95vw] md:max-w-5xl max-h-[90vh] md:max-h-[80vh] overflow-auto">
-          <DialogHeader className="border-b pb-4">
-            <DialogTitle className="flex items-center gap-2 text-xl font-bold text-gray-900">
-              <span>Doküman No: {selectedRequest?.documentNumber}</span>
+          <DialogHeader className="border-b-2 pb-4" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
+            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
+              <span>📋 Doküman No: {selectedRequest?.documentNumber}</span>
             </DialogTitle>
           </DialogHeader>
           {selectedRequest && (
             <div className="space-y-6 pt-4">
               {/* Talep Özeti - Başlık */}
               {selectedRequest.requestSummary && (
-                <div className="border-l-4 border-blue-500 bg-blue-50/50 p-5 rounded-r-lg shadow-sm">
-                  <h3 className="text-base font-bold text-gray-700 mb-2 uppercase tracking-wide">Talep Özeti</h3>
-                  <p className="text-lg font-semibold text-gray-900 leading-relaxed">{selectedRequest.requestSummary}</p>
+                <div className="relative overflow-hidden rounded-xl shadow-md p-6" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)", borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>📝 Talep Özeti</span>
+                  </div>
+                  <p className="text-lg font-semibold text-gray-800 leading-relaxed">{selectedRequest.requestSummary}</p>
                 </div>
               )}
 
@@ -573,74 +575,80 @@ export default function TalepListesi() {
               </div>
 
               {/* Genel Bilgiler */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 md:p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Talep Eden</span>
-                  <p className="text-base font-semibold text-gray-900">{selectedRequest.requester}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-5 hover:shadow-lg transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">👤</span>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Talep Eden</span>
+                  </div>
+                  <p className="text-lg font-bold text-gray-800 ml-8">{selectedRequest.requester}</p>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Departman</span>
-                  <p className="text-base font-semibold text-gray-900">{selectedRequest.department}</p>
+                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-5 hover:shadow-lg transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">🏢</span>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Departman</span>
+                  </div>
+                  <p className="text-lg font-bold text-gray-800 ml-8">{selectedRequest.department}</p>
                 </div>
               </div>
 
               {/* Tarihler Bölümü */}
-              <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200 shadow-sm">
-                <div className="flex items-center gap-2 mb-4">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                  <span className="text-base font-bold text-gray-800 uppercase tracking-wide">Tarihler</span>
+              <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6">
+                <div className="flex items-center gap-3 mb-5">
+                  <Calendar className="w-6 h-6" style={{ color: "rgba(237, 124, 30)" }} />
+                  <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Tarihler</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Info className="w-4 h-4 text-gray-500 cursor-help" />
+                        <Info className="w-5 h-5 text-gray-400 cursor-help hover:text-gray-600 transition-colors" />
                       </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p className="text-xs">
-                          <strong>Belge Tarihi:</strong> Talebin belge üzerindeki tarihi<br />
-                          <strong>Gerekli Tarih:</strong> Malzemenin ihtiyaç duyulduğu tarih<br />
-                          <strong>Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih
+                      <TooltipContent className="max-w-xs bg-gray-900 text-white p-4 rounded-lg">
+                        <p className="text-sm leading-relaxed">
+                          <strong>📄 Belge Tarihi:</strong> Talebin belge üzerindeki tarihi<br />
+                          <strong>⏰ Gerekli Tarih:</strong> Malzemenin ihtiyaç duyulduğu tarih<br />
+                          <strong>💾 Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Belge Tarihi</span>
-                    <p className="text-base font-semibold text-gray-900">{formatDate(selectedRequest.documentDate)}</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">📄 Belge Tarihi</span>
+                    <p className="text-lg font-bold text-gray-800">{formatDate(selectedRequest.documentDate)}</p>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Gerekli Tarih</span>
-                    <p className="text-base font-semibold text-gray-900">{formatDate(selectedRequest.requiredDate)}</p>
+                  <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-orange-50 to-orange-100">
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>⏰ Gerekli Tarih</span>
+                    <p className="text-lg font-bold" style={{ color: "rgba(237, 124, 30)" }}>{formatDate(selectedRequest.requiredDate)}</p>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Kayıt Tarihi</span>
-                    <p className="text-base font-semibold text-gray-900">{formatDate(selectedRequest.createdDate)}</p>
+                  <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100">
+                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">💾 Kayıt Tarihi</span>
+                    <p className="text-lg font-bold text-gray-800">{formatDate(selectedRequest.createdDate)}</p>
                   </div>
                 </div>
               </div>
 
               {/* Kalem Listesi */}
               {selectedRequest.items && selectedRequest.items.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <Package className="w-5 h-5 text-green-600" />
-                    <h4 className="text-base font-bold text-gray-800 uppercase tracking-wide">Kalem Listesi</h4>
-                    <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-bold uppercase">
+                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6">
+                  <div className="flex items-center gap-3 mb-5">
+                    <Package className="w-6 h-6" style={{ color: "rgba(237, 124, 30)" }} />
+                    <h4 className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Kalem Listesi</h4>
+                    <span className="px-4 py-1.5 rounded-full text-sm font-bold uppercase shadow-sm" style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}>
                       {selectedRequest.items.length} Kalem
                     </span>
                   </div>
-                  <div className="border-2 border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                  <div className="border-2 rounded-lg overflow-hidden shadow-sm" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
                     <Table>
-                      <TableHeader className="bg-[#ECF2FF]">
+                      <TableHeader style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)" }}>
                         <TableRow>
-                          <TableHead className="text-[#181C14]">Kalem Kodu</TableHead>
-                          <TableHead className="text-[#181C14]">Kalem Tanımı</TableHead>
-                          <TableHead className="text-[#181C14]">Departman</TableHead>
-                          <TableHead className="text-[#181C14]">Miktar</TableHead>
-                          <TableHead className="text-[#181C14]">Birim</TableHead>
-                          <TableHead className="text-[#181C14]">Satıcı</TableHead>
-                          <TableHead className="text-[#181C14]">Gerekli Tarih</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Kalem Kodu</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Kalem Tanımı</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Departman</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Miktar</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Birim</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Satıcı</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Gerekli Tarih</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -666,11 +674,12 @@ export default function TalepListesi() {
 
               {/* Notlar */}
               {selectedRequest.notes && (
-                <div className="border-l-4 border-orange-500 bg-orange-50/50 p-5 rounded-r-lg shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-base font-bold text-gray-800 uppercase tracking-wide">📝 Açıklamalar ve Notlar</span>
+                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6" style={{ borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-2xl">📝</span>
+                    <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Açıklamalar ve Notlar</span>
                   </div>
-                  <div className="p-4 bg-white rounded-lg border border-orange-200">
+                  <div className="p-5 rounded-lg" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.05) 0%, rgba(237, 124, 30, 0.02) 100%)", border: "1px solid rgba(237, 124, 30, 0.1)" }}>
                     <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">{selectedRequest.notes}</p>
                   </div>
                 </div>
