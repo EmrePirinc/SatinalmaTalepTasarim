@@ -4,6 +4,7 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/SatinalmaTalepTasarim/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -13,5 +14,9 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
   },
 })
