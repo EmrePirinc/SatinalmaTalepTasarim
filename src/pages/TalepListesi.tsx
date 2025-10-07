@@ -33,7 +33,6 @@ import {
   Settings,
   User,
   Menu,
-  X,
   Eye,
   LogOut,
   Info,
@@ -149,13 +148,7 @@ export default function TalepListesi() {
     // localStorage'dan talepleri oku
     const savedRequests = localStorage.getItem("purchaseRequests")
     if (savedRequests) {
-      let parsedRequests = JSON.parse(savedRequests)
-
-      // Taslak kayıtları temizle (artık taslak süreci yok)
-      parsedRequests = parsedRequests.filter((req: PurchaseRequest) => req.status !== "Taslak")
-
-      // Temizlenmiş listeyi geri kaydet
-      localStorage.setItem("purchaseRequests", JSON.stringify(parsedRequests))
+      const parsedRequests = JSON.parse(savedRequests)
 
       // Kullanıcı rolüne göre filtreleme
       if (parsedUser.role === "user") {

@@ -27,7 +27,6 @@ import {
   Trash2,
   Shield,
   Menu,
-  X,
 } from "lucide-react"
 
 type User = {

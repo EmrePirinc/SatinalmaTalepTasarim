@@ -19,7 +19,6 @@ export default function SAPDateInput({
   placeholder = "DD/MM/YYYY veya SAP format",
 }: SAPDateInputProps) {
   const [textValue, setTextValue] = useState("")
-  const [showCalendar, setShowCalendar] = useState(false)
   const dateInputRef = useRef<HTMLInputElement>(null)
 
   // value prop'u DD/MM/YYYY veya YYYY-MM-DD olabilir

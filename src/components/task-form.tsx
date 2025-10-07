@@ -16,7 +16,6 @@ import {
   Upload,
   List,
   Menu,
-  X,
   LogOut,
   Trash2,
 } from "lucide-react"
