@@ -16,7 +16,7 @@ export default function SAPDateInput({
   value,
   onChange,
   className = "",
-  placeholder = "DD/MM/YYYY veya SAP format",
+  placeholder = "GG/AA/YYYY",
 }: SAPDateInputProps) {
   const [textValue, setTextValue] = useState("")
   const dateInputRef = useRef<HTMLInputElement>(null)
