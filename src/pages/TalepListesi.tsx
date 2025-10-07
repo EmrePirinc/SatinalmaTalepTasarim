@@ -541,7 +541,7 @@ export default function TalepListesi() {
 
       {/* Kalem Detayları Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-[95vw] md:max-w-5xl max-h-[90vh] md:max-h-[80vh] overflow-auto">
+        <DialogContent className="max-w-[98vw] md:max-w-7xl max-h-[95vh] overflow-y-auto">
           <DialogHeader className="border-b-2 pb-4" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
             <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
               <span>📋 Doküman No: {selectedRequest?.documentNumber}</span>
