@@ -1,7 +1,5 @@
-"use client"
-
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { User } from "lucide-react"
@@ -13,8 +11,8 @@ const mockUsers = [
   { id: 3, username: "admin", password: "123456", name: "Admin User", role: "admin" },
 ]
 
-export default function LoginPage() {
-  const router = useRouter()
+export default function Login() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -46,18 +44,18 @@ export default function LoginPage() {
 
     // Role göre yönlendirme
     if (user.role === "admin") {
-      router.push("/admin")
+      navigate("/admin")
     } else if (user.role === "purchaser") {
-      router.push("/talep-listesi")
+      navigate("/talep-listesi")
     } else {
-      router.push("/")
+      navigate("/")
     }
   }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+    <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
           {/* Logo */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30) 0%, rgba(200, 100, 20) 100%)" }}>

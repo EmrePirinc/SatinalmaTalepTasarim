@@ -1,10 +1,8 @@
-"use client"
-
 import { useState, useMemo, useEffect } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Sidebar from "@/components/Sidebar"
 import {
   Dialog,
   DialogContent,
@@ -27,7 +25,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import {
-  Home,
   Package,
   Bell,
   Calendar,
@@ -35,8 +32,6 @@ import {
   Search,
   Settings,
   User,
-  DollarSign,
-  ChevronDown,
   Menu,
   X,
   Eye,
@@ -121,7 +116,7 @@ const formatDate = (dateStr: string | undefined): string => {
 }
 
 export default function TalepListesi() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
@@ -144,7 +139,7 @@ export default function TalepListesi() {
     // Kullanıcı kontrolü
     const user = localStorage.getItem("currentUser")
     if (!user) {
-      router.push("/login")
+      navigate("/login")
       return
     }
 
@@ -172,7 +167,7 @@ export default function TalepListesi() {
         setRequests(parsedRequests)
       }
     }
-  }, [router])
+  }, [navigate])
 
   const filteredRequests = useMemo(() => {
     return requests.filter((request) => {
@@ -200,7 +195,7 @@ export default function TalepListesi() {
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser")
-    router.push("/login")
+    navigate("/login")
   }
 
   const handleViewDetails = (request: PurchaseRequest) => {
@@ -258,83 +253,19 @@ export default function TalepListesi() {
 
   return (
     <div className="flex h-screen bg-background">
-      <aside
-        className={`${isSidebarOpen ? "w-48" : "w-0"} bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 overflow-hidden`}
-      >
-        {/* Logo */}
-        <div className="h-14 flex items-center justify-center border-b border-sidebar-border">
-          <div className="text-base font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-            ANADOLU BAKIR
-          </div>
-        </div>
-
-        {/* Menu */}
-        <nav className="flex-1 py-4">
-          <div className="px-4 mb-2">
-            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">ANADOLU BAKIR</div>
-          </div>
-
-          <div className="space-y-1 px-2">
-            <button className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
-              <Home className="w-4 h-4" />
-              <span className="text-xs">Anasayfa</span>
-            </button>
-
-            <button
-              className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-xs font-medium"
-              style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}
-            >
-              <Package className="w-4 h-4" />
-              <span>Satınalma</span>
-              <ChevronDown className="w-3 h-3 ml-auto" />
-            </button>
-
-            <div className="pl-6 space-y-1">
-              <Link href="/">
-                <button className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-xs">
-                  <div className="w-1 h-1 rounded-full bg-muted-foreground" />
-                  Satınalma Talep Formu
-                </button>
-              </Link>
-              <button
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-white text-xs font-medium"
-                style={{ backgroundColor: "rgba(237, 124, 30)" }}
-              >
-                <div className="w-1 h-1 rounded-full bg-white" />
-                Talep Listesi
-              </button>
-            </div>
-
-            <button className="w-full flex items-center gap-2 px-2 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
-              <DollarSign className="w-4 h-4" />
-              <span className="text-xs">Finans</span>
-              <ChevronDown className="w-3 h-3 ml-auto" />
-            </button>
-
-            <div className="pl-6 space-y-1">
-              <button className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-xs">
-                <div className="w-1 h-1 rounded-full bg-muted-foreground" />
-                Ödeme Süreci
-              </button>
-            </div>
-          </div>
-        </nav>
-      </aside>
+      {/* Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4">
+        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent"
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent"
               aria-label="Toggle sidebar"
             >
-              {isSidebarOpen ? (
-                <X className="w-5 h-5 text-muted-foreground" />
-              ) : (
-                <Menu className="w-5 h-5 text-muted-foreground" />
-              )}
+              <Menu className="w-5 h-5 text-muted-foreground" />
             </button>
             <nav className="flex items-center gap-6 text-sm">
               <span className="text-muted-foreground hover:text-foreground cursor-pointer">Görev Listesi</span>
@@ -360,16 +291,10 @@ export default function TalepListesi() {
               <div className="flex flex-col">
                 <span className="text-xs font-medium">{currentUser?.name}</span>
                 <span className="text-[10px] text-muted-foreground">
-                  {currentUser?.role === "purchaser" ? "Satınalmacı" : "Admin"}
+                  {currentUser?.role === "purchaser" ? "Satınalmacı" : currentUser?.role === "user" ? "Talep Açan" : "Admin"}
                 </span>
               </div>
-              <Button
-                onClick={handleLogout}
-                variant="ghost"
-                size="icon"
-                className="w-8 h-8 ml-2"
-                title="Çıkış Yap"
-              >
+              <Button onClick={handleLogout} variant="ghost" size="icon" className="w-8 h-8 ml-2" title="Çıkış Yap">
                 <LogOut className="w-4 h-4" />
               </Button>
             </div>
@@ -377,11 +302,11 @@ export default function TalepListesi() {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-4">
+        <main className="flex-1 overflow-auto p-2 md:p-4">
           <div className="w-full">
-            <div className="bg-card rounded-lg border border-border shadow-sm p-4">
+            <div className="bg-card rounded-lg border border-border shadow-sm p-3 md:p-4">
               <h3
-                className="text-2xl font-bold mb-6 pb-3 border-b-2"
+                className="text-lg md:text-2xl font-bold mb-4 md:mb-6 pb-2 md:pb-3 border-b-2"
                 style={{ color: "rgba(237, 124, 30)", borderColor: "rgba(237, 124, 30, 0.2)" }}
               >
                 Satınalma Talep Listesi
@@ -623,7 +548,7 @@ export default function TalepListesi() {
 
       {/* Kalem Detayları Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-5xl max-h-[80vh] overflow-auto">
+        <DialogContent className="max-w-[95vw] md:max-w-5xl max-h-[90vh] md:max-h-[80vh] overflow-auto">
           <DialogHeader className="border-b pb-4">
             <DialogTitle className="flex items-center gap-2 text-xl font-bold text-gray-900">
               <span>Doküman No: {selectedRequest?.documentNumber}</span>
@@ -655,7 +580,7 @@ export default function TalepListesi() {
               </div>
 
               {/* Genel Bilgiler */}
-              <div className="grid grid-cols-2 gap-4 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 md:p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm">
                 <div className="flex flex-col gap-2">
                   <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Talep Eden</span>
                   <p className="text-base font-semibold text-gray-900">{selectedRequest.requester}</p>
@@ -686,7 +611,7 @@ export default function TalepListesi() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex flex-col gap-2">
                     <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Belge Tarihi</span>
                     <p className="text-base font-semibold text-gray-900">{formatDate(selectedRequest.documentDate)}</p>

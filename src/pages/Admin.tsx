@@ -1,7 +1,5 @@
-"use client"
-
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -28,6 +26,8 @@ import {
   Edit,
   Trash2,
   Shield,
+  Menu,
+  X,
 } from "lucide-react"
 
 type User = {
@@ -50,10 +50,11 @@ const roleColors = {
   admin: "bg-purple-100 text-purple-800 border-purple-300",
 }
 
-export default function AdminPanel() {
-  const router = useRouter()
+export default function Admin() {
+  const navigate = useNavigate()
   const [users, setUsers] = useState<User[]>([])
   const [currentUser, setCurrentUser] = useState<any>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -68,14 +69,14 @@ export default function AdminPanel() {
     // Kullanıcı kontrolü
     const user = localStorage.getItem("currentUser")
     if (!user) {
-      router.push("/login")
+      navigate("/login")
       return
     }
 
     const parsedUser = JSON.parse(user)
     if (parsedUser.role !== "admin") {
       alert("Bu sayfaya erişim yetkiniz yok!")
-      router.push("/")
+      navigate("/")
       return
     }
 
@@ -86,11 +87,11 @@ export default function AdminPanel() {
     if (savedUsers) {
       setUsers(JSON.parse(savedUsers))
     }
-  }, [router])
+  }, [navigate])
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser")
-    router.push("/login")
+    navigate("/login")
   }
 
   const handleAddUser = () => {
@@ -166,8 +167,16 @@ export default function AdminPanel() {
 
   return (
     <div className="flex h-screen bg-background">
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
+      <aside className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed md:static inset-y-0 left-0 z-50 w-60 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-300 md:translate-x-0`}>
         <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
           <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
             ANADOLU BAKIR
@@ -222,8 +231,17 @@ export default function AdminPanel() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
-          <h2 className="text-xl font-semibold">Kullanıcı Yönetimi</h2>
+        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="md:hidden p-2 hover:bg-accent rounded-md"
+              aria-label="Toggle menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h2 className="text-lg md:text-xl font-semibold">Kullanıcı Yönetimi</h2>
+          </div>
           <Button
             onClick={() => {
               setFormData({ username: "", password: "", name: "", role: "user" })
@@ -231,14 +249,15 @@ export default function AdminPanel() {
             }}
             style={{ backgroundColor: "rgba(237, 124, 30)" }}
             className="text-white"
+            size="sm"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Yeni Kullanıcı Ekle
+            <Plus className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">Yeni Kullanıcı Ekle</span>
           </Button>
         </header>
 
-        <main className="flex-1 overflow-auto p-6">
-          <div className="bg-card rounded-lg border border-border shadow-sm">
+        <main className="flex-1 overflow-auto p-3 md:p-6">
+          <div className="bg-card rounded-lg border border-border shadow-sm overflow-x-auto">
             <Table>
               <TableHeader className="bg-[#ECF2FF]">
                 <TableRow>
