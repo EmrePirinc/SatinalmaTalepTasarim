@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/system-management-2024-secure" element={<Admin />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/talep-listesi" element={<TalepListesi />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
