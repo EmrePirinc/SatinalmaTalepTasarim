@@ -171,49 +171,69 @@ export default function Admin() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4">
-          <div className="flex items-center gap-4">
+        {/* Modern Header - Zwilling Style */}
+        <header className="h-14 border-b border-gray-100 bg-white flex items-center justify-between px-6 shadow-sm">
+          <div className="flex items-center gap-6">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="md:hidden w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent"
+              className="md:hidden w-8 h-8 flex items-center justify-center rounded hover:bg-gray-50 transition-colors"
               aria-label="Toggle sidebar"
             >
-              <Menu className="w-5 h-5 text-muted-foreground" />
+              <Menu className="w-4 h-4 text-gray-400" />
             </button>
-            <h2 className="text-lg md:text-xl font-semibold">Kullanıcı Yönetimi</h2>
+            <div className="flex items-center gap-3">
+              <h1 className="text-base font-semibold text-gray-800">Kullanıcı Yönetimi</h1>
+              <span className="hidden lg:flex items-center gap-2 text-xs text-gray-400">
+                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                <span>Admin Panel</span>
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Button
               onClick={() => {
                 setFormData({ username: "", password: "", name: "", role: "user" })
                 setIsAddDialogOpen(true)
               }}
-              style={{ backgroundColor: "rgba(237, 124, 30)" }}
-              className="text-white"
-              size="sm"
+              className="h-8 px-3 text-xs bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-sm"
             >
-              <Plus className="w-4 h-4 md:mr-2" />
-              <span className="hidden md:inline">Yeni Kullanıcı Ekle</span>
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              <span className="hidden sm:inline">Yeni Kullanıcı</span>
             </Button>
-            <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent relative">
-              <Bell className="w-5 h-5 text-muted-foreground" />
+            <button className="hidden sm:flex w-8 h-8 items-center justify-center rounded hover:bg-gray-50 transition-colors relative group">
+              <Bell className="w-4 h-4 text-gray-500" />
+              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-orange-500 rounded-full border-2 border-white"></div>
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Bildirimler
+              </span>
             </button>
-            <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent">
-              <Settings className="w-5 h-5 text-muted-foreground" />
+            <button className="hidden sm:flex w-8 h-8 items-center justify-center rounded hover:bg-gray-50 transition-colors group">
+              <Settings className="w-4 h-4 text-gray-500" />
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                Ayarlar
+              </span>
             </button>
-            <div className="flex items-center gap-2 border-l pl-3">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, rgba(237, 124, 30) 0%, rgba(200, 100, 20) 100%)" }}
+            <div className="flex items-center gap-2.5 ml-2 pl-3 border-l border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="w-7 h-7 rounded-full flex items-center justify-center shadow-sm"
+                  style={{ background: "linear-gradient(135deg, #FF6B1A 0%, #FF8C42 100%)" }}
+                >
+                  <User className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div className="hidden md:flex flex-col">
+                  <span className="text-xs font-medium text-gray-700 leading-tight">{currentUser?.name}</span>
+                  <span className="text-[10px] text-gray-400 leading-tight">Admin</span>
+                </div>
+              </div>
+              <Button 
+                onClick={handleLogout} 
+                variant="ghost" 
+                size="icon" 
+                className="w-7 h-7 hover:bg-red-50 hover:text-red-600 transition-colors" 
+                title="Çıkış Yap"
               >
-                <User className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-medium">{currentUser?.name}</span>
-                <span className="text-[10px] text-muted-foreground">Admin</span>
-              </div>
-              <Button onClick={handleLogout} variant="ghost" size="icon" className="w-8 h-8 ml-2" title="Çıkış Yap">
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
               </Button>
             </div>
           </div>
