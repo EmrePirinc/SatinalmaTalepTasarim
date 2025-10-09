@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 import {
   Home,
@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  Shield,
 } from "lucide-react"
 
 interface SidebarProps {
@@ -20,6 +21,14 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [satinalmaOpen, setSatinalmaOpen] = useState(true)
   const [finansOpen, setFinansOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+
+  useEffect(() => {
+    const user = localStorage.getItem("currentUser")
+    if (user) {
+      setCurrentUser(JSON.parse(user))
+    }
+  }, [location.pathname])
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed)
@@ -213,6 +222,35 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 </div>
               )}
             </div>
+
+            {/* Admin Paneli - Sadece Admin için */}
+            {currentUser?.role === "admin" && (
+              <Link to="/admin">
+                <button
+                  className={`w-full flex items-center ${
+                    isCollapsed ? "justify-center px-2" : "gap-3 px-3"
+                  } py-2.5 rounded-md transition-all duration-200 group relative ${
+                    location.pathname === "/admin"
+                      ? "text-white"
+                      : "hover:bg-sidebar-accent text-sidebar-foreground"
+                  }`}
+                  style={
+                    location.pathname === "/admin"
+                      ? { backgroundColor: "rgba(237, 124, 30)" }
+                      : undefined
+                  }
+                  title={isCollapsed ? "Admin Paneli" : ""}
+                >
+                  <Shield className="w-5 h-5 flex-shrink-0" />
+                  {!isCollapsed && <span className="text-sm font-medium">Admin Paneli</span>}
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                      Admin Paneli
+                    </div>
+                  )}
+                </button>
+              </Link>
+            )}
           </div>
         </nav>
 
