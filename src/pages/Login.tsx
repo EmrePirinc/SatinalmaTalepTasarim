@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
-import abLogo from "/AB_LOGO.png"
-import ottocoolLogo from "/OTTOCOOL_LOGO.png"
-import ab1 from "/AB.jpeg"
-import ab2 from "/AB2.jpg"
-import ab3 from "/AB3.jpg"
+import abLogo from "@/assets/AB_LOGO.png"
+import ottocoolLogo from "@/assets/OTTOCOOL_LOGO.png"
+import ab1 from "@/assets/AB.jpeg"
+import ab2 from "@/assets/AB2.jpg"
+import ab3 from "@/assets/AB3.jpg"
 
 // Carousel resimleri
 const carouselImages = [ab1, ab2, ab3]

@@ -10,7 +10,7 @@ import {
   X,
   Shield,
 } from "lucide-react"
-import abLogo from "/AB_LOGO.png"
+import abLogo from "@/assets/AB_LOGO.png"
 
 interface SidebarProps {
   isOpen: boolean
