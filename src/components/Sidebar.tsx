@@ -53,27 +53,19 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         } fixed md:static inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out md:translate-x-0`}
       >
         {/* Logo & Collapse Toggle */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border bg-white">
-          <div className="flex items-center justify-center flex-1">
-            {!isCollapsed ? (
-              <img
-                src="/AB_LOGO.png"
-                alt="Anadolu Bakır"
-                className="h-9 object-contain md:mr-auto"
-              />
-            ) : (
-              <img
-                src="/AB_LOGO.png"
-                alt="Anadolu Bakır"
-                className="h-7 object-contain"
-              />
-            )}
+        <div className="h-16 flex items-center justify-center px-4 border-b border-sidebar-border bg-white relative">
+          <div className="flex items-center justify-center">
+            <img
+              src="/AB_LOGO.png"
+              alt="Anadolu Bakır"
+              className={isCollapsed ? "h-7 object-contain" : "h-9 object-contain"}
+            />
           </div>
           
           {!isCollapsed && (
             <button
               onClick={toggleCollapse}
-              className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
+              className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 absolute right-4"
               aria-label="Toggle sidebar collapse"
             >
               <Menu className="w-4 h-4" />
@@ -92,7 +84,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           
           <button
             onClick={onToggle}
-            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
+            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 absolute right-4"
             aria-label="Close sidebar"
           >
             <X className="w-4 h-4" />
