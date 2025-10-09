@@ -31,6 +31,7 @@ export default function TaskForm() {
     return `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`
   })
   const [requiredDate, setRequiredDate] = useState("")
+  const [validityDate, setValidityDate] = useState("")
   const [requestSummary, setRequestSummary] = useState("")
   const [isUrgent, setIsUrgent] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -213,6 +214,7 @@ export default function TaskForm() {
       documentNumber,
       documentDate,
       requiredDate,
+      validityDate,
       requester: currentUser?.name || "Selim Aksu",
       requesterRole: "Talep Açan",
       department: tableRows[0]?.departman || "Yönetim",
@@ -333,6 +335,19 @@ export default function TaskForm() {
                   <SAPDateInput
                     value={requiredDate}
                     onChange={(value) => setRequiredDate(value)}
+                    className="bg-background border-border text-foreground"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="text-sm font-medium text-card-foreground mb-2 block">
+                    Geçerlilik Tarihi
+                  </label>
+                  <SAPDateInput
+                    value={validityDate}
+                    onChange={(value) => setValidityDate(value)}
                     className="bg-background border-border text-foreground"
                   />
                 </div>
