@@ -336,10 +336,29 @@ export default function TalepListesi() {
               </div>
 
               {/* Table - Yatay Kaydırma */}
-              <div className="overflow-x-auto overflow-y-visible">
-                <div className="border border-border rounded-lg overflow-hidden shadow-sm min-w-[1520px]">
+              <div className="table-scroll overflow-x-scroll overflow-y-visible border border-border rounded-lg shadow-sm" style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#FF6B1A #f3f4f6'
+              }}>
+                <style dangerouslySetInnerHTML={{__html: `
+                  .table-scroll::-webkit-scrollbar {
+                    height: 12px;
+                  }
+                  .table-scroll::-webkit-scrollbar-track {
+                    background: #f3f4f6;
+                    border-radius: 6px;
+                  }
+                  .table-scroll::-webkit-scrollbar-thumb {
+                    background: #FF6B1A;
+                    border-radius: 6px;
+                  }
+                  .table-scroll::-webkit-scrollbar-thumb:hover {
+                    background: #FF8C42;
+                  }
+                `}} />
+                <div className="overflow-hidden min-w-[1520px]">
                   {/* Filter Row - Compact */}
-                  <div className="bg-gray-50 border-b border-gray-200">
+                  <div className="bg-gray-50 border-b border-gray-200 sticky top-0 z-20">
                     <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px]">
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
@@ -468,7 +487,7 @@ export default function TalepListesi() {
                   </div>
 
                   {/* Header Row */}
-                  <div className="bg-[#ECF2FF] border-b border-border">
+                  <div className="bg-[#ECF2FF] border-b border-border sticky top-[40px] z-10">
                     <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
