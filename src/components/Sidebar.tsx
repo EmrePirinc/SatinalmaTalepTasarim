@@ -10,6 +10,7 @@ import {
   X,
   Shield,
 } from "lucide-react"
+import abLogo from "/AB_LOGO.png"
 
 interface SidebarProps {
   isOpen: boolean
@@ -63,7 +64,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         <div className="h-14 flex items-center justify-center px-3 border-b border-gray-100 bg-white relative">
           <div className="flex items-center justify-center">
             <img
-              src="/AB_LOGO.png"
+              src={abLogo}
               alt="Anadolu Bakır"
               className={isCollapsed ? "h-6 object-contain" : "h-8 object-contain"}
             />

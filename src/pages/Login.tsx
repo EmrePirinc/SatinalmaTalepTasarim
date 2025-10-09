@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
+import abLogo from "/AB_LOGO.png"
+import ottocoolLogo from "/OTTOCOOL_LOGO.png"
+import ab1 from "/AB.jpeg"
+import ab2 from "/AB2.jpg"
+import ab3 from "/AB3.jpg"
 
 // Carousel resimleri
-const carouselImages = [
-  "/AB.jpeg",
-  "/AB2.jpg",
-  "/AB3.jpg"
-]
+const carouselImages = [ab1, ab2, ab3]
 
 // Mock kullanıcılar
 const mockUsers = [
@@ -80,13 +81,13 @@ export default function Login() {
           <div className="mb-12">
             <div className="flex items-center justify-center gap-4 mb-12">
               <img
-                src="/AB_LOGO.png"
+                src={abLogo}
                 alt="Anadolu Bakır"
                 className="h-12 object-contain"
               />
               <div className="w-px h-10 bg-gray-200"></div>
               <img
-                src="/OTTOCOOL_LOGO.png"
+                src={ottocoolLogo}
                 alt="Ottocool"
                 className="h-10 object-contain"
               />
