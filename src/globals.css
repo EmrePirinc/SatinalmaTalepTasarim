@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* Updated color scheme to match Zwilling Portal theme with purple/indigo primary colors */
-    --background: #FFF7ED;
+    --background: #f5f6f8;
     --foreground: #6c757d;
     --card: #ffffff;
     --card-foreground: #323a46;
