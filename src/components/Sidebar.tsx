@@ -53,28 +53,38 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         } fixed md:static inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out md:translate-x-0`}
       >
         {/* Logo & Collapse Toggle */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border bg-white">
-          <div className="flex items-center w-full">
-            <img
-              src="/AB_LOGO.png"
-              alt="Anadolu Bakır"
-              className={isCollapsed ? "h-8 mx-auto" : "h-10"}
-            />
-          </div>
-          <button
-            onClick={toggleCollapse}
-            className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 ml-2"
-            aria-label="Toggle sidebar collapse"
-          >
-            {isCollapsed ? (
-              <ChevronRight className="w-4 h-4" />
-            ) : (
-              <Menu className="w-4 h-4" />
-            )}
-          </button>
+        <div className="h-16 flex items-center px-4 border-b border-sidebar-border bg-white">
+          {!isCollapsed ? (
+            <>
+              <img
+                src="/AB_LOGO.png"
+                alt="Anadolu Bakır"
+                className="h-9 object-contain"
+              />
+              <button
+                onClick={toggleCollapse}
+                className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 ml-auto"
+                aria-label="Toggle sidebar collapse"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={toggleCollapse}
+              className="hidden md:flex w-full items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors py-2"
+              aria-label="Toggle sidebar collapse"
+            >
+              <img
+                src="/AB_LOGO.png"
+                alt="Anadolu Bakır"
+                className="h-7 object-contain"
+              />
+            </button>
+          )}
           <button
             onClick={onToggle}
-            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors ml-auto"
             aria-label="Close sidebar"
           >
             <X className="w-4 h-4" />
