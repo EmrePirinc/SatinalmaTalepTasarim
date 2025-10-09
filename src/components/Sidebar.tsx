@@ -53,56 +53,49 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         } fixed md:static inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out md:translate-x-0`}
       >
         {/* Logo & Collapse Toggle */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
-          {!isCollapsed && (
+        <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border bg-white">
+          <div className="flex items-center w-full">
             <img
               src="/AB_LOGO.png"
               alt="Anadolu Bakır"
-              className="h-10 object-contain"
+              className={isCollapsed ? "h-8 mx-auto" : "h-10"}
             />
-          )}
-          {isCollapsed && (
-            <img
-              src="/AB_LOGO.png"
-              alt="Anadolu Bakır"
-              className="h-8 object-contain mx-auto"
-            />
-          )}
+          </div>
           <button
             onClick={toggleCollapse}
-            className="hidden md:flex w-8 h-8 items-center justify-center rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
+            className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 ml-2"
             aria-label="Toggle sidebar collapse"
           >
             {isCollapsed ? (
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4" />
             ) : (
-              <X className="w-5 h-5" />
+              <Menu className="w-4 h-4" />
             )}
           </button>
           <button
             onClick={onToggle}
-            className="md:hidden w-8 h-8 flex items-center justify-center rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-colors"
+            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
             aria-label="Close sidebar"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 py-4 overflow-y-auto">
-          <div className="space-y-1 px-2">
+        <nav className="flex-1 py-6 overflow-y-auto">
+          <div className="space-y-2 px-3">
             {/* Anasayfa */}
             <Link to="/">
               <button
                 className={`w-full flex items-center ${
-                  isCollapsed ? "justify-center px-2" : "gap-3 px-3"
-                } py-2.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-all duration-200 group relative`}
+                  isCollapsed ? "justify-center px-2" : "gap-3 px-4"
+                } py-3 rounded-lg hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition-all duration-200 group relative`}
                 title={isCollapsed ? "Anasayfa" : ""}
               >
                 <Home className="w-5 h-5 flex-shrink-0" />
-                {!isCollapsed && <span className="text-sm font-medium">Anasayfa</span>}
+                {!isCollapsed && <span className="text-sm font-semibold">Anasayfa</span>}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  <div className="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                     Anasayfa
                   </div>
                 )}
@@ -114,9 +107,8 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               <button
                 onClick={() => !isCollapsed && setSatinalmaOpen(!satinalmaOpen)}
                 className={`w-full flex items-center ${
-                  isCollapsed ? "justify-center px-2" : "gap-3 px-3"
-                } py-2.5 rounded-md text-sm font-medium transition-all duration-200 group relative`}
-                style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}
+                  isCollapsed ? "justify-center px-2" : "gap-3 px-4"
+                } py-3 rounded-lg text-sm font-semibold transition-all duration-200 group relative bg-orange-500 text-white hover:bg-orange-600 shadow-sm`}
                 title={isCollapsed ? "Satınalma" : ""}
               >
                 <Package className="w-5 h-5 flex-shrink-0" />
@@ -131,7 +123,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   </>
                 )}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  <div className="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                     Satınalma
                   </div>
                 )}
@@ -254,19 +246,6 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             )}
           </div>
         </nav>
-
-        {/* Collapse Toggle Button - Bottom */}
-        {!isCollapsed && (
-          <div className="hidden md:block p-4 border-t border-sidebar-border">
-            <button
-              onClick={toggleCollapse}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-sm transition-colors"
-            >
-              <Menu className="w-4 h-4" />
-              <span>Daralt</span>
-            </button>
-          </div>
-        )}
       </aside>
     </>
   )
