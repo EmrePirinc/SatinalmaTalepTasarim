@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import ItemSelectionDialog from "@/components/ItemSelectionDialog"
+import VendorSelectionDialog from "@/components/VendorSelectionDialog"
 import SAPDateInput from "@/components/SAPDateInput"
 import Sidebar from "@/components/Sidebar"
 import {
@@ -25,7 +26,7 @@ export default function TaskForm() {
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
-  const [documentNumber, setDocumentNumber] = useState("18691")
+  const [documentNumber, setDocumentNumber] = useState("1")
   const [documentDate, setDocumentDate] = useState(() => {
     const today = new Date()
     return `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`
@@ -35,6 +36,7 @@ export default function TaskForm() {
   const [requestSummary, setRequestSummary] = useState("")
   const [isUrgent, setIsUrgent] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const isFirstRender = useRef(true)
@@ -302,7 +304,7 @@ export default function TaskForm() {
                 Satınalma Talep Formu
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="text-sm font-medium text-card-foreground mb-2 block">Doküman Numarası</label>
                   <Input
@@ -312,12 +314,8 @@ export default function TaskForm() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-card-foreground mb-2 block">Talep Eden Kullanıcı ID</label>
-                  <Input value="Selim.aksu" readOnly className="bg-muted border-border text-foreground" />
-                </div>
-                <div>
                   <label className="text-sm font-medium text-card-foreground mb-2 block">Talep Eden Adı Soyadı</label>
-                  <Input value="Selim Aksu" readOnly className="bg-muted border-border text-foreground" />
+                  <Input value={currentUser?.name || "Selim Aksu"} readOnly className="bg-muted border-border text-foreground" />
                 </div>
               </div>
 
@@ -686,16 +684,21 @@ export default function TaskForm() {
                           </select>
                         </div>
                         <div className="px-3 py-3 border-r border-border">
-                          <select
-                            value={row.vendor}
-                            onChange={(e) => handleRowFieldChange(row.id, "vendor", e.target.value)}
-                            className="h-8 text-xs bg-background border border-border rounded-md px-2 w-full"
-                          >
-                            <option value="">Seçiniz</option>
-                            <option value="Satıcı A">Satıcı A</option>
-                            <option value="Satıcı B">Satıcı B</option>
-                            <option value="Satıcı C">Satıcı C</option>
-                          </select>
+                          <div className="relative">
+                            <Input
+                              value={row.vendor}
+                              readOnly
+                              onClick={() => {
+                                setSelectedRowId(row.id)
+                                setIsVendorDialogOpen(true)
+                              }}
+                              placeholder="Satıcı seçiniz..."
+                              className="h-8 text-xs cursor-pointer pr-8"
+                            />
+                            <List
+                              className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
+                            />
+                          </div>
                         </div>
                         <div className="px-3 py-3 border-r border-border">
                           <select
@@ -786,6 +789,21 @@ export default function TaskForm() {
               currentRows.map((row) =>
                 row.id === selectedRowId
                   ? { ...row, itemCode: item.itemCode, itemName: item.itemName, isDummy: item.itemCode === "DUMMY" }
+                  : row,
+              ),
+            )
+          }
+        }}
+      />
+      <VendorSelectionDialog
+        open={isVendorDialogOpen}
+        onOpenChange={setIsVendorDialogOpen}
+        onVendorSelected={(vendor) => {
+          if (selectedRowId !== null) {
+            setTableRows((currentRows) =>
+              currentRows.map((row) =>
+                row.id === selectedRowId
+                  ? { ...row, vendor: vendor.vendorName }
                   : row,
               ),
             )
