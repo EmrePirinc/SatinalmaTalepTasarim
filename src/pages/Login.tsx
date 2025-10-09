@@ -54,25 +54,25 @@ export default function Login() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-50">
       {/* Sol Taraf - Login Formu */}
-      <div className="flex-1 flex items-center justify-center bg-white p-8">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-[45%] flex items-center justify-center bg-white p-6 sm:p-12">
+        <div className="w-full max-w-[420px]">
           {/* Logo */}
-          <div className="text-center mb-12">
+          <div className="mb-10">
             <img
-              src="/anadolubakır büyük harf.png"
+              src="/AB_LOGO.png"
               alt="Anadolu Bakır"
-              className="h-24 mx-auto mb-8 object-contain"
+              className="h-16 mb-10 object-contain"
             />
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">Hoş Geldiniz</h1>
-            <p className="text-gray-600 text-lg">Satınalma Yönetim Sistemine giriş yapın</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Giriş Yap</h1>
+            <p className="text-gray-600 text-sm">Satınalma Yönetim Sistemi</p>
           </div>
 
           {/* Form */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Kullanıcı Adı</label>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Kullanıcı Adı</label>
               <Input
                 type="text"
                 value={username}
@@ -81,13 +81,13 @@ export default function Login() {
                   setError("")
                 }}
                 placeholder="Kullanıcı adınızı giriniz"
-                className="w-full h-12 px-4 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                className="w-full h-14 px-4 text-base border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
                 onKeyPress={(e) => e.key === "Enter" && handleLogin()}
               />
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">Şifre</label>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Şifre</label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -97,13 +97,13 @@ export default function Login() {
                     setError("")
                   }}
                   placeholder="Şifrenizi giriniz"
-                  className="w-full h-12 px-4 pr-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500"
+                  className="w-full h-14 px-4 pr-12 text-base border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-lg"
                   onKeyPress={(e) => e.key === "Enter" && handleLogin()}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -119,7 +119,7 @@ export default function Login() {
 
             <Button
               onClick={handleLogin}
-              className="w-full h-12 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="w-full h-14 text-white text-base font-semibold rounded-lg hover:opacity-90 transition-all mt-6"
               style={{ backgroundColor: "rgba(237, 124, 30)" }}
             >
               Giriş Yap
@@ -127,26 +127,20 @@ export default function Login() {
           </div>
 
           {/* Demo Bilgisi */}
-          <div className="mt-8 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-            <p className="font-semibold text-gray-800 mb-3 text-sm">📌 Demo Kullanıcılar</p>
-            <div className="space-y-2 text-xs text-gray-700">
-              <div className="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
-                <span className="text-lg">👤</span>
-                <div>
-                  <span className="font-semibold">Talep Açan:</span> talep.acan / 123456
-                </div>
+          <div className="mt-10 pt-6 border-t border-gray-200">
+            <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Demo Hesaplar</p>
+            <div className="space-y-2 text-xs text-gray-600">
+              <div className="flex items-center justify-between py-2">
+                <span className="font-medium">Talep Açan</span>
+                <span className="text-gray-500">talep.acan / 123456</span>
               </div>
-              <div className="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
-                <span className="text-lg">🛒</span>
-                <div>
-                  <span className="font-semibold">Satınalmacı:</span> satinalma / 123456
-                </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="font-medium">Satınalmacı</span>
+                <span className="text-gray-500">satinalma / 123456</span>
               </div>
-              <div className="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
-                <span className="text-lg">⚙️</span>
-                <div>
-                  <span className="font-semibold">Admin:</span> admin / 123456
-                </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="font-medium">Admin</span>
+                <span className="text-gray-500">admin / 123456</span>
               </div>
             </div>
           </div>
@@ -154,42 +148,13 @@ export default function Login() {
       </div>
 
       {/* Sağ Taraf - Arka Plan Görseli */}
-      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/30 to-orange-700/30 z-10"></div>
+      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent z-10"></div>
         <img
-          src="/chillventa-2018-anadolu-bakir-a-s.jpeg"
+          src="/AB.jpeg"
           alt="Anadolu Bakır"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="relative z-20 flex flex-col items-center justify-center text-white p-12 w-full bg-gradient-to-t from-black/60 via-black/40 to-transparent">
-          <div className="max-w-lg text-center">
-            <h2 className="text-5xl font-bold mb-6 drop-shadow-lg">
-              Satınalma Süreçlerinizi
-              <br />
-              Dijitalleştirin
-            </h2>
-            <p className="text-xl text-white/95 leading-relaxed drop-shadow-md">
-              Modern ve kullanıcı dostu arayüzü ile satınalma taleplerini yönetin,
-              onaylayın ve takip edin.
-            </p>
-            <div className="mt-12 flex items-center justify-center gap-8">
-              <div className="text-center backdrop-blur-sm bg-white/10 rounded-xl p-4 min-w-[100px]">
-                <div className="text-4xl font-bold mb-2">100%</div>
-                <div className="text-sm text-white/90 font-medium">Dijital</div>
-              </div>
-              <div className="w-px h-16 bg-white/40"></div>
-              <div className="text-center backdrop-blur-sm bg-white/10 rounded-xl p-4 min-w-[100px]">
-                <div className="text-4xl font-bold mb-2">24/7</div>
-                <div className="text-sm text-white/90 font-medium">Erişim</div>
-              </div>
-              <div className="w-px h-16 bg-white/40"></div>
-              <div className="text-center backdrop-blur-sm bg-white/10 rounded-xl p-4 min-w-[100px]">
-                <div className="text-4xl font-bold mb-2">Hızlı</div>
-                <div className="text-sm text-white/90 font-medium">Onay</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )

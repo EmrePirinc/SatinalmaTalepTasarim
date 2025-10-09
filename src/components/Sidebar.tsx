@@ -55,9 +55,18 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {/* Logo & Collapse Toggle */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
           {!isCollapsed && (
-            <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-              ANADOLU BAKIR
-            </div>
+            <img
+              src="/AB_LOGO.png"
+              alt="Anadolu Bakır"
+              className="h-10 object-contain"
+            />
+          )}
+          {isCollapsed && (
+            <img
+              src="/AB_LOGO.png"
+              alt="Anadolu Bakır"
+              className="h-8 object-contain mx-auto"
+            />
           )}
           <button
             onClick={toggleCollapse}
@@ -81,14 +90,6 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
         {/* Menu */}
         <nav className="flex-1 py-4 overflow-y-auto">
-          {!isCollapsed && (
-            <div className="px-4 mb-2">
-              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                ANADOLU BAKIR
-              </div>
-            </div>
-          )}
-
           <div className="space-y-1 px-2">
             {/* Anasayfa */}
             <Link to="/">
