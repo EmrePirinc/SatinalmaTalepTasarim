@@ -129,6 +129,7 @@ export default function TalepListesi() {
     department: "",
     documentDate: "",
     requiredDate: "",
+    validityDate: "",
     createdDate: "",
     itemCount: "",
     status: "",
@@ -178,6 +179,7 @@ export default function TalepListesi() {
       if (filters.department && request.department !== filters.department) return false
       if (filters.documentDate && request.documentDate !== filters.documentDate) return false
       if (filters.requiredDate && request.requiredDate !== filters.requiredDate) return false
+      if (filters.validityDate && (!request.validityDate || request.validityDate !== filters.validityDate)) return false
       if (filters.createdDate && !request.createdDate.includes(filters.createdDate)) return false
       if (filters.itemCount && request.itemCount.toString() !== filters.itemCount) return false
       if (filters.status && request.status !== filters.status) return false
@@ -333,12 +335,12 @@ export default function TalepListesi() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               </div>
 
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <div className="border border-border rounded-lg overflow-hidden shadow-sm min-w-[1400px]">
+              {/* Table - Yatay Kaydırma */}
+              <div className="overflow-x-auto overflow-y-visible">
+                <div className="border border-border rounded-lg overflow-hidden shadow-sm min-w-[1520px]">
                   {/* Filter Row - Compact */}
                   <div className="bg-gray-50 border-b border-gray-200">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px]">
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
                           placeholder="Filtrele..."
@@ -396,6 +398,14 @@ export default function TalepListesi() {
                       </div>
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
+                          type="date"
+                          className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
+                          value={filters.validityDate}
+                          onChange={(e) => setFilters({ ...filters, validityDate: e.target.value })}
+                        />
+                      </div>
+                      <div className="px-1.5 py-1.5 border-r border-gray-200">
+                        <Input
                           placeholder="gg.aa.yyyy"
                           className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
                           value={filters.createdDate}
@@ -443,6 +453,7 @@ export default function TalepListesi() {
                             department: "",
                             documentDate: "",
                             requiredDate: "",
+                            validityDate: "",
                             createdDate: "",
                             itemCount: "",
                             status: ""
@@ -458,7 +469,7 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
                       </div>
@@ -478,6 +489,9 @@ export default function TalepListesi() {
                         Gerekli Tarih
                       </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Geçerlilik Tarihi
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Kayıt Tarihi
                       </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
@@ -495,7 +509,8 @@ export default function TalepListesi() {
                   {filteredRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px] border-b border-border bg-white hover:bg-orange-50 transition-colors cursor-pointer"
+                      onClick={() => handleViewDetails(request)}
                     >
                       <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
                       <div className="px-3 py-3 border-r border-border text-sm truncate">{request.requestSummary || "-"}</div>
@@ -503,6 +518,7 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.documentDate)}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.requiredDate)}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.validityDate ? formatDate(request.validityDate) : "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.createdDate)}</div>
                       <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
                       <div className="px-2 py-3 border-r border-border flex items-center justify-center">
@@ -521,7 +537,7 @@ export default function TalepListesi() {
                           {request.status}
                         </span>
                       </div>
-                      <div className="px-2 py-2 flex items-center justify-center">
+                      <div className="px-2 py-2 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="ghost"
                           size="icon"
