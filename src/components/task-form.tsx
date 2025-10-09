@@ -9,7 +9,6 @@ import SAPDateInput from "@/components/SAPDateInput"
 import Sidebar from "@/components/Sidebar"
 import {
   Bell,
-  Filter,
   Plus,
   Search,
   Settings,
@@ -460,138 +459,145 @@ export default function TaskForm() {
                   </Button>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <div className="border border-border rounded-lg overflow-hidden shadow-sm min-w-[1200px]">
-                    {/* Filter Row */}
-                    <div className="bg-white border-b border-border">
-                      <div className="grid grid-cols-[180px_minmax(200px,1fr)_130px_80px_100px_120px_100px_150px_100px_60px]">
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <Input
-                              placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
-                              value={filters.itemCode}
-                              onChange={(e) => setFilters({ ...filters, itemCode: e.target.value })}
-                            />
-                          </div>
+                <div className="table-scroll overflow-x-scroll overflow-y-visible border border-border rounded-lg shadow-sm" style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#FF6B1A #f3f4f6'
+                }}>
+                  <style dangerouslySetInnerHTML={{__html: `
+                    .table-scroll::-webkit-scrollbar {
+                      height: 12px;
+                    }
+                    .table-scroll::-webkit-scrollbar-track {
+                      background: #f3f4f6;
+                      border-radius: 6px;
+                    }
+                    .table-scroll::-webkit-scrollbar-thumb {
+                      background: #FF6B1A;
+                      border-radius: 6px;
+                    }
+                    .table-scroll::-webkit-scrollbar-thumb:hover {
+                      background: #FF8C42;
+                    }
+                    /* Takvim ikonunu gizle ama işlevselliği koru */
+                    input[type="date"]::-webkit-calendar-picker-indicator {
+                      opacity: 0;
+                      cursor: pointer;
+                      width: 100%;
+                      height: 100%;
+                      position: absolute;
+                      left: 0;
+                      top: 0;
+                    }
+                    input[type="date"] {
+                      position: relative;
+                    }
+                  `}} />
+                  <div className="overflow-hidden min-w-[1270px]">
+                    {/* Filter Row - Compact */}
+                    <div className="bg-gray-50 border-b border-gray-200">
+                      <div className="grid grid-cols-[180px_minmax(200px,1fr)_140px_80px_100px_120px_100px_150px_100px_80px]">
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-7 text-[11px] bg-white border-gray-200 px-1.5 w-full"
+                            value={filters.itemCode}
+                            onChange={(e) => setFilters({ ...filters, itemCode: e.target.value })}
+                          />
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <Input
-                              placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
-                              value={filters.itemName}
-                              onChange={(e) => setFilters({ ...filters, itemName: e.target.value })}
-                            />
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-7 text-[11px] bg-white border-gray-200 px-1.5 w-full"
+                            value={filters.itemName}
+                            onChange={(e) => setFilters({ ...filters, itemName: e.target.value })}
+                          />
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <Input
-                              type="date"
-                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
-                              value={filters.requiredDate}
-                              onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
-                            />
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <Input
+                            type="date"
+                            className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
+                            value={filters.requiredDate}
+                            onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
+                          />
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <Input
-                              placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
-                              value={filters.quantity}
-                              onChange={(e) => setFilters({ ...filters, quantity: e.target.value })}
-                            />
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <Input
+                            placeholder="#"
+                            className="h-7 text-[11px] bg-white border-gray-200 px-1.5 w-full text-center"
+                            value={filters.quantity}
+                            onChange={(e) => setFilters({ ...filters, quantity: e.target.value })}
+                          />
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <select
-                              className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
-                              value={filters.uomCode}
-                              onChange={(e) => setFilters({ ...filters, uomCode: e.target.value })}
-                            >
-                              <option value="">Tümü</option>
-                              <option value="AD">AD</option>
-                              <option value="KG">KG</option>
-                              <option value="LT">LT</option>
-                              <option value="MT">MT</option>
-                              <option value="M2">M2</option>
-                              <option value="M3">M3</option>
-                            </select>
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <select
+                            className="h-7 text-[11px] bg-white border border-gray-200 rounded-md px-1 w-full"
+                            value={filters.uomCode}
+                            onChange={(e) => setFilters({ ...filters, uomCode: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="AD">AD</option>
+                            <option value="KG">KG</option>
+                            <option value="LT">LT</option>
+                            <option value="MT">MT</option>
+                            <option value="M2">M2</option>
+                            <option value="M3">M3</option>
+                          </select>
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <select
-                              className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
-                              value={filters.vendor}
-                              onChange={(e) => setFilters({ ...filters, vendor: e.target.value })}
-                            >
-                              <option value="">Tümü</option>
-                              <option value="Satıcı A">Satıcı A</option>
-                              <option value="Satıcı B">Satıcı B</option>
-                              <option value="Satıcı C">Satıcı C</option>
-                            </select>
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <select
+                            className="h-7 text-[11px] bg-white border border-gray-200 rounded-md px-1 w-full"
+                            value={filters.vendor}
+                            onChange={(e) => setFilters({ ...filters, vendor: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="Satıcı A">Satıcı A</option>
+                            <option value="Satıcı B">Satıcı B</option>
+                            <option value="Satıcı C">Satıcı C</option>
+                          </select>
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <select
-                              className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
-                              value={filters.departman}
-                              onChange={(e) => setFilters({ ...filters, departman: e.target.value })}
-                            >
-                              <option value="">Tümü</option>
-                              <option value="Konsol">Konsol</option>
-                              <option value="Bakır">Bakır</option>
-                              <option value="İzole">İzole</option>
-                              <option value="Yönetim">Yönetim</option>
-                              <option value="Bakımhane">Bakımhane</option>
-                              <option value="Depo">Depo</option>
-                            </select>
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <select
+                            className="h-7 text-[11px] bg-white border border-gray-200 rounded-md px-1 w-full"
+                            value={filters.departman}
+                            onChange={(e) => setFilters({ ...filters, departman: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="Konsol">Konsol</option>
+                            <option value="Bakır">Bakır</option>
+                            <option value="İzole">İzole</option>
+                            <option value="Yönetim">Yönetim</option>
+                            <option value="Bakımhane">Bakımhane</option>
+                            <option value="Depo">Depo</option>
+                          </select>
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <Input
-                              placeholder="Filtrele..."
-                              className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
-                              value={filters.description}
-                              onChange={(e) => setFilters({ ...filters, description: e.target.value })}
-                            />
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-7 text-[11px] bg-white border-gray-200 px-1.5 w-full"
+                            value={filters.description}
+                            onChange={(e) => setFilters({ ...filters, description: e.target.value })}
+                          />
                         </div>
-                        <div className="px-3 py-2 border-r border-border">
-                          <div className="flex items-center gap-1">
-                            <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-                            <select
-                              className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
-                              value={filters.hasFile}
-                              onChange={(e) => setFilters({ ...filters, hasFile: e.target.value })}
-                            >
-                              <option value="">Tümü</option>
-                              <option value="var">Var</option>
-                              <option value="yok">Yok</option>
-                            </select>
-                          </div>
+                        <div className="px-1.5 py-1.5 border-r border-gray-200">
+                          <select
+                            className="h-7 text-[11px] bg-white border border-gray-200 rounded-md px-1 w-full"
+                            value={filters.hasFile}
+                            onChange={(e) => setFilters({ ...filters, hasFile: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="var">Var</option>
+                            <option value="yok">Yok</option>
+                          </select>
                         </div>
-                        <div className="px-3 py-2"></div>
+                        <div className="px-1.5 py-1.5 flex items-center justify-center">
+                          <span className="text-xs text-gray-400">🗑️</span>
+                        </div>
                       </div>
                     </div>
 
                     {/* Header Row */}
                     <div className="bg-[#ECF2FF] border-b border-border">
-                      <div className="grid grid-cols-[180px_minmax(200px,1fr)_130px_80px_100px_120px_100px_150px_100px_60px]">
+                      <div className="grid grid-cols-[180px_minmax(200px,1fr)_140px_80px_100px_120px_100px_150px_100px_80px]">
                         <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                           Kalem Kodu <span className="text-red-500">*</span>
                         </div>
@@ -625,7 +631,7 @@ export default function TaskForm() {
                     {filteredRows.map((row) => (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[180px_minmax(200px,1fr)_130px_80px_100px_120px_100px_150px_100px_60px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                        className="grid grid-cols-[180px_minmax(200px,1fr)_140px_80px_100px_120px_100px_150px_100px_80px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
                       >
                         <div className="px-3 py-3 border-r border-border">
                           <div className="flex items-center gap-1">
