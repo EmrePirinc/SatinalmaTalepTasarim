@@ -89,7 +89,7 @@ export default function TaskForm() {
     }
 
     const parsedUser = JSON.parse(user)
-    if (parsedUser.role !== "user" && parsedUser.role !== "purchaser") {
+    if (parsedUser.role !== "user" && parsedUser.role !== "purchaser" && parsedUser.role !== "admin") {
       alert("Bu sayfaya erişim yetkiniz yok!")
       navigate("/login")
       return
@@ -277,7 +277,11 @@ export default function TaskForm() {
               <div className="flex flex-col">
                 <span className="text-xs font-medium">{currentUser?.name}</span>
                 <span className="text-[10px] text-muted-foreground">
-                  {currentUser?.role === "purchaser" ? "Satınalmacı" : "Talep Açan"}
+                  {currentUser?.role === "purchaser"
+                    ? "Satınalmacı"
+                    : currentUser?.role === "admin"
+                      ? "Admin"
+                      : "Talep Açan"}
                 </span>
               </div>
               <Button onClick={handleLogout} variant="ghost" size="icon" className="w-8 h-8 ml-2" title="Çıkış Yap">
