@@ -1,8 +1,15 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Eye, EyeOff } from "lucide-react"
+
+// Carousel resimleri
+const carouselImages = [
+  "/AB.jpeg",
+  "/AB2.jpg",
+  "/AB3.jpg"
+]
 
 // Mock kullanıcılar
 const mockUsers = [
@@ -18,6 +25,16 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  // Otomatik resim değişimi
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % carouselImages.length)
+    }, 5000) // 5 saniyede bir değişir
+
+    return () => clearInterval(interval)
+  }, [])
 
   const handleLogin = () => {
     // Kullanıcı doğrulama
@@ -174,15 +191,45 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Sağ Taraf - Arka Plan Görseli */}
-      <div className="hidden lg:flex lg:w-[60%] relative overflow-hidden bg-gradient-to-br from-orange-50 to-blue-50">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-blue-500/5"></div>
-        <img
-          src="/AB.jpeg"
-          alt="Anadolu Bakır & Ottocool"
-          className="absolute inset-0 w-full h-full object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-white/30 via-transparent to-transparent"></div>
+      {/* Sağ Taraf - Carousel Arka Plan Görseli */}
+      <div className="hidden lg:flex lg:w-[60%] relative overflow-hidden">
+        {/* Nostaljik renk efekti - Mazi ve başarı */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-600/20 via-orange-500/15 to-yellow-600/20 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-900/30 via-transparent to-orange-800/20 z-10"></div>
+        
+        {/* Carousel Görselleri */}
+        {carouselImages.map((image, index) => (
+          <img
+            key={image}
+            src={image}
+            alt={`Anadolu Bakır ${index + 1}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+              index === currentImageIndex ? "opacity-100" : "opacity-0"
+            }`}
+            style={{
+              filter: "sepia(15%) contrast(105%) brightness(95%)"
+            }}
+          />
+        ))}
+        
+        {/* Alt overlay - Derinlik */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-20"></div>
+        
+        {/* Indicator dots */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-30">
+          {carouselImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentImageIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentImageIndex 
+                  ? "bg-white w-6" 
+                  : "bg-white/50 hover:bg-white/75"
+              }`}
+              aria-label={`Resim ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )
