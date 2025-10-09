@@ -33,7 +33,6 @@ import {
   Settings,
   User,
   Menu,
-  Eye,
   LogOut,
   Info,
   ChevronDown,
