@@ -20,7 +20,11 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation()
   const [satinalmaOpen, setSatinalmaOpen] = useState(true)
   const [finansOpen, setFinansOpen] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    // localStorage'dan sidebar durumunu al, yoksa false (expanded)
+    const saved = localStorage.getItem("sidebarCollapsed")
+    return saved ? JSON.parse(saved) : false
+  })
   const [currentUser, setCurrentUser] = useState<any>(null)
 
   useEffect(() => {
@@ -31,7 +35,10 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   }, [location.pathname])
 
   const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed)
+    const newState = !isCollapsed
+    setIsCollapsed(newState)
+    // Sidebar durumunu localStorage'a kaydet
+    localStorage.setItem("sidebarCollapsed", JSON.stringify(newState))
   }
 
   return (
