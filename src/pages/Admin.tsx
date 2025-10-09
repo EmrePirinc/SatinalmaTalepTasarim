@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Sidebar from "@/components/Sidebar"
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,13 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import {
-  Home,
-  Users,
+  Bell,
   Settings,
+  User,
   LogOut,
   Plus,
   Edit,
   Trash2,
-  Shield,
   Menu,
 } from "lucide-react"
 
@@ -53,7 +53,7 @@ export default function Admin() {
   const navigate = useNavigate()
   const [users, setUsers] = useState<User[]>([])
   const [currentUser, setCurrentUser] = useState<any>(null)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -166,93 +166,57 @@ export default function Admin() {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
-      <aside className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed md:static inset-y-0 left-0 z-50 w-60 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-300 md:translate-x-0`}>
-        <div className="h-16 flex items-center justify-center border-b border-sidebar-border">
-          <div className="text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-            ANADOLU BAKIR
-          </div>
-        </div>
-
-        <nav className="flex-1 py-4">
-          <div className="px-4 mb-2">
-            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin Panel</div>
-          </div>
-
-          <div className="space-y-1 px-2">
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
-              <Home className="w-5 h-5" />
-              <span className="text-sm">Dashboard</span>
-            </button>
-
-            <button
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-white text-sm font-medium"
-              style={{ backgroundColor: "rgba(237, 124, 30)" }}
-            >
-              <Users className="w-5 h-5" />
-              <span>Kullanıcı Yönetimi</span>
-            </button>
-
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground">
-              <Settings className="w-5 h-5" />
-              <span className="text-sm">Ayarlar</span>
-            </button>
-          </div>
-        </nav>
-
-        <div className="p-4 border-t border-sidebar-border">
-          <div className="flex items-center gap-3 mb-3">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, rgba(237, 124, 30) 0%, rgba(200, 100, 20) 100%)" }}
-            >
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">{currentUser?.name}</p>
-              <p className="text-xs text-muted-foreground">Admin</p>
-            </div>
-          </div>
-          <Button onClick={handleLogout} variant="outline" className="w-full text-sm">
-            <LogOut className="w-4 h-4 mr-2" />
-            Çıkış Yap
-          </Button>
-        </div>
-      </aside>
+      <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-3">
+        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="md:hidden p-2 hover:bg-accent rounded-md"
-              aria-label="Toggle menu"
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent"
+              aria-label="Toggle sidebar"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5 h-5 text-muted-foreground" />
             </button>
             <h2 className="text-lg md:text-xl font-semibold">Kullanıcı Yönetimi</h2>
           </div>
-          <Button
-            onClick={() => {
-              setFormData({ username: "", password: "", name: "", role: "user" })
-              setIsAddDialogOpen(true)
-            }}
-            style={{ backgroundColor: "rgba(237, 124, 30)" }}
-            className="text-white"
-            size="sm"
-          >
-            <Plus className="w-4 h-4 md:mr-2" />
-            <span className="hidden md:inline">Yeni Kullanıcı Ekle</span>
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => {
+                setFormData({ username: "", password: "", name: "", role: "user" })
+                setIsAddDialogOpen(true)
+              }}
+              style={{ backgroundColor: "rgba(237, 124, 30)" }}
+              className="text-white"
+              size="sm"
+            >
+              <Plus className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Yeni Kullanıcı Ekle</span>
+            </Button>
+            <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent relative">
+              <Bell className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-accent">
+              <Settings className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <div className="flex items-center gap-2 border-l pl-3">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, rgba(237, 124, 30) 0%, rgba(200, 100, 20) 100%)" }}
+              >
+                <User className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium">{currentUser?.name}</span>
+                <span className="text-[10px] text-muted-foreground">Admin</span>
+              </div>
+              <Button onClick={handleLogout} variant="ghost" size="icon" className="w-8 h-8 ml-2" title="Çıkış Yap">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         </header>
 
         <main className="flex-1 overflow-auto p-3 md:p-6">
