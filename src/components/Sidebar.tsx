@@ -53,38 +53,46 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         } fixed md:static inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out md:translate-x-0`}
       >
         {/* Logo & Collapse Toggle */}
-        <div className="h-16 flex items-center px-4 border-b border-sidebar-border bg-white">
-          {!isCollapsed ? (
-            <>
+        <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border bg-white">
+          <div className="flex items-center justify-center flex-1">
+            {!isCollapsed ? (
               <img
                 src="/AB_LOGO.png"
                 alt="Anadolu Bakır"
-                className="h-9 object-contain"
+                className="h-9 object-contain md:mr-auto"
               />
-              <button
-                onClick={toggleCollapse}
-                className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 ml-auto"
-                aria-label="Toggle sidebar collapse"
-              >
-                <Menu className="w-4 h-4" />
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={toggleCollapse}
-              className="hidden md:flex w-full items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors py-2"
-              aria-label="Toggle sidebar collapse"
-            >
+            ) : (
               <img
                 src="/AB_LOGO.png"
                 alt="Anadolu Bakır"
                 className="h-7 object-contain"
               />
+            )}
+          </div>
+          
+          {!isCollapsed && (
+            <button
+              onClick={toggleCollapse}
+              className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
+              aria-label="Toggle sidebar collapse"
+            >
+              <Menu className="w-4 h-4" />
             </button>
           )}
+          
+          {isCollapsed && (
+            <button
+              onClick={toggleCollapse}
+              className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 absolute right-4"
+              aria-label="Expand sidebar"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+          
           <button
             onClick={onToggle}
-            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors ml-auto"
+            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0"
             aria-label="Close sidebar"
           >
             <X className="w-4 h-4" />
