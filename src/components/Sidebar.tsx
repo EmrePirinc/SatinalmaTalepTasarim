@@ -49,63 +49,63 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         className={`${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } ${
-          isCollapsed ? "w-16" : "w-64"
-        } fixed md:static inset-y-0 left-0 z-50 bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out md:translate-x-0`}
+          isCollapsed ? "w-16" : "w-56"
+        } fixed md:static inset-y-0 left-0 z-50 bg-white border-r border-gray-100 flex flex-col transition-all duration-300 ease-in-out md:translate-x-0 shadow-sm`}
       >
-        {/* Logo & Collapse Toggle */}
-        <div className="h-16 flex items-center justify-center px-4 border-b border-sidebar-border bg-white relative">
+        {/* Logo & Collapse Toggle - Zwilling Style */}
+        <div className="h-14 flex items-center justify-center px-3 border-b border-gray-100 bg-white relative">
           <div className="flex items-center justify-center">
             <img
               src="/AB_LOGO.png"
               alt="Anadolu Bakır"
-              className={isCollapsed ? "h-7 object-contain" : "h-9 object-contain"}
+              className={isCollapsed ? "h-6 object-contain" : "h-8 object-contain"}
             />
           </div>
           
           {!isCollapsed && (
             <button
               onClick={toggleCollapse}
-              className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 absolute right-4"
+              className="hidden md:flex w-6 h-6 items-center justify-center rounded hover:bg-gray-50 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 absolute right-3"
               aria-label="Toggle sidebar collapse"
             >
-              <Menu className="w-4 h-4" />
+              <Menu className="w-3.5 h-3.5" />
             </button>
           )}
           
           {isCollapsed && (
             <button
               onClick={toggleCollapse}
-              className="hidden md:flex w-7 h-7 items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 absolute right-4"
+              className="hidden md:flex w-6 h-6 items-center justify-center rounded hover:bg-gray-50 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 absolute right-3"
               aria-label="Expand sidebar"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           )}
           
           <button
             onClick={onToggle}
-            className="md:hidden w-7 h-7 flex items-center justify-center rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors flex-shrink-0 absolute right-4"
+            className="md:hidden w-6 h-6 flex items-center justify-center rounded hover:bg-gray-50 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 absolute right-3"
             aria-label="Close sidebar"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        {/* Menu */}
-        <nav className="flex-1 py-6 overflow-y-auto">
-          <div className="space-y-2 px-3">
+        {/* Menu - Zwilling Style */}
+        <nav className="flex-1 py-4 overflow-y-auto">
+          <div className="space-y-1 px-2">
             {/* Anasayfa */}
             <Link to="/">
               <button
                 className={`w-full flex items-center ${
-                  isCollapsed ? "justify-center px-2" : "gap-3 px-4"
-                } py-3 rounded-lg hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition-all duration-200 group relative`}
+                  isCollapsed ? "justify-center px-2" : "gap-3 px-3"
+                } py-2.5 rounded-md hover:bg-orange-50 text-gray-600 hover:text-orange-600 transition-all duration-200 group relative text-sm`}
                 title={isCollapsed ? "Anasayfa" : ""}
               >
-                <Home className="w-5 h-5 flex-shrink-0" />
-                {!isCollapsed && <span className="text-sm font-semibold">Anasayfa</span>}
+                <Home className="w-4.5 h-4.5 flex-shrink-0" />
+                {!isCollapsed && <span className="font-medium">Anasayfa</span>}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                     Anasayfa
                   </div>
                 )}
@@ -117,47 +117,42 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               <button
                 onClick={() => !isCollapsed && setSatinalmaOpen(!satinalmaOpen)}
                 className={`w-full flex items-center ${
-                  isCollapsed ? "justify-center px-2" : "gap-3 px-4"
-                } py-3 rounded-lg text-sm font-semibold transition-all duration-200 group relative bg-orange-500 text-white hover:bg-orange-600 shadow-sm`}
+                  isCollapsed ? "justify-center px-2" : "gap-3 px-3"
+                } py-2.5 rounded-md text-sm font-medium transition-all duration-200 group relative bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-sm`}
                 title={isCollapsed ? "Satınalma" : ""}
               >
-                <Package className="w-5 h-5 flex-shrink-0" />
+                <Package className="w-4.5 h-4.5 flex-shrink-0" />
                 {!isCollapsed && (
                   <>
                     <span>Satınalma</span>
                     {satinalmaOpen ? (
-                      <ChevronDown className="w-4 h-4 ml-auto transition-transform" />
+                      <ChevronDown className="w-3.5 h-3.5 ml-auto transition-transform" />
                     ) : (
-                      <ChevronRight className="w-4 h-4 ml-auto transition-transform" />
+                      <ChevronRight className="w-3.5 h-3.5 ml-auto transition-transform" />
                     )}
                   </>
                 )}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                     Satınalma
                   </div>
                 )}
               </button>
 
-              {/* Satınalma Alt Menü */}
+              {/* Satınalma Alt Menü - Zwilling Style */}
               {satinalmaOpen && !isCollapsed && (
-                <div className="pl-8 space-y-1 mt-1">
+                <div className="pl-7 space-y-0.5 mt-1">
                   <Link to="/">
                     <button
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 ${
                         location.pathname === "/"
-                          ? "text-white"
-                          : "hover:bg-sidebar-accent text-sidebar-foreground"
+                          ? "text-white bg-orange-500"
+                          : "hover:bg-gray-50 text-gray-600 hover:text-orange-600"
                       }`}
-                      style={
-                        location.pathname === "/"
-                          ? { backgroundColor: "rgba(237, 124, 30)" }
-                          : undefined
-                      }
                     >
                       <div
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          location.pathname === "/" ? "bg-white" : "bg-muted-foreground"
+                        className={`w-1 h-1 rounded-full ${
+                          location.pathname === "/" ? "bg-white" : "bg-gray-400"
                         }`}
                       />
                       Satınalma Talep Formu
@@ -165,20 +160,15 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   </Link>
                   <Link to="/talep-listesi">
                     <button
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 ${
                         location.pathname === "/talep-listesi"
-                          ? "text-white"
-                          : "hover:bg-sidebar-accent text-sidebar-foreground"
+                          ? "text-white bg-orange-500"
+                          : "hover:bg-gray-50 text-gray-600 hover:text-orange-600"
                       }`}
-                      style={
-                        location.pathname === "/talep-listesi"
-                          ? { backgroundColor: "rgba(237, 124, 30)" }
-                          : undefined
-                      }
                     >
                       <div
-                        className={`w-1.5 h-1.5 rounded-full ${
-                          location.pathname === "/talep-listesi" ? "bg-white" : "bg-muted-foreground"
+                        className={`w-1 h-1 rounded-full ${
+                          location.pathname === "/talep-listesi" ? "bg-white" : "bg-gray-400"
                         }`}
                       />
                       Talep Listesi
@@ -194,22 +184,22 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 onClick={() => !isCollapsed && setFinansOpen(!finansOpen)}
                 className={`w-full flex items-center ${
                   isCollapsed ? "justify-center px-2" : "gap-3 px-3"
-                } py-2.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground transition-all duration-200 group relative`}
+                } py-2.5 rounded-md hover:bg-orange-50 text-gray-600 hover:text-orange-600 transition-all duration-200 group relative text-sm`}
                 title={isCollapsed ? "Finans" : ""}
               >
-                <DollarSign className="w-5 h-5 flex-shrink-0" />
+                <DollarSign className="w-4.5 h-4.5 flex-shrink-0" />
                 {!isCollapsed && (
                   <>
-                    <span className="text-sm font-medium">Finans</span>
+                    <span className="font-medium">Finans</span>
                     {finansOpen ? (
-                      <ChevronDown className="w-4 h-4 ml-auto transition-transform" />
+                      <ChevronDown className="w-3.5 h-3.5 ml-auto transition-transform" />
                     ) : (
-                      <ChevronRight className="w-4 h-4 ml-auto transition-transform" />
+                      <ChevronRight className="w-3.5 h-3.5 ml-auto transition-transform" />
                     )}
                   </>
                 )}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                  <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                     Finans
                   </div>
                 )}
@@ -217,9 +207,9 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
               {/* Finans Alt Menü */}
               {finansOpen && !isCollapsed && (
-                <div className="pl-8 space-y-1 mt-1">
-                  <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-sidebar-accent text-sidebar-foreground text-sm font-medium transition-all duration-200">
-                    <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                <div className="pl-7 space-y-0.5 mt-1">
+                  <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 text-gray-600 hover:text-orange-600 text-xs font-medium transition-all duration-200">
+                    <div className="w-1 h-1 rounded-full bg-gray-400" />
                     Ödeme Süreci
                   </button>
                 </div>
@@ -232,22 +222,17 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 <button
                   className={`w-full flex items-center ${
                     isCollapsed ? "justify-center px-2" : "gap-3 px-3"
-                  } py-2.5 rounded-md transition-all duration-200 group relative ${
+                  } py-2.5 rounded-md transition-all duration-200 group relative text-sm ${
                     location.pathname === "/admin"
-                      ? "text-white"
-                      : "hover:bg-sidebar-accent text-sidebar-foreground"
+                      ? "text-white bg-orange-500"
+                      : "hover:bg-orange-50 text-gray-600 hover:text-orange-600"
                   }`}
-                  style={
-                    location.pathname === "/admin"
-                      ? { backgroundColor: "rgba(237, 124, 30)" }
-                      : undefined
-                  }
                   title={isCollapsed ? "Admin Paneli" : ""}
                 >
-                  <Shield className="w-5 h-5 flex-shrink-0" />
-                  {!isCollapsed && <span className="text-sm font-medium">Admin Paneli</span>}
+                  <Shield className="w-4.5 h-4.5 flex-shrink-0" />
+                  {!isCollapsed && <span className="font-medium">Admin Paneli</span>}
                   {isCollapsed && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                    <div className="absolute left-full ml-2 px-2.5 py-1.5 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                       Admin Paneli
                     </div>
                   )}
