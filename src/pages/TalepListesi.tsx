@@ -33,9 +33,9 @@ import {
   Settings,
   User,
   Menu,
+  Eye,
   LogOut,
   Info,
-  ChevronDown,
 } from "lucide-react"
 
 type RequestStatus =
@@ -123,8 +123,17 @@ export default function TalepListesi() {
   const [requests, setRequests] = useState<PurchaseRequest[]>([])
   const [selectedRequest, setSelectedRequest] = useState<PurchaseRequest | null>(null)
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
-  const [filterAssigned, setFilterAssigned] = useState("all")
-  const [filterStatus, setFilterStatus] = useState("all")
+  const [filters, setFilters] = useState({
+    documentNumber: "",
+    requestSummary: "",
+    requester: "",
+    department: "",
+    documentDate: "",
+    requiredDate: "",
+    createdDate: "",
+    itemCount: "",
+    status: "",
+  })
 
   useEffect(() => {
     // Kullanıcı kontrolü
@@ -163,19 +172,20 @@ export default function TalepListesi() {
         (request.requestSummary && request.requestSummary.toLowerCase().includes(searchQuery.toLowerCase()))
 
       if (!searchMatch) return false
-
-      // Atanan filtresi
-      if (filterAssigned === "mine") {
-        if (currentUser?.role !== "purchaser") return false
-        if (request.status !== "Satınalmacıda" && request.status !== "Satınalma Talebi") return false
-      }
-
-      // Durum filtresi
-      if (filterStatus !== "all" && request.status !== filterStatus) return false
+      if (filters.documentNumber && !request.documentNumber.toLowerCase().includes(filters.documentNumber.toLowerCase())) return false
+      if (filters.requestSummary && (!request.requestSummary || !request.requestSummary.toLowerCase().includes(filters.requestSummary.toLowerCase()))) return false
+      if (filters.requester && !request.requester.toLowerCase().includes(filters.requester.toLowerCase()))
+        return false
+      if (filters.department && request.department !== filters.department) return false
+      if (filters.documentDate && request.documentDate !== filters.documentDate) return false
+      if (filters.requiredDate && request.requiredDate !== filters.requiredDate) return false
+      if (filters.createdDate && !request.createdDate.includes(filters.createdDate)) return false
+      if (filters.itemCount && request.itemCount.toString() !== filters.itemCount) return false
+      if (filters.status && request.status !== filters.status) return false
 
       return true
     })
-  }, [requests, searchQuery, filterAssigned, filterStatus, currentUser])
+  }, [requests, searchQuery, filters])
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser")
@@ -187,6 +197,7 @@ export default function TalepListesi() {
     setIsDetailDialogOpen(true)
   }
 
+
   const handleReject = () => {
     if (!selectedRequest) return
 
@@ -194,13 +205,7 @@ export default function TalepListesi() {
     if (!reason) return
 
     const updatedRequests = requests.map((req) =>
-      req.id === selectedRequest.id
-        ? {
-            ...req,
-            status: "Reddedildi" as RequestStatus,
-            notes: (req.notes || "") + "\n\nRed Sebebi: " + reason,
-          }
-        : req
+      req.id === selectedRequest.id ? { ...req, status: "Reddedildi" as RequestStatus, notes: (req.notes || "") + "\n\nRed Sebebi: " + reason } : req
     )
     setRequests(updatedRequests)
     localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
@@ -215,13 +220,7 @@ export default function TalepListesi() {
     if (!revisionNote) return
 
     const updatedRequests = requests.map((req) =>
-      req.id === selectedRequest.id
-        ? {
-            ...req,
-            status: "Revize İstendi" as RequestStatus,
-            notes: (req.notes || "") + "\n\nRevize Notu: " + revisionNote,
-          }
-        : req
+      req.id === selectedRequest.id ? { ...req, status: "Revize İstendi" as RequestStatus, notes: (req.notes || "") + "\n\nRevize Notu: " + revisionNote } : req
     )
     setRequests(updatedRequests)
     localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
@@ -237,15 +236,7 @@ export default function TalepListesi() {
 
     const updatedRequests = requests.map((req) =>
       req.id === selectedRequest.id
-        ? {
-            ...req,
-            status: "Satınalma Talebi" as RequestStatus,
-            notes:
-              (req.notes || "") +
-              "\n\n[Revize sonrası tekrar gönderildi: " +
-              new Date().toLocaleDateString("tr-TR") +
-              "]",
-          }
+        ? { ...req, status: "Satınalma Talebi" as RequestStatus, notes: (req.notes || "") + "\n\n[Revize sonrası tekrar gönderildi: " + new Date().toLocaleDateString("tr-TR") + "]" }
         : req
     )
     setRequests(updatedRequests)
@@ -271,9 +262,7 @@ export default function TalepListesi() {
               <Menu className="w-5 h-5 text-muted-foreground" />
             </button>
             <nav className="flex items-center gap-6 text-sm">
-              <span className="font-semibold" style={{ color: "rgba(237, 124, 30)" }}>
-                Görev Listesi
-              </span>
+              <span className="text-muted-foreground hover:text-foreground cursor-pointer">Görev Listesi</span>
               <span className="text-muted-foreground hover:text-foreground cursor-pointer">Anasayfa</span>
               <span className="text-muted-foreground hover:text-foreground cursor-pointer">Ayarlar</span>
               <span className="text-muted-foreground hover:text-foreground cursor-pointer">Yardım</span>
@@ -296,11 +285,7 @@ export default function TalepListesi() {
               <div className="flex flex-col">
                 <span className="text-xs font-medium">{currentUser?.name}</span>
                 <span className="text-[10px] text-muted-foreground">
-                  {currentUser?.role === "purchaser"
-                    ? "Satınalmacı"
-                    : currentUser?.role === "user"
-                      ? "Talep Açan"
-                      : "Admin"}
+                  {currentUser?.role === "purchaser" ? "Satınalmacı" : currentUser?.role === "user" ? "Talep Açan" : "Admin"}
                 </span>
               </div>
               <Button onClick={handleLogout} variant="ghost" size="icon" className="w-8 h-8 ml-2" title="Çıkış Yap">
@@ -311,176 +296,255 @@ export default function TalepListesi() {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-4 bg-gray-50">
-          <div className="max-w-7xl mx-auto">
-            {/* Üst Filtreler ve Arama */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                {/* Filtreler */}
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm font-medium text-gray-700">Atanan:</span>
-                    <div className="relative">
-                      <select
-                        value={filterAssigned}
-                        onChange={(e) => setFilterAssigned(e.target.value)}
-                        className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      >
-                        <option value="all">Hepsi</option>
-                        <option value="mine">Bana Atananlar</option>
-                      </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                    </div>
-                  </div>
+        <main className="flex-1 overflow-auto p-2 md:p-4">
+          <div className="w-full">
+            <div className="bg-card rounded-lg border border-border shadow-sm p-3 md:p-4">
+              <h3
+                className="text-lg md:text-2xl font-bold mb-4 md:mb-6 pb-2 md:pb-3 border-b-2"
+                style={{ color: "rgba(237, 124, 30)", borderColor: "rgba(237, 124, 30, 0.2)" }}
+              >
+                Satınalma Talep Listesi
+              </h3>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">Durum:</span>
-                    <div className="relative">
-                      <select
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                        className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm font-medium text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      >
-                        <option value="all">Tüm Süreçler</option>
-                        <option value="Satınalma Talebi">Satınalma Talebi</option>
-                        <option value="Satınalmacıda">Satınalmacıda</option>
-                        <option value="Revize İstendi">Revize İstendi</option>
-                        <option value="Reddedildi">Reddedildi</option>
-                        <option value="Satınalma Teklifi">Satınalma Teklifi</option>
-                        <option value="Satınalma Siparişi">Satınalma Siparişi</option>
-                        <option value="Mal Girişi">Mal Girişi</option>
-                        <option value="Tamamlandı">Tamamlandı</option>
-                      </select>
-                      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Arama */}
-                <div className="flex-1 relative">
-                  <Input
-                    placeholder="Ara..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10"
-                  />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                </div>
+              {/* Search */}
+              <div className="relative mb-6">
+                <Input
+                  placeholder="Doküman numarası, talep eden veya departmana göre ara..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               </div>
-            </div>
 
-            {/* Görev Listesi */}
-            <div className="mb-4 text-lg font-semibold text-gray-700">
-              Görev Listesi
-            </div>
-
-            {/* Talep Kartları */}
-            <div className="space-y-3">
-              {filteredRequests.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-                  <p className="text-gray-500">Gösterilecek talep bulunamadı.</p>
-                </div>
-              ) : (
-                filteredRequests.map((request) => (
-                  <div
-                    key={request.id}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => handleViewDetails(request)}
-                  >
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        {/* Sol Taraf - Ana İçerik */}
-                        <div className="flex-1 min-w-0">
-                          {/* Başlık ve Numara */}
-                          <div className="flex items-start gap-3 mb-2">
-                            {/* Acil İkonu */}
-                            {request.isUrgent && (
-                              <div
-                                className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-red-500 text-white shadow-md"
-                                title="Acil Talep"
-                              >
-                                ⚠️
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-base font-bold text-gray-900 mb-1">
-                                Satınalma Süreci - Talep Onay Formu
-                              </h3>
-                              <p className="text-sm text-gray-600">
-                                {request.documentNumber} numaralı ve{" "}
-                                {formatDate(request.documentDate)} tarihli{" "}
-                                {request.requestSummary || "Platform lazer kesim konulu talep"}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Alt Bilgiler */}
-                          <div className="flex items-center gap-4 text-xs text-gray-500 mt-3">
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">Başlatan:</span>
-                              <span className="text-blue-600">{request.requester}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">Atanan:</span>
-                              <span className="text-blue-600">
-                                {request.status === "Satınalmacıda" || request.status === "Satınalma Talebi"
-                                  ? "Satınalma"
-                                  : request.department}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Sağ Taraf - Durum ve Tarih */}
-                        <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${statusColors[request.status]}`}
-                          >
-                            {request.status === "Satınalma Talebi" ? "Talep onayı: bekleniyor" : request.status}
-                          </span>
-                          <div className="text-xs text-gray-500">
-                            {formatDate(request.createdDate)}/{formatDate(request.requiredDate)}
-                          </div>
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <div className="border border-border rounded-lg overflow-hidden shadow-sm min-w-[1400px]">
+                  {/* Filter Row */}
+                  <div className="bg-white border-b border-border">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px]">
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
+                            value={filters.documentNumber}
+                            onChange={(e) => setFilters({ ...filters, documentNumber: e.target.value })}
+                          />
                         </div>
                       </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
+                            value={filters.requestSummary}
+                            onChange={(e) => setFilters({ ...filters, requestSummary: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
+                            value={filters.requester}
+                            onChange={(e) => setFilters({ ...filters, requester: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <select
+                            className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
+                            value={filters.department}
+                            onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="Konsol">Konsol</option>
+                            <option value="Bakır">Bakır</option>
+                            <option value="İzole">İzole</option>
+                            <option value="Yönetim">Yönetim</option>
+                            <option value="Bakımhane">Bakımhane</option>
+                            <option value="Depo">Depo</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            type="date"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
+                            value={filters.documentDate}
+                            onChange={(e) => setFilters({ ...filters, documentDate: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            type="date"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
+                            value={filters.requiredDate}
+                            onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            placeholder="GG.AA.YYYY"
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
+                            value={filters.createdDate}
+                            onChange={(e) => setFilters({ ...filters, createdDate: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <Input
+                            type="number"
+                            placeholder="Filtrele..."
+                            className="h-8 text-xs bg-muted border-border flex-1 min-w-0"
+                            value={filters.itemCount}
+                            onChange={(e) => setFilters({ ...filters, itemCount: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="px-2 py-2 border-r border-border flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground">⚠️</span>
+                      </div>
+                      <div className="px-3 py-2 border-r border-border">
+                        <div className="flex items-center gap-1">
+                          <Filter className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                          <select
+                            className="h-8 text-xs bg-muted border border-border rounded-md px-2 flex-1"
+                            value={filters.status}
+                            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                          >
+                            <option value="">Tümü</option>
+                            <option value="Satınalmacıda">Satınalmacıda</option>
+                            <option value="Revize İstendi">Revize İstendi</option>
+                            <option value="Reddedildi">Reddedildi</option>
+                            <option value="Satınalma Teklifi">Satınalma Teklifi</option>
+                            <option value="Satınalma Talebi">Satınalma Talebi</option>
+                            <option value="Satınalma Siparişi">Satınalma Siparişi</option>
+                            <option value="Mal Girişi">Mal Girişi</option>
+                            <option value="Satıcı Faturası">Satıcı Faturası</option>
+                            <option value="Ödeme Yapıldı">Ödeme Yapıldı</option>
+                            <option value="İade">İade</option>
+                            <option value="Tamamlandı">Tamamlandı</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="px-3 py-2 flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground">İşlem</span>
+                      </div>
                     </div>
-
-                    {/* Alt Çizgi - Vurgu Çubuğu */}
-                    <div
-                      className="h-1 rounded-b-lg"
-                      style={{
-                        background:
-                          request.status === "Reddedildi"
-                            ? "linear-gradient(to right, #ef4444, #dc2626)"
-                            : request.status === "Revize İstendi"
-                              ? "linear-gradient(to right, #f97316, #ea580c)"
-                              : "linear-gradient(to right, rgba(237, 124, 30), rgba(200, 100, 20))",
-                      }}
-                    />
                   </div>
-                ))
-              )}
-            </div>
 
-            {/* Toplam Sayısı */}
-            {filteredRequests.length > 0 && (
-              <div className="mt-4 text-sm text-gray-500 text-center">
-                Toplam {filteredRequests.length} talep gösteriliyor
+                  {/* Header Row */}
+                  <div className="bg-[#ECF2FF] border-b border-border">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px]">
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Doküman No
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Talep Özeti
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Talep Eden
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Departman
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Belge Tarihi
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Gerekli Tarih
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
+                        Kayıt Tarihi
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
+                        Kalem Sayısı
+                      </div>
+                      <div className="px-2 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
+                        Acil
+                      </div>
+                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">Durum</div>
+                      <div className="px-3 py-3 text-sm font-medium text-[#181C14] text-center">İşlemler</div>
+                    </div>
+                  </div>
+
+                  {/* Data Rows */}
+                  {filteredRequests.map((request) => (
+                    <div
+                      key={request.id}
+                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_90px_70px_130px_80px] border-b border-border bg-white hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm truncate">{request.requestSummary || "-"}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.requester}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{request.department}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.documentDate)}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.requiredDate)}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.createdDate)}</div>
+                      <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
+                      <div className="px-2 py-3 border-r border-border flex items-center justify-center">
+                        {request.isUrgent ? (
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white text-sm font-bold shadow-md" title="Acil Talep">
+                            ⚠️
+                          </span>
+                        ) : (
+                          <span className="text-gray-300">—</span>
+                        )}
+                      </div>
+                      <div className="px-3 py-3 border-r border-border">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[request.status]}`}
+                        >
+                          {request.status}
+                        </span>
+                      </div>
+                      <div className="px-2 py-2 flex items-center justify-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleViewDetails(request)}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Footer */}
+                  <div className="px-4 py-3 text-sm text-muted-foreground flex justify-end bg-muted/30">
+                    <span>Toplam {filteredRequests.length} talep var</span>
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </main>
       </div>
 
-      {/* Detay Dialog */}
+      {/* Kalem Detayları Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-[98vw] md:max-w-7xl max-h-[95vh] overflow-y-auto">
           <DialogHeader className="border-b-2 pb-4" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
-            <DialogTitle
-              className="flex items-center gap-2 text-xl md:text-2xl font-bold"
-              style={{ color: "rgba(237, 124, 30)" }}
-            >
+            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
               <span>📋 Doküman No: {selectedRequest?.documentNumber}</span>
             </DialogTitle>
           </DialogHeader>
@@ -488,21 +552,11 @@ export default function TalepListesi() {
             <div className="space-y-6 pt-4">
               {/* Talep Özeti - Başlık */}
               {selectedRequest.requestSummary && (
-                <div
-                  className="relative overflow-hidden rounded-xl shadow-md p-6"
-                  style={{
-                    background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)",
-                    borderLeft: "4px solid rgba(237, 124, 30, 1)",
-                  }}
-                >
+                <div className="relative overflow-hidden rounded-xl shadow-md p-6" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)", borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>
-                      📝 Talep Özeti
-                    </span>
+                    <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>📝 Talep Özeti</span>
                   </div>
-                  <p className="text-lg font-semibold text-gray-800 leading-relaxed">
-                    {selectedRequest.requestSummary}
-                  </p>
+                  <p className="text-lg font-semibold text-gray-800 leading-relaxed">{selectedRequest.requestSummary}</p>
                 </div>
               )}
 
@@ -526,24 +580,14 @@ export default function TalepListesi() {
                 <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-5 hover:shadow-lg transition-shadow">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">👤</span>
-                    <span
-                      className="text-xs font-bold uppercase tracking-wider"
-                      style={{ color: "rgba(237, 124, 30)" }}
-                    >
-                      Talep Eden
-                    </span>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Talep Eden</span>
                   </div>
                   <p className="text-lg font-bold text-gray-800 ml-8">{selectedRequest.requester}</p>
                 </div>
                 <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-5 hover:shadow-lg transition-shadow">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">🏢</span>
-                    <span
-                      className="text-xs font-bold uppercase tracking-wider"
-                      style={{ color: "rgba(237, 124, 30)" }}
-                    >
-                      Departman
-                    </span>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Departman</span>
                   </div>
                   <p className="text-lg font-bold text-gray-800 ml-8">{selectedRequest.department}</p>
                 </div>
@@ -553,12 +597,7 @@ export default function TalepListesi() {
               <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6">
                 <div className="flex items-center gap-3 mb-5">
                   <Calendar className="w-6 h-6" style={{ color: "rgba(237, 124, 30)" }} />
-                  <span
-                    className="text-lg font-bold uppercase tracking-wide"
-                    style={{ color: "rgba(237, 124, 30)" }}
-                  >
-                    Tarihler
-                  </span>
+                  <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Tarihler</span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -566,12 +605,9 @@ export default function TalepListesi() {
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs bg-gray-900 text-white p-4 rounded-lg">
                         <p className="text-sm leading-relaxed">
-                          <strong>📄 Belge Tarihi:</strong> Talebin belge üzerindeki tarihi
-                          <br />
-                          <strong>⏰ Gerekli Tarih:</strong> Malzemenin ihtiyaç duyulduğu tarih
-                          <br />
-                          <strong>💾 Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih
-                          <br />
+                          <strong>📄 Belge Tarihi:</strong> Talebin belge üzerindeki tarihi<br />
+                          <strong>⏰ Gerekli Tarih:</strong> Malzemenin ihtiyaç duyulduğu tarih<br />
+                          <strong>💾 Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih<br />
                           <strong>✅ Geçerlilik Tarihi:</strong> Talebin geçerli olduğu son tarih
                         </p>
                       </TooltipContent>
@@ -584,27 +620,16 @@ export default function TalepListesi() {
                     <p className="text-lg font-bold text-gray-800">{formatDate(selectedRequest.documentDate)}</p>
                   </div>
                   <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-orange-50 to-orange-100">
-                    <span
-                      className="text-xs font-bold uppercase tracking-wider"
-                      style={{ color: "rgba(237, 124, 30)" }}
-                    >
-                      ⏰ Gerekli Tarih
-                    </span>
-                    <p className="text-lg font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                      {formatDate(selectedRequest.requiredDate)}
-                    </p>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>⏰ Gerekli Tarih</span>
+                    <p className="text-lg font-bold" style={{ color: "rgba(237, 124, 30)" }}>{formatDate(selectedRequest.requiredDate)}</p>
                   </div>
                   <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100">
                     <span className="text-xs font-bold uppercase tracking-wider text-gray-500">💾 Kayıt Tarihi</span>
                     <p className="text-lg font-bold text-gray-800">{formatDate(selectedRequest.createdDate)}</p>
                   </div>
                   <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100">
-                    <span className="text-xs font-bold uppercase tracking-wider text-green-700">
-                      ✅ Geçerlilik Tarihi
-                    </span>
-                    <p className="text-lg font-bold text-green-800">
-                      {formatDate(selectedRequest.validityDate)}
-                    </p>
+                    <span className="text-xs font-bold uppercase tracking-wider text-green-700">✅ Geçerlilik Tarihi</span>
+                    <p className="text-lg font-bold text-green-800">{formatDate(selectedRequest.validityDate)}</p>
                   </div>
                 </div>
               </div>
@@ -614,63 +639,29 @@ export default function TalepListesi() {
                 <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6">
                   <div className="flex items-center gap-3 mb-5">
                     <Package className="w-6 h-6" style={{ color: "rgba(237, 124, 30)" }} />
-                    <h4
-                      className="text-lg font-bold uppercase tracking-wide"
-                      style={{ color: "rgba(237, 124, 30)" }}
-                    >
-                      Kalem Listesi
-                    </h4>
-                    <span
-                      className="px-4 py-1.5 rounded-full text-sm font-bold uppercase shadow-sm"
-                      style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}
-                    >
+                    <h4 className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Kalem Listesi</h4>
+                    <span className="px-4 py-1.5 rounded-full text-sm font-bold uppercase shadow-sm" style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}>
                       {selectedRequest.items.length} Kalem
                     </span>
                   </div>
-                  <div
-                    className="border-2 rounded-lg overflow-hidden shadow-sm"
-                    style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}
-                  >
+                  <div className="border-2 rounded-lg overflow-hidden shadow-sm" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
                     <Table>
-                      <TableHeader
-                        style={{
-                          background:
-                            "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)",
-                        }}
-                      >
+                      <TableHeader style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)" }}>
                         <TableRow>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                            Kalem Kodu
-                          </TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                            Kalem Tanımı
-                          </TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                            Departman
-                          </TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                            Miktar
-                          </TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                            Birim
-                          </TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                            Satıcı
-                          </TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-                            Gerekli Tarih
-                          </TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Kalem Kodu</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Kalem Tanımı</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Departman</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Miktar</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Birim</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Satıcı</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Gerekli Tarih</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {selectedRequest.items.map((item) => (
                           <TableRow key={item.id}>
                             <TableCell className="font-medium">
-                              {item.isDummy && (
-                                <span className="text-orange-600 mr-1" title="Dummy Kalem">
-                                  🔸
-                                </span>
-                              )}
+                              {item.isDummy && <span className="text-orange-600 mr-1" title="Dummy Kalem">🔸</span>}
                               {item.itemCode}
                             </TableCell>
                             <TableCell>{item.itemName}</TableCell>
@@ -689,64 +680,50 @@ export default function TalepListesi() {
 
               {/* Notlar */}
               {selectedRequest.notes && (
-                <div
-                  className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6"
-                  style={{ borderLeft: "4px solid rgba(237, 124, 30, 1)" }}
-                >
+                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6" style={{ borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-2xl">📝</span>
-                    <span
-                      className="text-lg font-bold uppercase tracking-wide"
-                      style={{ color: "rgba(237, 124, 30)" }}
-                    >
-                      Açıklamalar ve Notlar
-                    </span>
+                    <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Açıklamalar ve Notlar</span>
                   </div>
-                  <div
-                    className="p-5 rounded-lg"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(237, 124, 30, 0.05) 0%, rgba(237, 124, 30, 0.02) 100%)",
-                      border: "1px solid rgba(237, 124, 30, 0.1)",
-                    }}
-                  >
-                    <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
-                      {selectedRequest.notes}
-                    </p>
+                  <div className="p-5 rounded-lg" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.05) 0%, rgba(237, 124, 30, 0.02) 100%)", border: "1px solid rgba(237, 124, 30, 0.1)" }}>
+                    <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">{selectedRequest.notes}</p>
                   </div>
                 </div>
               )}
             </div>
           )}
           {/* Satınalmacı Butonları */}
-          {selectedRequest &&
-            currentUser?.role === "purchaser" &&
-            (selectedRequest.status === "Satınalmacıda" || selectedRequest.status === "Satınalma Talebi") && (
-              <DialogFooter className="gap-2">
-                <Button onClick={handleReject} variant="destructive" className="text-sm">
-                  Reddet
-                </Button>
-                <Button onClick={handleRevise} variant="outline" className="text-sm">
-                  Revize İste
-                </Button>
-              </DialogFooter>
-            )}
+          {selectedRequest && currentUser?.role === "purchaser" && (selectedRequest.status === "Satınalmacıda" || selectedRequest.status === "Satınalma Talebi") && (
+            <DialogFooter className="gap-2">
+              <Button
+                onClick={handleReject}
+                variant="destructive"
+                className="text-sm"
+              >
+                Reddet
+              </Button>
+              <Button
+                onClick={handleRevise}
+                variant="outline"
+                className="text-sm"
+              >
+                Revize İste
+              </Button>
+            </DialogFooter>
+          )}
 
           {/* Talep Sahibi - Revize Durumu Butonu */}
-          {selectedRequest &&
-            currentUser?.role === "user" &&
-            selectedRequest.status === "Revize İstendi" &&
-            selectedRequest.requester === currentUser?.name && (
-              <DialogFooter className="gap-2">
-                <Button
-                  onClick={handleResubmitAfterRevision}
-                  className="text-sm"
-                  style={{ backgroundColor: "rgba(237, 124, 30)" }}
-                >
-                  Güncelle ve Tekrar Gönder
-                </Button>
-              </DialogFooter>
-            )}
+          {selectedRequest && currentUser?.role === "user" && selectedRequest.status === "Revize İstendi" && selectedRequest.requester === currentUser?.name && (
+            <DialogFooter className="gap-2">
+              <Button
+                onClick={handleResubmitAfterRevision}
+                className="text-sm"
+                style={{ backgroundColor: "rgba(237, 124, 30)" }}
+              >
+                Güncelle ve Tekrar Gönder
+              </Button>
+            </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
     </div>
