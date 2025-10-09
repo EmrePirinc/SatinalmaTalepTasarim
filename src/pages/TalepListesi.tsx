@@ -355,6 +355,19 @@ export default function TalepListesi() {
                   .table-scroll::-webkit-scrollbar-thumb:hover {
                     background: #FF8C42;
                   }
+                  /* Takvim ikonunu gizle ama işlevselliği koru */
+                  input[type="date"]::-webkit-calendar-picker-indicator {
+                    opacity: 0;
+                    cursor: pointer;
+                    width: 100%;
+                    height: 100%;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                  }
+                  input[type="date"] {
+                    position: relative;
+                  }
                 `}} />
                 <div className="overflow-hidden min-w-[1520px]">
                   {/* Filter Row - Compact */}
