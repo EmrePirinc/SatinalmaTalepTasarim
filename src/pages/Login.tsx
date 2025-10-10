@@ -219,13 +219,13 @@ export default function Login() {
         {/* Carousel Görselleri - Smooth Transitions with Ken Burns Effect */}
         {carouselImages.map((image, index) => (
           <img
-            key={image}
+            key={`${image}-${index === currentImageIndex ? currentImageIndex : 'hidden'}`}
             src={image}
             alt={`Anadolu Bakır ${index + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-all duration-1500 ease-in-out ${
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1500 ease-in-out ${
               index === currentImageIndex
                 ? "opacity-100 animate-ken-burns"
-                : "opacity-0 scale-110"
+                : "opacity-0"
             }`}
             style={{
               filter: "sepia(10%) contrast(102%) brightness(97%) saturate(110%)"
