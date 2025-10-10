@@ -1,19 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/M-Rey/OneDrive/Masaüstü/Github/**)",
-      "Bash(git init:*)",
-      "Bash(git remote add:*)",
-      "Bash(git fetch:*)",
-      "Bash(git checkout:*)",
-      "Bash(git pull:*)",
-      "Bash(git merge:*)",
-      "Bash(git push:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
       "Bash(git add:*)",
-      "Bash(git restore:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Talep listesi ve detay popup iyileştirmeleri\n\n- Kalem Sayısı kolonu kaldırıldı\n- Tüm tarih inputlarına tıklandığında takvim otomatik açılıyor\n- Popup''a satır açıklamaları eklendi\n- Popup''a ek dosya kolonu ve indirme özelliği eklendi\n- Popup''a aciliyet durumu kartı eklendi (Talep Eden, Departman, Aciliyet Durumu)\n- Dosya indirme butonu eklendi (tıklayınca dosya indiriliyor)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(npm install:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Excel export ve test verisi oluşturma özellikleri eklendi\n\n- Excel''e aktar butonu eklendi (tüm kolonlar dahil)\n- Excel''e \"Açıklamalar ve Notlar\" kolonu eklendi\n- 15 adet test verisi oluşturma butonu eklendi\n- Test verilerinde dosya örnekleri mevcut\n- xlsx kütüphanesi yüklendi\n- Kolon genişlikleri optimize edildi\n- Dosya adı otomatik tarih içeriyor\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Dosya indirme ve Excel export iyileştirmeleri\n\n- Dosya indirme sorunu düzeltildi (fileData desteği eklendi)\n- Excel export tüm alanları içerecek şekilde güncellendi (21 kolon)\n- Test verilerinde dosya indirme özelliği aktif\n- Popup''ta tüm alanlar Excel''e dahil edildi\n- Kalem bazında detaylı Excel export\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Sayfalama ve modern login tasarımı eklendi\n\n- Talep listesine sayfalama eklendi (10/20/50/100 kayıt/sayfa)\n- Sayfa numaraları ve navigasyon butonları\n- Filtre değiştiğinde otomatik ilk sayfaya dönme\n- Login sayfası modern tasarım - pastel renkler\n- Animasyonlu arka plan ve hover efektleri\n- Form inputlarına glassmorphism efekti\n- Gradient başlık ve buton animasyonları\n- Demo hesap kartlarına hover efekti\n- Sağ tarafta floating brand card\n- Carousel görselleri smooth transition\n- Tailwind config''e 12 yeni animasyon\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Test verisi ekleme özelliği geliştirildi\n\n- Test verisi ekle butonu artık mevcut verilerin üzerine ekliyor\n- Doküman numaraları otomatik artırılıyor (en son numaradan devam)\n- Her tıklamada 15 yeni talep ekleniyor\n- Alert mesajında toplam kayıt sayısı gösteriliyor\n- Veriler sıfırlanmıyor, üzerine ekleniyor\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Login carousel resimlerine Ken Burns efekti eklendi\n\n- Carousel resimleri soldan sağa doğru yavaşça kayıyor\n- Her resim 1.15x zoom ile başlayıp pan yapıyor\n- 8 saniyelik smooth animasyon\n- Tailwind config''e ken-burns animasyonu eklendi\n- Resimlerin görünmeyen kısımları keşfediliyor\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Ken Burns efekti daha belirgin hale getirildi\n\n- Scale 1.15x → 1.2x artırıldı\n- Pan hareketi -4%/+4% → -8%/+8% artırıldı\n- Kamera akışı 2 kat daha belirgin\n- Resimlerin soldan sağa kayması artık net görülüyor\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "auto_approve": true
 }

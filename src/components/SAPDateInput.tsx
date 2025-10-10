@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useState, useRef } from "react"
@@ -18,10 +16,9 @@ export default function SAPDateInput({
   value,
   onChange,
   className = "",
-  placeholder = "DD/MM/YYYY veya SAP format",
+  placeholder = "GG/AA/YYYY",
 }: SAPDateInputProps) {
   const [textValue, setTextValue] = useState("")
-  const [showCalendar, setShowCalendar] = useState(false)
   const dateInputRef = useRef<HTMLInputElement>(null)
 
   // value prop'u DD/MM/YYYY veya YYYY-MM-DD olabilir
