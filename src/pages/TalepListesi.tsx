@@ -35,7 +35,9 @@ import {
   Eye,
   LogOut,
   Info,
+  Download,
 } from "lucide-react"
+import * as XLSX from "xlsx"
 
 type RequestStatus =
   | "Satınalmacıda"
@@ -244,6 +246,145 @@ export default function TalepListesi() {
     setIsDetailDialogOpen(false)
   }
 
+  const handleGenerateTestData = () => {
+    const statuses = [
+      "Satınalmacıda",
+      "Revize İstendi",
+      "Reddedildi",
+      "Satınalma Teklifi",
+      "Satınalma Talebi",
+      "Satınalma Siparişi",
+      "Mal Girişi",
+      "Satıcı Faturası",
+      "Ödeme Yapıldı",
+      "Tamamlandı",
+    ]
+
+    const departments = ["Konsol", "Bakır", "İzole", "Yönetim", "Bakımhane", "Depo"]
+    const requesters = ["Selim Aksu", "Ahmet Yılmaz", "Mehmet Demir", "Ayşe Kaya", "Fatma Şahin"]
+    const itemNames = [
+      "Vida M8x20", "Somun M8", "Pul 8mm", "Kablo 3x2.5", "Sigorta 16A",
+      "Conta NBR 50x70", "Rulman 6205", "Kayış A-1250", "Yağ Shell 15W40", "Filtre Hava",
+      "Boya RAL 9016", "Lastik 8x2", "Çelik Profil 40x40", "Plaka 5mm", "Boru DN50",
+    ]
+    const vendors = ["Satıcı A", "Satıcı B", "Satıcı C", "Bosch", "Siemens"]
+
+    const testData = []
+
+    for (let i = 1; i <= 15; i++) {
+      const isUrgent = i % 4 === 0
+      const itemCount = Math.floor(Math.random() * 5) + 1
+
+      const items = []
+      for (let j = 1; j <= itemCount; j++) {
+        const randomItem = itemNames[Math.floor(Math.random() * itemNames.length)]
+        const randomVendor = vendors[Math.floor(Math.random() * vendors.length)]
+        const randomDept = departments[Math.floor(Math.random() * departments.length)]
+
+        let file = null
+        if (j % 3 === 0) {
+          const content = `Bu ${randomItem} için örnek dosyadır.\nDosya içeriği: Teknik özellikler ve gereksinimler.`
+          const blob = new Blob([content], { type: 'text/plain' })
+          file = new File([blob], `${randomItem.replace(/\s+/g, '_')}_belge.txt`, { type: 'text/plain' })
+        }
+
+        items.push({
+          id: j,
+          departman: randomDept,
+          itemCode: `ITM-${String(i).padStart(3, '0')}-${String(j).padStart(2, '0')}`,
+          itemName: randomItem,
+          requiredDate: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+          quantity: String(Math.floor(Math.random() * 100) + 1),
+          uomCode: ["AD", "KG", "LT", "MT", "M2"][Math.floor(Math.random() * 5)],
+          vendor: randomVendor,
+          description: j % 2 === 0 ? `${randomItem} için özel açıklama. Kalite kontrol gereklidir.` : "",
+          file: file,
+          isDummy: false,
+        })
+      }
+
+      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
+      const randomDept = departments[Math.floor(Math.random() * departments.length)]
+      const randomRequester = requesters[Math.floor(Math.random() * requesters.length)]
+
+      const docDate = new Date(2025, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
+      const reqDate = new Date(docDate)
+      reqDate.setDate(reqDate.getDate() + Math.floor(Math.random() * 30) + 7)
+
+      testData.push({
+        id: Date.now() + i,
+        documentNumber: `DOC-2025-${String(i).padStart(4, '0')}`,
+        documentDate: `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}-${String(docDate.getDate()).padStart(2, '0')}`,
+        requiredDate: `${reqDate.getFullYear()}-${String(reqDate.getMonth() + 1).padStart(2, '0')}-${String(reqDate.getDate()).padStart(2, '0')}`,
+        validityDate: `2025-12-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+        requester: randomRequester,
+        requesterRole: "Talep Açan",
+        department: randomDept,
+        createdDate: new Date().toLocaleDateString("tr-TR"),
+        itemCount: items.length,
+        status: randomStatus,
+        isUrgent: isUrgent,
+        requestSummary: `${randomDept} departmanı için ${items.length} kalem malzeme talebi`,
+        items: items,
+        notes: isUrgent ?
+          "ACİL TALEP: Bu talep öncelikli olarak işlenmelidir. Üretim durması riski var." :
+          i % 3 === 0 ? `${randomDept} departmanı için rutin malzeme talebi. Stok kontrolü yapılmıştır.` : undefined,
+      })
+    }
+
+    localStorage.setItem("purchaseRequests", JSON.stringify(testData))
+    alert("✅ 15 adet test verisi başarıyla oluşturuldu!")
+    window.location.reload()
+  }
+
+  const handleExportToExcel = () => {
+    // Excel için veri hazırlama
+    const excelData = filteredRequests.map((request) => ({
+      "Doküman No": request.documentNumber,
+      "Talep Özeti": request.requestSummary || "-",
+      "Talep Eden": request.requester,
+      "Departman": request.department,
+      "Belge Tarihi": formatDate(request.documentDate),
+      "Gerekli Tarih": formatDate(request.requiredDate),
+      "Geçerlilik Tarihi": request.validityDate ? formatDate(request.validityDate) : "-",
+      "Kayıt Tarihi": formatDate(request.createdDate),
+      "Acil": request.isUrgent ? "Evet" : "Hayır",
+      "Durum": request.status,
+      "Açıklamalar ve Notlar": request.notes || "-",
+    }))
+
+    // Worksheet oluştur
+    const ws = XLSX.utils.json_to_sheet(excelData)
+
+    // Kolon genişliklerini ayarla
+    const columnWidths = [
+      { wch: 15 }, // Doküman No
+      { wch: 30 }, // Talep Özeti
+      { wch: 20 }, // Talep Eden
+      { wch: 15 }, // Departman
+      { wch: 15 }, // Belge Tarihi
+      { wch: 15 }, // Gerekli Tarih
+      { wch: 18 }, // Geçerlilik Tarihi
+      { wch: 15 }, // Kayıt Tarihi
+      { wch: 10 }, // Acil
+      { wch: 20 }, // Durum
+      { wch: 40 }, // Açıklamalar ve Notlar
+    ]
+    ws["!cols"] = columnWidths
+
+    // Workbook oluştur
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, "Talep Listesi")
+
+    // Dosya adı oluştur (tarih içeren)
+    const today = new Date()
+    const dateStr = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`
+    const fileName = `Satinalma_Talep_Listesi_${dateStr}.xlsx`
+
+    // Excel dosyasını indir
+    XLSX.writeFile(wb, fileName)
+  }
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -322,15 +463,35 @@ export default function TalepListesi() {
                 Satınalma Talep Listesi
               </h3>
 
-              {/* Search */}
-              <div className="relative mb-6">
-                <Input
-                  placeholder="Doküman numarası, talep eden veya departmana göre ara..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              {/* Search & Export */}
+              <div className="flex gap-3 mb-6">
+                <div className="relative flex-1">
+                  <Input
+                    placeholder="Doküman numarası, talep eden veya departmana göre ara..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                </div>
+                <Button
+                  onClick={handleGenerateTestData}
+                  variant="outline"
+                  className="flex items-center gap-2 text-sm font-medium"
+                  title="15 Adet Test Verisi Oluştur"
+                >
+                  <Package className="w-4 h-4" />
+                  <span className="hidden lg:inline">Test Verisi</span>
+                </Button>
+                <Button
+                  onClick={handleExportToExcel}
+                  className="flex items-center gap-2 text-sm font-medium"
+                  style={{ backgroundColor: "rgba(237, 124, 30)", borderColor: "rgba(237, 124, 30)" }}
+                  title="Excel'e Aktar"
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="hidden md:inline">Excel'e Aktar</span>
+                </Button>
               </div>
 
               {/* Table - Yatay Kaydırma */}
