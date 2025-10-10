@@ -63,6 +63,11 @@ type RequestItem = {
   vendor: string
   description: string
   file: File | null
+  fileData?: {
+    name: string
+    content: string
+    type: string
+  }
   isDummy?: boolean
 }
 
@@ -281,11 +286,14 @@ export default function TalepListesi() {
         const randomVendor = vendors[Math.floor(Math.random() * vendors.length)]
         const randomDept = departments[Math.floor(Math.random() * departments.length)]
 
-        let file = null
+        let fileData = undefined
         if (j % 3 === 0) {
-          const content = `Bu ${randomItem} için örnek dosyadır.\nDosya içeriği: Teknik özellikler ve gereksinimler.`
-          const blob = new Blob([content], { type: 'text/plain' })
-          file = new File([blob], `${randomItem.replace(/\s+/g, '_')}_belge.txt`, { type: 'text/plain' })
+          const content = `Bu ${randomItem} için örnek dosyadır.\nDosya içeriği: Teknik özellikler ve gereksinimler.\n\nMalzeme: ${randomItem}\nMiktar: ${Math.floor(Math.random() * 100) + 1}\nTarih: ${new Date().toLocaleDateString('tr-TR')}`
+          fileData = {
+            name: `${randomItem.replace(/\s+/g, '_')}_belge.txt`,
+            content: content,
+            type: 'text/plain'
+          }
         }
 
         items.push({
@@ -298,12 +306,14 @@ export default function TalepListesi() {
           uomCode: ["AD", "KG", "LT", "MT", "M2"][Math.floor(Math.random() * 5)],
           vendor: randomVendor,
           description: j % 2 === 0 ? `${randomItem} için özel açıklama. Kalite kontrol gereklidir.` : "",
-          file: file,
+          file: null,
+          fileData: fileData,
           isDummy: false,
         })
       }
 
-      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
+      // İlk 5 talebi "Satınalmacıda" yap ki butonlar test edilebilsin
+      const randomStatus = i <= 5 ? "Satınalmacıda" : statuses[Math.floor(Math.random() * statuses.length)]
       const randomDept = departments[Math.floor(Math.random() * departments.length)]
       const randomRequester = requesters[Math.floor(Math.random() * requesters.length)]
 
@@ -338,20 +348,65 @@ export default function TalepListesi() {
   }
 
   const handleExportToExcel = () => {
-    // Excel için veri hazırlama
-    const excelData = filteredRequests.map((request) => ({
-      "Doküman No": request.documentNumber,
-      "Talep Özeti": request.requestSummary || "-",
-      "Talep Eden": request.requester,
-      "Departman": request.department,
-      "Belge Tarihi": formatDate(request.documentDate),
-      "Gerekli Tarih": formatDate(request.requiredDate),
-      "Geçerlilik Tarihi": request.validityDate ? formatDate(request.validityDate) : "-",
-      "Kayıt Tarihi": formatDate(request.createdDate),
-      "Acil": request.isUrgent ? "Evet" : "Hayır",
-      "Durum": request.status,
-      "Açıklamalar ve Notlar": request.notes || "-",
-    }))
+    // Excel için detaylı veri hazırlama - her kalem için ayrı satır
+    const excelData: any[] = []
+
+    filteredRequests.forEach((request) => {
+      if (request.items && request.items.length > 0) {
+        // Her kalem için ayrı satır oluştur
+        request.items.forEach((item, index) => {
+          excelData.push({
+            "Doküman No": request.documentNumber,
+            "Talep Özeti": request.requestSummary || "-",
+            "Talep Eden": request.requester,
+            "Talep Eden Departmanı": request.department,
+            "Belge Tarihi": formatDate(request.documentDate),
+            "Gerekli Tarih (Genel)": formatDate(request.requiredDate),
+            "Geçerlilik Tarihi": request.validityDate ? formatDate(request.validityDate) : "-",
+            "Kayıt Tarihi": formatDate(request.createdDate),
+            "Acil": request.isUrgent ? "Evet" : "Hayır",
+            "Durum": request.status,
+            "Açıklamalar ve Notlar": request.notes || "-",
+            // Kalem detayları
+            "Satır No": index + 1,
+            "Kalem Kodu": item.itemCode,
+            "Kalem Tanımı": item.itemName,
+            "Kalem Departmanı": item.departman,
+            "Kalem Gerekli Tarih": formatDate(item.requiredDate),
+            "Miktar": item.quantity,
+            "Birim": item.uomCode,
+            "Satıcı": item.vendor || "-",
+            "Kalem Açıklaması": item.description || "-",
+            "Ek Dosya": (item.file || item.fileData) ? (item.file?.name || item.fileData?.name) : "-",
+          })
+        })
+      } else {
+        // Kalem yoksa sadece talep bilgilerini ekle
+        excelData.push({
+          "Doküman No": request.documentNumber,
+          "Talep Özeti": request.requestSummary || "-",
+          "Talep Eden": request.requester,
+          "Talep Eden Departmanı": request.department,
+          "Belge Tarihi": formatDate(request.documentDate),
+          "Gerekli Tarih (Genel)": formatDate(request.requiredDate),
+          "Geçerlilik Tarihi": request.validityDate ? formatDate(request.validityDate) : "-",
+          "Kayıt Tarihi": formatDate(request.createdDate),
+          "Acil": request.isUrgent ? "Evet" : "Hayır",
+          "Durum": request.status,
+          "Açıklamalar ve Notlar": request.notes || "-",
+          "Satır No": "-",
+          "Kalem Kodu": "-",
+          "Kalem Tanımı": "-",
+          "Kalem Departmanı": "-",
+          "Kalem Gerekli Tarih": "-",
+          "Miktar": "-",
+          "Birim": "-",
+          "Satıcı": "-",
+          "Kalem Açıklaması": "-",
+          "Ek Dosya": "-",
+        })
+      }
+    })
 
     // Worksheet oluştur
     const ws = XLSX.utils.json_to_sheet(excelData)
@@ -361,25 +416,35 @@ export default function TalepListesi() {
       { wch: 15 }, // Doküman No
       { wch: 30 }, // Talep Özeti
       { wch: 20 }, // Talep Eden
-      { wch: 15 }, // Departman
+      { wch: 15 }, // Talep Eden Departmanı
       { wch: 15 }, // Belge Tarihi
-      { wch: 15 }, // Gerekli Tarih
+      { wch: 18 }, // Gerekli Tarih (Genel)
       { wch: 18 }, // Geçerlilik Tarihi
       { wch: 15 }, // Kayıt Tarihi
       { wch: 10 }, // Acil
       { wch: 20 }, // Durum
       { wch: 40 }, // Açıklamalar ve Notlar
+      { wch: 10 }, // Satır No
+      { wch: 20 }, // Kalem Kodu
+      { wch: 25 }, // Kalem Tanımı
+      { wch: 15 }, // Kalem Departmanı
+      { wch: 18 }, // Kalem Gerekli Tarih
+      { wch: 10 }, // Miktar
+      { wch: 10 }, // Birim
+      { wch: 15 }, // Satıcı
+      { wch: 35 }, // Kalem Açıklaması
+      { wch: 20 }, // Ek Dosya
     ]
     ws["!cols"] = columnWidths
 
     // Workbook oluştur
     const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Talep Listesi")
+    XLSX.utils.book_append_sheet(wb, ws, "Talep Detayları")
 
     // Dosya adı oluştur (tarih içeren)
     const today = new Date()
     const dateStr = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`
-    const fileName = `Satinalma_Talep_Listesi_${dateStr}.xlsx`
+    const fileName = `Satinalma_Talep_Detaylari_${dateStr}.xlsx`
 
     // Excel dosyasını indir
     XLSX.writeFile(wb, fileName)
@@ -913,29 +978,41 @@ export default function TalepListesi() {
                               )}
                             </TableCell>
                             <TableCell className="text-center">
-                              {item.file ? (
+                              {(item.file || item.fileData) ? (
                                 <button
                                   onClick={() => {
                                     // Dosya indirme işlemi
-                                    const url = URL.createObjectURL(item.file!)
-                                    const a = document.createElement('a')
-                                    a.href = url
-                                    a.download = item.file!.name
-                                    document.body.appendChild(a)
-                                    a.click()
-                                    document.body.removeChild(a)
-                                    URL.revokeObjectURL(url)
+                                    if (item.file) {
+                                      const url = URL.createObjectURL(item.file)
+                                      const a = document.createElement('a')
+                                      a.href = url
+                                      a.download = item.file.name
+                                      document.body.appendChild(a)
+                                      a.click()
+                                      document.body.removeChild(a)
+                                      URL.revokeObjectURL(url)
+                                    } else if (item.fileData) {
+                                      const blob = new Blob([item.fileData.content], { type: item.fileData.type })
+                                      const url = URL.createObjectURL(blob)
+                                      const a = document.createElement('a')
+                                      a.href = url
+                                      a.download = item.fileData.name
+                                      document.body.appendChild(a)
+                                      a.click()
+                                      document.body.removeChild(a)
+                                      URL.revokeObjectURL(url)
+                                    }
                                   }}
-                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors hover:opacity-80"
                                   style={{
                                     backgroundColor: "rgba(237, 124, 30, 0.1)",
                                     color: "rgba(237, 124, 30)",
                                     border: "1px solid rgba(237, 124, 30, 0.3)"
                                   }}
-                                  title={`İndir: ${item.file.name}`}
+                                  title={`İndir: ${item.file?.name || item.fileData?.name}`}
                                 >
                                   <span>📎</span>
-                                  <span className="max-w-[100px] truncate">{item.file.name}</span>
+                                  <span className="max-w-[100px] truncate">{item.file?.name || item.fileData?.name}</span>
                                 </button>
                               ) : (
                                 <span className="text-gray-400">-</span>
