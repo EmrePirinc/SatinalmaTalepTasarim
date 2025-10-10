@@ -142,8 +142,8 @@ export default {
           "20%, 40%, 60%, 80%": { transform: "translateX(5px)" },
         },
         "ken-burns": {
-          "0%": { transform: "scale(1.15) translateX(-4%)" },
-          "100%": { transform: "scale(1.15) translateX(4%)" },
+          "0%": { transform: "scale(1.2) translateX(-8%)" },
+          "100%": { transform: "scale(1.2) translateX(8%)" },
         },
       },
       animation: {
