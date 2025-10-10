@@ -140,6 +140,8 @@ export default function TalepListesi() {
     createdDate: "",
     status: "",
   })
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
 
   useEffect(() => {
     // Kullanıcı kontrolü
@@ -192,6 +194,19 @@ export default function TalepListesi() {
       return true
     })
   }, [requests, searchQuery, filters])
+
+  // Sayfalama için hesaplamalar
+  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedRequests = useMemo(() => {
+    return filteredRequests.slice(startIndex, endIndex)
+  }, [filteredRequests, startIndex, endIndex])
+
+  // Filtre değiştiğinde ilk sayfaya dön
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, filters])
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser")
@@ -767,7 +782,7 @@ export default function TalepListesi() {
                   </div>
 
                   {/* Data Rows */}
-                  {filteredRequests.map((request) => (
+                  {paginatedRequests.map((request) => (
                     <div
                       key={request.id}
                       className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_70px_130px_80px] border-b border-border bg-white hover:bg-orange-50 transition-colors cursor-pointer"
@@ -810,9 +825,113 @@ export default function TalepListesi() {
                     </div>
                   ))}
 
-                  {/* Footer */}
-                  <div className="px-4 py-3 text-sm text-muted-foreground flex justify-end bg-muted/30">
-                    <span>Toplam {filteredRequests.length} talep var</span>
+                  {/* Footer - Pagination */}
+                  <div className="px-4 py-3 bg-muted/30 border-t border-border">
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                      {/* Sol - Toplam ve Sayfa Bilgisi */}
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>Toplam <strong className="text-gray-700">{filteredRequests.length}</strong> talep</span>
+                        <span className="text-gray-300">|</span>
+                        <span>Sayfa <strong className="text-gray-700">{currentPage}</strong> / {totalPages}</span>
+                        <span className="text-gray-300">|</span>
+                        <span>Gösterilen: <strong className="text-gray-700">{startIndex + 1}-{Math.min(endIndex, filteredRequests.length)}</strong></span>
+                      </div>
+
+                      {/* Sağ - Sayfalama Kontrolleri */}
+                      <div className="flex items-center gap-2">
+                        {/* Sayfa Başına Kayıt Seçici */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">Sayfa başına:</span>
+                          <select
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                              setItemsPerPage(Number(e.target.value))
+                              setCurrentPage(1)
+                            }}
+                            className="h-8 text-xs bg-white border border-gray-200 rounded-md px-2"
+                          >
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                          </select>
+                        </div>
+
+                        <span className="text-gray-300">|</span>
+
+                        {/* Sayfa Navigasyonu */}
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => setCurrentPage(1)}
+                            disabled={currentPage === 1}
+                            className="px-2 py-1 text-xs rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            title="İlk Sayfa"
+                          >
+                            ««
+                          </button>
+                          <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="px-2 py-1 text-xs rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            title="Önceki Sayfa"
+                          >
+                            ‹
+                          </button>
+
+                          {/* Sayfa Numaraları */}
+                          {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(page => {
+                              // İlk 2 sayfa, son 2 sayfa ve mevcut sayfa civarı
+                              return (
+                                page === 1 ||
+                                page === totalPages ||
+                                (page >= currentPage - 1 && page <= currentPage + 1)
+                              )
+                            })
+                            .map((page, index, arr) => {
+                              // Sayfa atlaması varsa ... göster
+                              const showEllipsis = index > 0 && page - arr[index - 1] > 1
+                              return (
+                                <div key={page} className="flex items-center">
+                                  {showEllipsis && <span className="px-1 text-gray-400">...</span>}
+                                  <button
+                                    onClick={() => setCurrentPage(page)}
+                                    className={`px-3 py-1 text-xs rounded transition-colors ${
+                                      currentPage === page
+                                        ? 'font-bold text-white shadow-md'
+                                        : 'hover:bg-gray-100 text-gray-700'
+                                    }`}
+                                    style={
+                                      currentPage === page
+                                        ? { backgroundColor: 'rgba(237, 124, 30)' }
+                                        : {}
+                                    }
+                                  >
+                                    {page}
+                                  </button>
+                                </div>
+                              )
+                            })}
+
+                          <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-2 py-1 text-xs rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            title="Sonraki Sayfa"
+                          >
+                            ›
+                          </button>
+                          <button
+                            onClick={() => setCurrentPage(totalPages)}
+                            disabled={currentPage === totalPages}
+                            className="px-2 py-1 text-xs rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                            title="Son Sayfa"
+                          >
+                            »»
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
