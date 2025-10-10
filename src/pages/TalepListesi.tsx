@@ -267,6 +267,20 @@ export default function TalepListesi() {
   }
 
   const handleGenerateTestData = () => {
+    // Mevcut verileri oku
+    const existingDataStr = localStorage.getItem("purchaseRequests")
+    const existingData: PurchaseRequest[] = existingDataStr ? JSON.parse(existingDataStr) : []
+
+    // Mevcut en yüksek doküman numarasını bul
+    let maxDocNumber = 0
+    existingData.forEach((req) => {
+      const match = req.documentNumber.match(/DOC-2025-(\d+)/)
+      if (match) {
+        const num = parseInt(match[1], 10)
+        if (num > maxDocNumber) maxDocNumber = num
+      }
+    })
+
     const statuses = [
       "Satınalmacıda",
       "Revize İstendi",
@@ -292,6 +306,7 @@ export default function TalepListesi() {
     const testData = []
 
     for (let i = 1; i <= 15; i++) {
+      const docNumber = maxDocNumber + i
       const isUrgent = i % 4 === 0
       const itemCount = Math.floor(Math.random() * 5) + 1
 
@@ -314,7 +329,7 @@ export default function TalepListesi() {
         items.push({
           id: j,
           departman: randomDept,
-          itemCode: `ITM-${String(i).padStart(3, '0')}-${String(j).padStart(2, '0')}`,
+          itemCode: `ITM-${String(docNumber).padStart(3, '0')}-${String(j).padStart(2, '0')}`,
           itemName: randomItem,
           requiredDate: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
           quantity: String(Math.floor(Math.random() * 100) + 1),
@@ -337,8 +352,8 @@ export default function TalepListesi() {
       reqDate.setDate(reqDate.getDate() + Math.floor(Math.random() * 30) + 7)
 
       testData.push({
-        id: Date.now() + i,
-        documentNumber: `DOC-2025-${String(i).padStart(4, '0')}`,
+        id: Date.now() + i + Math.random() * 1000,
+        documentNumber: `DOC-2025-${String(docNumber).padStart(4, '0')}`,
         documentDate: `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}-${String(docDate.getDate()).padStart(2, '0')}`,
         requiredDate: `${reqDate.getFullYear()}-${String(reqDate.getMonth() + 1).padStart(2, '0')}-${String(reqDate.getDate()).padStart(2, '0')}`,
         validityDate: `2025-12-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
@@ -357,8 +372,10 @@ export default function TalepListesi() {
       })
     }
 
-    localStorage.setItem("purchaseRequests", JSON.stringify(testData))
-    alert("✅ 15 adet test verisi başarıyla oluşturuldu!")
+    // Mevcut verilerin üzerine ekle
+    const allData = [...existingData, ...testData]
+    localStorage.setItem("purchaseRequests", JSON.stringify(allData))
+    alert(`✅ 15 adet test verisi başarıyla eklendi! Toplam ${allData.length} talep var.`)
     window.location.reload()
   }
 
