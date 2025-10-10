@@ -141,6 +141,10 @@ export default {
           "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-5px)" },
           "20%, 40%, 60%, 80%": { transform: "translateX(5px)" },
         },
+        "ken-burns": {
+          "0%": { transform: "scale(1.15) translateX(-4%)" },
+          "100%": { transform: "scale(1.15) translateX(4%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -156,6 +160,7 @@ export default {
         "pulse-slow": "pulse-slow 4s ease-in-out infinite",
         "pulse-slower": "pulse-slow 6s ease-in-out infinite",
         "shake": "shake 0.5s ease-in-out",
+        "ken-burns": "ken-burns 8s ease-in-out infinite alternate",
       },
     },
   },

@@ -216,14 +216,16 @@ export default function Login() {
         <div className="absolute inset-0 bg-gradient-to-br from-orange-400/30 via-amber-300/20 to-yellow-400/25 z-10 animate-gradient-shift"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 via-transparent to-amber-600/15 z-10"></div>
 
-        {/* Carousel Görselleri - Smooth Transitions */}
+        {/* Carousel Görselleri - Smooth Transitions with Ken Burns Effect */}
         {carouselImages.map((image, index) => (
           <img
             key={image}
             src={image}
             alt={`Anadolu Bakır ${index + 1}`}
             className={`absolute inset-0 w-full h-full object-cover transition-all duration-1500 ease-in-out ${
-              index === currentImageIndex ? "opacity-100 scale-100" : "opacity-0 scale-105"
+              index === currentImageIndex
+                ? "opacity-100 animate-ken-burns"
+                : "opacity-0 scale-110"
             }`}
             style={{
               filter: "sepia(10%) contrast(102%) brightness(97%) saturate(110%)"
