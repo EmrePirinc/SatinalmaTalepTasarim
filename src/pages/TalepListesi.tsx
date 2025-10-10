@@ -131,7 +131,6 @@ export default function TalepListesi() {
     requiredDate: "",
     validityDate: "",
     createdDate: "",
-    itemCount: "",
     status: "",
   })
 
@@ -181,7 +180,6 @@ export default function TalepListesi() {
       if (filters.requiredDate && request.requiredDate !== filters.requiredDate) return false
       if (filters.validityDate && (!request.validityDate || request.validityDate !== filters.validityDate)) return false
       if (filters.createdDate && !request.createdDate.includes(filters.createdDate)) return false
-      if (filters.itemCount && request.itemCount.toString() !== filters.itemCount) return false
       if (filters.status && request.status !== filters.status) return false
 
       return true
@@ -372,7 +370,7 @@ export default function TalepListesi() {
                 <div className="overflow-hidden min-w-[1520px]">
                   {/* Filter Row - Compact */}
                   <div className="bg-gray-50 border-b border-gray-200 sticky top-0 z-20">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_70px_130px_80px]">
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
                           placeholder="Filtrele..."
@@ -415,25 +413,43 @@ export default function TalepListesi() {
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
                           type="date"
-                          className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
+                          className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full cursor-pointer"
                           value={filters.documentDate}
                           onChange={(e) => setFilters({ ...filters, documentDate: e.target.value })}
+                          onClick={(e) => {
+                            const input = e.currentTarget as HTMLInputElement
+                            if ('showPicker' in input && typeof input.showPicker === 'function') {
+                              try { input.showPicker() } catch (error) { console.warn('showPicker failed:', error) }
+                            }
+                          }}
                         />
                       </div>
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
                           type="date"
-                          className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
+                          className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full cursor-pointer"
                           value={filters.requiredDate}
                           onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
+                          onClick={(e) => {
+                            const input = e.currentTarget as HTMLInputElement
+                            if ('showPicker' in input && typeof input.showPicker === 'function') {
+                              try { input.showPicker() } catch (error) { console.warn('showPicker failed:', error) }
+                            }
+                          }}
                         />
                       </div>
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
                           type="date"
-                          className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
+                          className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full cursor-pointer"
                           value={filters.validityDate}
                           onChange={(e) => setFilters({ ...filters, validityDate: e.target.value })}
+                          onClick={(e) => {
+                            const input = e.currentTarget as HTMLInputElement
+                            if ('showPicker' in input && typeof input.showPicker === 'function') {
+                              try { input.showPicker() } catch (error) { console.warn('showPicker failed:', error) }
+                            }
+                          }}
                         />
                       </div>
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
@@ -442,15 +458,6 @@ export default function TalepListesi() {
                           className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
                           value={filters.createdDate}
                           onChange={(e) => setFilters({ ...filters, createdDate: e.target.value })}
-                        />
-                      </div>
-                      <div className="px-1.5 py-1.5 border-r border-gray-200">
-                        <Input
-                          type="number"
-                          placeholder="#"
-                          className="h-7 text-[11px] bg-white border-gray-200 px-1 w-full text-center"
-                          value={filters.itemCount}
-                          onChange={(e) => setFilters({ ...filters, itemCount: e.target.value })}
                         />
                       </div>
                       <div className="px-1 py-1.5 border-r border-gray-200 flex items-center justify-center">
@@ -477,7 +484,7 @@ export default function TalepListesi() {
                         </select>
                       </div>
                       <div className="px-1 py-1.5 flex items-center justify-center">
-                        <button 
+                        <button
                           onClick={() => setFilters({
                             documentNumber: "",
                             requestSummary: "",
@@ -487,7 +494,6 @@ export default function TalepListesi() {
                             requiredDate: "",
                             validityDate: "",
                             createdDate: "",
-                            itemCount: "",
                             status: ""
                           })}
                           className="text-xs text-gray-400 hover:text-orange-500 transition-colors"
@@ -501,7 +507,7 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border sticky top-[40px] z-10">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_70px_130px_80px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No
                       </div>
@@ -526,9 +532,6 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Kayıt Tarihi
                       </div>
-                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
-                        Kalem Sayısı
-                      </div>
                       <div className="px-2 py-3 border-r border-border text-sm font-medium text-[#181C14] text-center">
                         Acil
                       </div>
@@ -541,7 +544,7 @@ export default function TalepListesi() {
                   {filteredRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_90px_70px_130px_80px] border-b border-border bg-white hover:bg-orange-50 transition-colors cursor-pointer"
+                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_70px_130px_80px] border-b border-border bg-white hover:bg-orange-50 transition-colors cursor-pointer"
                       onClick={() => handleViewDetails(request)}
                     >
                       <div className="px-3 py-3 border-r border-border text-sm">{request.documentNumber}</div>
@@ -552,7 +555,6 @@ export default function TalepListesi() {
                       <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.requiredDate)}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.validityDate ? formatDate(request.validityDate) : "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.createdDate)}</div>
-                      <div className="px-3 py-3 border-r border-border text-sm text-center">{request.itemCount}</div>
                       <div className="px-2 py-3 border-r border-border flex items-center justify-center">
                         {request.isUrgent ? (
                           <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white text-sm font-bold shadow-md" title="Acil Talep">
@@ -629,7 +631,7 @@ export default function TalepListesi() {
               </div>
 
               {/* Genel Bilgiler */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-5 hover:shadow-lg transition-shadow">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">👤</span>
@@ -643,6 +645,23 @@ export default function TalepListesi() {
                     <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Departman</span>
                   </div>
                   <p className="text-lg font-bold text-gray-800 ml-8">{selectedRequest.department}</p>
+                </div>
+                <div className={`rounded-xl shadow-md border-2 p-5 hover:shadow-lg transition-shadow ${
+                  selectedRequest.isUrgent
+                    ? 'bg-red-50 border-red-200'
+                    : 'bg-white border-gray-100'
+                }`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">{selectedRequest.isUrgent ? '⚠️' : '✅'}</span>
+                    <span className={`text-xs font-bold uppercase tracking-wider ${
+                      selectedRequest.isUrgent ? 'text-red-600' : 'text-green-600'
+                    }`}>Aciliyet Durumu</span>
+                  </div>
+                  <p className={`text-lg font-bold ml-8 ${
+                    selectedRequest.isUrgent ? 'text-red-700' : 'text-green-700'
+                  }`}>
+                    {selectedRequest.isUrgent ? 'ACİL TALEP' : 'Normal'}
+                  </p>
                 </div>
               </div>
 
@@ -708,6 +727,8 @@ export default function TalepListesi() {
                           <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Birim</TableHead>
                           <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Satıcı</TableHead>
                           <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Gerekli Tarih</TableHead>
+                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Açıklama</TableHead>
+                          <TableHead className="font-bold text-center" style={{ color: "rgba(237, 124, 30)" }}>Ek Dosya</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -723,6 +744,42 @@ export default function TalepListesi() {
                             <TableCell>{item.uomCode}</TableCell>
                             <TableCell>{item.vendor || "-"}</TableCell>
                             <TableCell>{formatDate(item.requiredDate)}</TableCell>
+                            <TableCell className="max-w-xs">
+                              {item.description ? (
+                                <div className="text-sm text-gray-700">{item.description}</div>
+                              ) : (
+                                <span className="text-gray-400">-</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {item.file ? (
+                                <button
+                                  onClick={() => {
+                                    // Dosya indirme işlemi
+                                    const url = URL.createObjectURL(item.file!)
+                                    const a = document.createElement('a')
+                                    a.href = url
+                                    a.download = item.file!.name
+                                    document.body.appendChild(a)
+                                    a.click()
+                                    document.body.removeChild(a)
+                                    URL.revokeObjectURL(url)
+                                  }}
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+                                  style={{
+                                    backgroundColor: "rgba(237, 124, 30, 0.1)",
+                                    color: "rgba(237, 124, 30)",
+                                    border: "1px solid rgba(237, 124, 30, 0.3)"
+                                  }}
+                                  title={`İndir: ${item.file.name}`}
+                                >
+                                  <span>📎</span>
+                                  <span className="max-w-[100px] truncate">{item.file.name}</span>
+                                </button>
+                              ) : (
+                                <span className="text-gray-400">-</span>
+                              )}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

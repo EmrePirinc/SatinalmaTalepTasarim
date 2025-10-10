@@ -515,9 +515,15 @@ export default function TaskForm() {
                         <div className="px-1.5 py-1.5 border-r border-gray-200">
                           <Input
                             type="date"
-                            className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full"
+                            className="h-7 text-[10px] bg-white border-gray-200 px-1 w-full cursor-pointer"
                             value={filters.requiredDate}
                             onChange={(e) => setFilters({ ...filters, requiredDate: e.target.value })}
+                            onClick={(e) => {
+                              const input = e.currentTarget as HTMLInputElement
+                              if ('showPicker' in input && typeof input.showPicker === 'function') {
+                                try { input.showPicker() } catch (error) { console.warn('showPicker failed:', error) }
+                              }
+                            }}
                           />
                         </div>
                         <div className="px-1.5 py-1.5 border-r border-gray-200">
