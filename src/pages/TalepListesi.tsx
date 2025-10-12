@@ -225,11 +225,25 @@ export default function TalepListesi() {
     const reason = prompt("Reddetme sebebini giriniz:")
     if (!reason) return
 
-    const updatedRequests = requests.map((req) =>
+    // Tüm talepleri localStorage'dan oku
+    const allRequests: PurchaseRequest[] = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
+
+    // Güncellemeyi tüm talepler üzerinde yap
+    const updatedAllRequests = allRequests.map((req) =>
       req.id === selectedRequest.id ? { ...req, status: "Reddedildi" as RequestStatus, notes: (req.notes || "") + "\n\nRed Sebebi: " + reason } : req
     )
-    setRequests(updatedRequests)
-    localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+
+    // localStorage'ı güncelle
+    localStorage.setItem("purchaseRequests", JSON.stringify(updatedAllRequests))
+
+    // Kullanıcı rolüne göre filtreleme yap
+    if (currentUser?.role === "user") {
+      const userRequests = updatedAllRequests.filter((req) => req.requester === currentUser.name)
+      setRequests(userRequests)
+    } else {
+      setRequests(updatedAllRequests)
+    }
+
     alert("Talep reddedildi!")
     setIsDetailDialogOpen(false)
   }
@@ -240,11 +254,25 @@ export default function TalepListesi() {
     const revisionNote = prompt("Revize notunu giriniz:")
     if (!revisionNote) return
 
-    const updatedRequests = requests.map((req) =>
+    // Tüm talepleri localStorage'dan oku
+    const allRequests: PurchaseRequest[] = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
+
+    // Güncellemeyi tüm talepler üzerinde yap
+    const updatedAllRequests = allRequests.map((req) =>
       req.id === selectedRequest.id ? { ...req, status: "Revize İstendi" as RequestStatus, notes: (req.notes || "") + "\n\nRevize Notu: " + revisionNote } : req
     )
-    setRequests(updatedRequests)
-    localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+
+    // localStorage'ı güncelle
+    localStorage.setItem("purchaseRequests", JSON.stringify(updatedAllRequests))
+
+    // Kullanıcı rolüne göre filtreleme yap
+    if (currentUser?.role === "user") {
+      const userRequests = updatedAllRequests.filter((req) => req.requester === currentUser.name)
+      setRequests(userRequests)
+    } else {
+      setRequests(updatedAllRequests)
+    }
+
     alert("Revize talebi gönderildi!")
     setIsDetailDialogOpen(false)
   }
@@ -255,13 +283,27 @@ export default function TalepListesi() {
     const confirmMessage = "Talebi güncellemek ve tekrar göndermek istiyor musunuz?"
     if (!confirm(confirmMessage)) return
 
-    const updatedRequests = requests.map((req) =>
+    // Tüm talepleri localStorage'dan oku
+    const allRequests: PurchaseRequest[] = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
+
+    // Güncellemeyi tüm talepler üzerinde yap
+    const updatedAllRequests = allRequests.map((req) =>
       req.id === selectedRequest.id
         ? { ...req, status: "Satınalma Talebi" as RequestStatus, notes: (req.notes || "") + "\n\n[Revize sonrası tekrar gönderildi: " + new Date().toLocaleDateString("tr-TR") + "]" }
         : req
     )
-    setRequests(updatedRequests)
-    localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+
+    // localStorage'ı güncelle
+    localStorage.setItem("purchaseRequests", JSON.stringify(updatedAllRequests))
+
+    // Kullanıcı rolüne göre filtreleme yap
+    if (currentUser?.role === "user") {
+      const userRequests = updatedAllRequests.filter((req) => req.requester === currentUser.name)
+      setRequests(userRequests)
+    } else {
+      setRequests(updatedAllRequests)
+    }
+
     alert("Talep güncellenerek tekrar gönderildi!")
     setIsDetailDialogOpen(false)
   }
@@ -295,7 +337,10 @@ export default function TalepListesi() {
     ]
 
     const departments = ["Konsol", "Bakır", "İzole", "Yönetim", "Bakımhane", "Depo"]
-    const requesters = ["Selim Aksu", "Ahmet Yılmaz", "Mehmet Demir", "Ayşe Kaya", "Fatma Şahin"]
+    // Mevcut kullanıcı adını da ekleyelim ki kendi taleplerini görebilsin
+    const requesters = currentUser?.role === "user"
+      ? [currentUser.name]
+      : ["Selim Aksu", "Ahmet Yılmaz", "Mehmet Demir", "Ayşe Kaya", "Fatma Şahin"]
     const itemNames = [
       "Vida M8x20", "Somun M8", "Pul 8mm", "Kablo 3x2.5", "Sigorta 16A",
       "Conta NBR 50x70", "Rulman 6205", "Kayış A-1250", "Yağ Shell 15W40", "Filtre Hava",
@@ -375,8 +420,18 @@ export default function TalepListesi() {
     // Mevcut verilerin üzerine ekle
     const allData = [...existingData, ...testData]
     localStorage.setItem("purchaseRequests", JSON.stringify(allData))
+
+    // Kullanıcı rolüne göre filtreleme yap
+    if (currentUser?.role === "user") {
+      // Talep açan sadece kendi taleplerini görsün
+      const userRequests = allData.filter((req: PurchaseRequest) => req.requester === currentUser.name)
+      setRequests(userRequests)
+    } else {
+      // Satınalmacı ve Admin tüm talepleri görsün
+      setRequests(allData)
+    }
+
     alert(`✅ 15 adet test verisi başarıyla eklendi! Toplam ${allData.length} talep var.`)
-    window.location.reload()
   }
 
   const handleExportToExcel = () => {
