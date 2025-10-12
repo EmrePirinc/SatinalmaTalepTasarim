@@ -65,6 +65,8 @@ Bu ekran, yeni satınalma talepleri oluşturmak veya mevcut talepleri düzenleme
 Oluşturulan tüm satınalma taleplerinin görüntülendiği, filtrelendiği ve yönetildiği ana ekrandır.
 
 > **[GÖRSEL EKLENECEK: Talep Listesi Genel Görünüm]**
+<img width="1794" height="904" alt="image" src="https://github.com/user-attachments/assets/7bea32f9-ec8b-4064-a458-230be1979cba" />
+
 > *Açıklama: Bu alana, farklı durumlarda (örn: "Revize İstendi", "Reddedildi", "Satınalmacıda") birkaç talebin listelendiği tablo görünümünün ekran görüntüsü eklenmelidir. Filtreleme ve arama alanları da bu görselde yer almalıdır.*
 
 **Sayfanın Amacı:** Kullanıcılara rollerine göre ilgili talepleri göstermek, durumlarını takip etme ve talepler üzerinde işlem yapma imkanı sunmak.
