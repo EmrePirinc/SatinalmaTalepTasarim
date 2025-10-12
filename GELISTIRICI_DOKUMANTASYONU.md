@@ -19,6 +19,9 @@ Bu proje, SAP sistemiyle entegre çalışacak web tabanlı bir satınalma talebi
 
 Bu ekran, yeni satınalma talepleri oluşturmak veya mevcut talepleri düzenlemek için kullanılır.
 
+> **[GÖRSEL EKLENECEK: Talep Formu Genel Görünüm]**
+> *Açıklama: Bu alana, başlık alanları ve birkaç satır içeren talep formunun tam sayfa ekran görüntüsü eklenmelidir. Formun genel yerleşimi ve alanları bu görselde net bir şekilde görülebilmelidir.*
+
 **Sayfanın Amacı:** Kullanıcının gerekli tüm bilgileri girerek bir satınalma talebi oluşturmasını sağlamak.
 
 **Beklenen Fonksiyonlar:**
@@ -58,6 +61,9 @@ Bu ekran, yeni satınalma talepleri oluşturmak veya mevcut talepleri düzenleme
 ### 2.2. Talep Listesi Ekranı
 
 Oluşturulan tüm satınalma taleplerinin görüntülendiği, filtrelendiği ve yönetildiği ana ekrandır.
+
+> **[GÖRSEL EKLENECEK: Talep Listesi Genel Görünüm]**
+> *Açıklama: Bu alana, farklı durumlarda (örn: "Revize İstendi", "Reddedildi", "Satınalmacıda") birkaç talebin listelendiği tablo görünümünün ekran görüntüsü eklenmelidir. Filtreleme ve arama alanları da bu görselde yer almalıdır.*
 
 **Sayfanın Amacı:** Kullanıcılara rollerine göre ilgili talepleri göstermek, durumlarını takip etme ve talepler üzerinde işlem yapma imkanı sunmak.
 
@@ -104,8 +110,13 @@ Sistemde üç temel kullanıcı rolü bulunmalıdır:
 Formun kaydedilebilmesi için "Zorunlu" olarak işaretlenmiş tüm başlık ve satır alanları doldurulmalıdır.
 
 ### 4.2. Tarih Alanlarının Etkileşimi
+
 - **Senaryo: Başlık "Gerekli Tarih" alanını değiştirmek.**
   - **Eğer satırlarda daha önceden girilmiş tarihler varsa:** Kullanıcıya "Mevcut satırların tarihlerini de güncellemek istiyor musunuz?" diye sorulmalıdır.
+
+> **[GÖRSEL EKLENECEK: Tarih Güncelleme Onay Mesajı]**
+> *Açıklama: Bu alana, başlık "Gerekli Tarih" alanı değiştirildiğinde çıkan onay mesajının (confirm dialog) ekran görüntüsü eklenmelidir.*
+
     - **Evet denirse:** Tüm satırların tarihi, başlıkta girilen yeni tarih ile güncellenmelidir.
     - **Hayır denirse:** Mevcut satırlar korunmalı, sadece bu adımdan sonra eklenecek yeni satırlar bu yeni tarihi almalıdır.
   - **Eğer satırlarda hiç tarih girilmemişse:** Tüm satırların tarihi otomatik olarak başlıkta girilen tarihle doldurulmalıdır.
@@ -122,11 +133,16 @@ Formun kaydedilebilmesi için "Zorunlu" olarak işaretlenmiş tüm başlık ve s
 ## 5. Talep Listesi ve İş Akışları
 
 - **Detay Görüntüleme:** Listeden bir talebe tıklandığında, o talebin tüm başlık ve satır bilgilerini içeren bir detay penceresi açılmalıdır.
-- **Revize Süreci:**
-  1. Satınalmacı, bir talebi "Revize İste" butonu ile ve bir neden belirterek revizeye gönderebilmelidir.
-  2. Talebin durumu "Revize İstendi" olarak güncellenmelidir.
-  3. Talep sahibi, listesinde bu talebi gördüğünde, detay penceresinde "Düzenle ve Tekrar Gönder" butonu aktif olmalıdır.
+
+> **[GÖRSEL EKLENECEK: Talep Detayları Penceresi]**
+> *Açıklama: Bu alana, bir talebe tıklandığında açılan ve talebin tüm başlık, satır ve not bilgilerini gösteren detay popup'ının ekran görüntüsü eklenmelidir.*
+
+- **Revize ve Reddetme Süreci:**
+  1. Satınalmacı, bir talebi "Revize İste" veya "Reddet" butonları ile ve bir neden belirterek işleme alabilmelidir.
+
+> **[GÖRSEL EKLENECEK: Revize/Reddetme Penceresi]**
+> *Açıklama: Bu alana, "Revize İste" veya "Reddet" butonuna tıklandığında açılan ve kullanıcıdan bir sebep girmesini isteyen popup penceresinin ekran görüntüsü eklenmelidir.*
+
+  2. Talebin durumu buna göre ("Revize İstendi" veya "Reddedildi") güncellenmelidir.
+  3. Talep sahibi, durumu "Revize İstendi" olan talebi için detay penceresinde "Düzenle ve Tekrar Gönder" butonu görmelidir.
   4. Bu butona tıkladığında, talep formu bu talebin bilgileriyle dolu şekilde açılmalı ve düzenlemeye olanak tanımalıdır.
-- **Reddetme Süreci:**
-  1. Satınalmacı, bir talebi "Reddet" butonu ile ve bir neden belirterek reddedebilmelidir.
-  2. Talebin durumu "Reddedildi" olarak güncellenmeli ve bu talep için iş akışı sonlanmalıdır.
