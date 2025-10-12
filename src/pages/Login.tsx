@@ -72,6 +72,14 @@ export default function Login() {
     }
   }
 
+  // Demo kullanıcı seçme fonksiyonu
+  const fillCredentials = (user: typeof mockUsers[0]) => {
+    setUsername(user.username)
+    setPassword(user.password)
+    setCompany("anadolu-bakir") // Varsayılan şirket
+    setError("")
+  }
+
   return (
     <div className="flex h-screen bg-white overflow-hidden">
       {/* Sol Taraf - Login Formu */}
@@ -193,15 +201,24 @@ export default function Login() {
               Demo Hesaplar
             </p>
             <div className="space-y-2 text-xs text-gray-600">
-              <div className="flex items-center justify-between py-2.5 px-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:border-orange-200 hover:scale-[1.02] cursor-pointer group">
+              <div
+                onClick={() => fillCredentials(mockUsers[0])}
+                className="flex items-center justify-between py-2.5 px-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:border-orange-200 hover:scale-[1.02] cursor-pointer group"
+              >
                 <span className="font-medium text-gray-700 group-hover:text-orange-600 transition-colors">Talep Açan</span>
                 <span className="text-gray-500 font-mono text-[10px] group-hover:text-gray-700 transition-colors">talep.acan / 123456</span>
               </div>
-              <div className="flex items-center justify-between py-2.5 px-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:border-orange-200 hover:scale-[1.02] cursor-pointer group">
+              <div
+                onClick={() => fillCredentials(mockUsers[1])}
+                className="flex items-center justify-between py-2.5 px-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:border-orange-200 hover:scale-[1.02] cursor-pointer group"
+              >
                 <span className="font-medium text-gray-700 group-hover:text-orange-600 transition-colors">Satınalmacı</span>
                 <span className="text-gray-500 font-mono text-[10px] group-hover:text-gray-700 transition-colors">satinalma / 123456</span>
               </div>
-              <div className="flex items-center justify-between py-2.5 px-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:border-orange-200 hover:scale-[1.02] cursor-pointer group">
+              <div
+                onClick={() => fillCredentials(mockUsers[2])}
+                className="flex items-center justify-between py-2.5 px-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 transition-all duration-300 hover:bg-white hover:shadow-md hover:border-orange-200 hover:scale-[1.02] cursor-pointer group"
+              >
                 <span className="font-medium text-gray-700 group-hover:text-orange-600 transition-colors">Admin</span>
                 <span className="text-gray-500 font-mono text-[10px] group-hover:text-gray-700 transition-colors">admin / 123456</span>
               </div>
