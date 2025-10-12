@@ -372,7 +372,7 @@ export default function TalepListesi() {
         items.push({
           id: j,
           departman: randomDept,
-          itemCode: `ITM-${String(docNumber).padStart(3, '0')}-${String(j).padStart(2, '0')}`,
+          itemCode: `${docNumber}-${j}`,
           itemName: randomItem,
           requiredDate: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
           quantity: String(Math.floor(Math.random() * 100) + 1),
