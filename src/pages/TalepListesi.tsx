@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import Sidebar from "@/components/Sidebar"
 import {
   Dialog,
@@ -129,6 +130,10 @@ export default function TalepListesi() {
   const [requests, setRequests] = useState<PurchaseRequest[]>([])
   const [selectedRequest, setSelectedRequest] = useState<PurchaseRequest | null>(null)
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
+  const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
+  const [isReviseDialogOpen, setIsReviseDialogOpen] = useState(false)
+  const [rejectReason, setRejectReason] = useState("")
+  const [reviseReason, setReviseReason] = useState("")
   const [filters, setFilters] = useState({
     documentNumber: "",
     requestSummary: "",
@@ -219,18 +224,22 @@ export default function TalepListesi() {
   }
 
 
-  const handleReject = () => {
-    if (!selectedRequest) return
+  const handleRejectClick = () => {
+    setIsRejectDialogOpen(true)
+  }
 
-    const reason = prompt("Reddetme sebebini giriniz:")
-    if (!reason) return
+  const handleRejectConfirm = () => {
+    if (!selectedRequest || !rejectReason.trim()) {
+      alert("Lütfen reddetme sebebini giriniz!")
+      return
+    }
 
     // Tüm talepleri localStorage'dan oku
     const allRequests: PurchaseRequest[] = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
 
     // Güncellemeyi tüm talepler üzerinde yap
     const updatedAllRequests = allRequests.map((req) =>
-      req.id === selectedRequest.id ? { ...req, status: "Reddedildi" as RequestStatus, notes: (req.notes || "") + "\n\nRed Sebebi: " + reason } : req
+      req.id === selectedRequest.id ? { ...req, status: "Reddedildi" as RequestStatus, notes: (req.notes || "") + "\n\nRed Sebebi: " + rejectReason } : req
     )
 
     // localStorage'ı güncelle
@@ -245,21 +254,27 @@ export default function TalepListesi() {
     }
 
     alert("Talep reddedildi!")
+    setRejectReason("")
+    setIsRejectDialogOpen(false)
     setIsDetailDialogOpen(false)
   }
 
-  const handleRevise = () => {
-    if (!selectedRequest) return
+  const handleReviseClick = () => {
+    setIsReviseDialogOpen(true)
+  }
 
-    const revisionNote = prompt("Revize notunu giriniz:")
-    if (!revisionNote) return
+  const handleReviseConfirm = () => {
+    if (!selectedRequest || !reviseReason.trim()) {
+      alert("Lütfen revize sebebini giriniz!")
+      return
+    }
 
     // Tüm talepleri localStorage'dan oku
     const allRequests: PurchaseRequest[] = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
 
     // Güncellemeyi tüm talepler üzerinde yap
     const updatedAllRequests = allRequests.map((req) =>
-      req.id === selectedRequest.id ? { ...req, status: "Revize İstendi" as RequestStatus, notes: (req.notes || "") + "\n\nRevize Notu: " + revisionNote } : req
+      req.id === selectedRequest.id ? { ...req, status: "Revize İstendi" as RequestStatus, notes: (req.notes || "") + "\n\nRevize Notu: " + reviseReason } : req
     )
 
     // localStorage'ı güncelle
@@ -274,6 +289,8 @@ export default function TalepListesi() {
     }
 
     alert("Revize talebi gönderildi!")
+    setReviseReason("")
+    setIsReviseDialogOpen(false)
     setIsDetailDialogOpen(false)
   }
 
@@ -1229,18 +1246,18 @@ export default function TalepListesi() {
               )}
             </div>
           )}
-          {/* Satınalmacı Butonları */}
-          {selectedRequest && currentUser?.role === "purchaser" && (selectedRequest.status === "Satınalmacıda" || selectedRequest.status === "Satınalma Talebi") && (
+          {/* Satınalmacı ve Admin Butonları */}
+          {selectedRequest && (currentUser?.role === "purchaser" || currentUser?.role === "admin") && (selectedRequest.status === "Satınalmacıda" || selectedRequest.status === "Satınalma Talebi") && (
             <DialogFooter className="gap-2">
               <Button
-                onClick={handleReject}
+                onClick={handleRejectClick}
                 variant="destructive"
                 className="text-sm"
               >
                 Reddet
               </Button>
               <Button
-                onClick={handleRevise}
+                onClick={handleReviseClick}
                 variant="outline"
                 className="text-sm"
               >
@@ -1261,6 +1278,108 @@ export default function TalepListesi() {
               </Button>
             </DialogFooter>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Reddetme Dialog'u */}
+      <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="text-xl font-bold text-red-600 flex items-center gap-2">
+              <span>❌</span>
+              <span>Talebi Reddet</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+              <p className="text-sm text-red-800">
+                <strong>Doküman No:</strong> {selectedRequest?.documentNumber}
+              </p>
+              <p className="text-sm text-red-800">
+                <strong>Talep Eden:</strong> {selectedRequest?.requester}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                Reddetme Sebebi <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Talebin neden reddedildiğini açıklayınız..."
+                className="min-h-[120px] resize-none"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRejectReason("")
+                setIsRejectDialogOpen(false)
+              }}
+            >
+              İptal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRejectConfirm}
+              disabled={!rejectReason.trim()}
+            >
+              Reddet
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Revize Dialog'u */}
+      <Dialog open={isReviseDialogOpen} onOpenChange={setIsReviseDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="border-b pb-4">
+            <DialogTitle className="text-xl font-bold flex items-center gap-2" style={{ color: "rgba(237, 124, 30)" }}>
+              <span>🔄</span>
+              <span>Revize İste</span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="border-l-4 p-4 rounded" style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", borderColor: "rgba(237, 124, 30)" }}>
+              <p className="text-sm" style={{ color: "rgba(237, 124, 30)" }}>
+                <strong>Doküman No:</strong> {selectedRequest?.documentNumber}
+              </p>
+              <p className="text-sm" style={{ color: "rgba(237, 124, 30)" }}>
+                <strong>Talep Eden:</strong> {selectedRequest?.requester}
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                Revize Sebebi <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                value={reviseReason}
+                onChange={(e) => setReviseReason(e.target.value)}
+                placeholder="Hangi değişikliklerin yapılmasını istiyorsunuz?"
+                className="min-h-[120px] resize-none"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setReviseReason("")
+                setIsReviseDialogOpen(false)
+              }}
+            >
+              İptal
+            </Button>
+            <Button
+              onClick={handleReviseConfirm}
+              disabled={!reviseReason.trim()}
+              style={{ backgroundColor: "rgba(237, 124, 30)" }}
+            >
+              Revize İste
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

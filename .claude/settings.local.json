@@ -19,7 +19,9 @@
       "Bash(gh run list:*)",
       "Bash(npm run build)",
       "Bash(rm:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nchore: Next.js kalıntıları temizlendi\n\n- old_task_form.txt dosyası silindi (Next.js import''ları içeriyordu)\n- old_globals.css dosyası silindi\n- src/styles/globals.css gereksiz kopyası silindi\n- test-results klasörü temizlendi\n- Proje artık %100 React + Vite tabanlı\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": []
