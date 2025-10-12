@@ -23,6 +23,8 @@ import {
 export default function TaskForm() {
   const navigate = useNavigate()
   const [currentUser, setCurrentUser] = useState<any>(null)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [editingRequestId, setEditingRequestId] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
   const [documentNumber, setDocumentNumber] = useState(() => {
@@ -109,6 +111,64 @@ export default function TaskForm() {
     }
 
     setCurrentUser(parsedUser)
+
+    // Düzenleme modunu kontrol et
+    const editingRequestStr = localStorage.getItem("editingRequest")
+    if (editingRequestStr) {
+      const editingRequest = JSON.parse(editingRequestStr)
+
+      // Edit mode'u aktifleştir
+      setIsEditMode(true)
+      setEditingRequestId(editingRequest.id)
+
+      // Tarih formatlarını DD/MM/YYYY'ye çevir
+      const formatToSAPDate = (dateStr: string | undefined): string => {
+        if (!dateStr) return ""
+
+        // Eğer YYYY-MM-DD formatındaysa
+        if (dateStr.includes("-")) {
+          const [year, month, day] = dateStr.split("-")
+          return `${day}/${month}/${year}`
+        }
+
+        // Eğer DD.MM.YYYY formatındaysa (toLocaleDateString'den)
+        if (dateStr.includes(".")) {
+          return dateStr.replace(/\./g, "/")
+        }
+
+        return dateStr
+      }
+
+      // Formu doldur
+      setDocumentNumber(editingRequest.documentNumber || "")
+      setDocumentDate(formatToSAPDate(editingRequest.documentDate))
+      setRequiredDate(formatToSAPDate(editingRequest.requiredDate))
+      setValidityDate(formatToSAPDate(editingRequest.validityDate))
+      setRequestSummary(editingRequest.requestSummary || "")
+      setIsUrgent(editingRequest.isUrgent || false)
+      setNotes(editingRequest.notes || "")
+
+      // Satırları doldur
+      if (editingRequest.items && editingRequest.items.length > 0) {
+        const formattedItems = editingRequest.items.map((item: any, index: number) => ({
+          id: index + 1,
+          departman: item.departman || "",
+          itemCode: item.itemCode || "",
+          itemName: item.itemName || "",
+          requiredDate: formatToSAPDate(item.requiredDate),
+          quantity: item.quantity || "",
+          uomCode: item.uomCode || "",
+          vendor: item.vendor || "",
+          description: item.description || "",
+          file: null,
+          isDummy: item.isDummy || false,
+        }))
+        setTableRows(formattedItems)
+      }
+
+      // Düzenleme modunu temizle
+      localStorage.removeItem("editingRequest")
+    }
   }, [navigate])
 
   const handleLogout = () => {
@@ -221,31 +281,57 @@ export default function TaskForm() {
       return
     }
 
-    // Talebi oluştur - SAP'ye gönder
-    const newRequest = {
-      id: Date.now(),
-      documentNumber,
-      documentDate,
-      requiredDate,
-      validityDate,
-      requester: currentUser?.name || "Selim Aksu",
-      requesterRole: "Talep Açan",
-      department: tableRows[0]?.departman || "Yönetim",
-      createdDate: new Date().toLocaleDateString("tr-TR"),
-      itemCount: tableRows.length,
-      status: "Satınalma Talebi",
-      isUrgent,
-      requestSummary,
-      items: tableRows,
-      notes,
+    const existingRequests = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
+
+    if (isEditMode && editingRequestId) {
+      // Düzenleme modu - mevcut talebi güncelle
+      const updatedRequests = existingRequests.map((req: any) => {
+        if (req.id === editingRequestId) {
+          return {
+            ...req,
+            documentNumber,
+            documentDate,
+            requiredDate,
+            validityDate,
+            department: tableRows[0]?.departman || req.department,
+            itemCount: tableRows.length,
+            status: "Satınalma Talebi" as const,
+            isUrgent,
+            requestSummary,
+            items: tableRows,
+            notes: (req.notes || "") + "\n\n[Revize sonrası güncellendi: " + new Date().toLocaleDateString("tr-TR") + "]",
+          }
+        }
+        return req
+      })
+
+      localStorage.setItem("purchaseRequests", JSON.stringify(updatedRequests))
+      alert("Talep başarıyla güncellendi ve tekrar gönderildi!")
+    } else {
+      // Yeni talep oluştur
+      const newRequest = {
+        id: Date.now(),
+        documentNumber,
+        documentDate,
+        requiredDate,
+        validityDate,
+        requester: currentUser?.name || "Selim Aksu",
+        requesterRole: "Talep Açan",
+        department: tableRows[0]?.departman || "Yönetim",
+        createdDate: new Date().toLocaleDateString("tr-TR"),
+        itemCount: tableRows.length,
+        status: "Satınalma Talebi",
+        isUrgent,
+        requestSummary,
+        items: tableRows,
+        notes,
+      }
+
+      existingRequests.push(newRequest)
+      localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
+      alert("Satınalma talebi başarıyla oluşturuldu!")
     }
 
-    // localStorage'a kaydet
-    const existingRequests = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
-    existingRequests.push(newRequest)
-    localStorage.setItem("purchaseRequests", JSON.stringify(existingRequests))
-
-    alert("Satınalma talebi başarıyla oluşturuldu!")
     // Talep listesi sayfasına yönlendir
     navigate("/talep-listesi")
   }
@@ -271,8 +357,13 @@ export default function TaskForm() {
               <h1 className="text-base font-semibold text-gray-800">Satınalma Talep Formu</h1>
               <span className="hidden lg:flex items-center gap-2 text-xs text-gray-400">
                 <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                <span>Yeni Talep</span>
+                <span>{isEditMode ? "Talebi Düzenle" : "Yeni Talep"}</span>
               </span>
+              {isEditMode && (
+                <span className="px-2 py-1 rounded text-xs font-medium text-white" style={{ backgroundColor: "rgba(237, 124, 30)" }}>
+                  Düzenleniyor
+                </span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -815,7 +906,7 @@ export default function TaskForm() {
 
             <div className="flex justify-end gap-2 mb-4">
               <Button onClick={handleSubmit} className="text-sm" style={{ backgroundColor: "rgba(237, 124, 30)" }}>
-                SAP'ye Gönder (Satınalma Talebi)
+                {isEditMode ? "Güncelle ve Tekrar Gönder" : "SAP'ye Gönder (Satınalma Talebi)"}
               </Button>
             </div>
           </div>

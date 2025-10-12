@@ -294,35 +294,14 @@ export default function TalepListesi() {
     setIsDetailDialogOpen(false)
   }
 
-  const handleResubmitAfterRevision = () => {
+  const handleEditAndResubmit = () => {
     if (!selectedRequest) return
 
-    const confirmMessage = "Talebi güncellemek ve tekrar göndermek istiyor musunuz?"
-    if (!confirm(confirmMessage)) return
+    // Talebi düzenleme modunda açmak için localStorage'a kaydet
+    localStorage.setItem("editingRequest", JSON.stringify(selectedRequest))
 
-    // Tüm talepleri localStorage'dan oku
-    const allRequests: PurchaseRequest[] = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
-
-    // Güncellemeyi tüm talepler üzerinde yap
-    const updatedAllRequests = allRequests.map((req) =>
-      req.id === selectedRequest.id
-        ? { ...req, status: "Satınalma Talebi" as RequestStatus, notes: (req.notes || "") + "\n\n[Revize sonrası tekrar gönderildi: " + new Date().toLocaleDateString("tr-TR") + "]" }
-        : req
-    )
-
-    // localStorage'ı güncelle
-    localStorage.setItem("purchaseRequests", JSON.stringify(updatedAllRequests))
-
-    // Kullanıcı rolüne göre filtreleme yap
-    if (currentUser?.role === "user") {
-      const userRequests = updatedAllRequests.filter((req) => req.requester === currentUser.name)
-      setRequests(userRequests)
-    } else {
-      setRequests(updatedAllRequests)
-    }
-
-    alert("Talep güncellenerek tekrar gönderildi!")
-    setIsDetailDialogOpen(false)
+    // Talep formuna yönlendir
+    navigate("/")
   }
 
   const handleGenerateTestData = () => {
@@ -1270,11 +1249,11 @@ export default function TalepListesi() {
           {selectedRequest && currentUser?.role === "user" && selectedRequest.status === "Revize İstendi" && selectedRequest.requester === currentUser?.name && (
             <DialogFooter className="gap-2">
               <Button
-                onClick={handleResubmitAfterRevision}
+                onClick={handleEditAndResubmit}
                 className="text-sm"
                 style={{ backgroundColor: "rgba(237, 124, 30)" }}
               >
-                Güncelle ve Tekrar Gönder
+                Düzenle ve Tekrar Gönder
               </Button>
             </DialogFooter>
           )}
