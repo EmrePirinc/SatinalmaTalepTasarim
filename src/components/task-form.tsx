@@ -263,9 +263,10 @@ export default function TaskForm() {
     if (!requiredDate) {
       errors.push("Gerekli Tarih alanı zorunludur")
     }
-    if (!validityDate) {
-      errors.push("Geçerlilik Tarihi alanı zorunludur")
-    }
+    // Geçerlilik Tarihi otomatik hesaplanan salt okunur alan olduğu için validasyon hatası vermesin
+    // if (!validityDate) {
+    //   errors.push("Geçerlilik Tarihi alanı zorunludur")
+    // }
     if (!requestSummary || !requestSummary.trim()) {
       errors.push("Talep Özeti alanı zorunludur")
     }
