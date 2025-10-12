@@ -17,7 +17,9 @@
       "Bash(npm run dev)",
       "Bash(git archive:*)",
       "Bash(gh run list:*)",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "Bash(rm:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
