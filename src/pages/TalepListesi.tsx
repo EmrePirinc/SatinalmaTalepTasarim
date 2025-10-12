@@ -316,11 +316,9 @@ export default function TalepListesi() {
     // Mevcut en yüksek doküman numarasını bul
     let maxDocNumber = 0
     existingData.forEach((req) => {
-      const match = req.documentNumber.match(/DOC-2025-(\d+)/)
-      if (match) {
-        const num = parseInt(match[1], 10)
-        if (num > maxDocNumber) maxDocNumber = num
-      }
+      // Doküman numarasından sayıyı çıkar (örn: "5" veya "DOC-2025-0005" -> 5)
+      const num = parseInt(req.documentNumber.replace(/\D/g, '')) || 0
+      if (num > maxDocNumber) maxDocNumber = num
     })
 
     const statuses = [
@@ -398,7 +396,7 @@ export default function TalepListesi() {
 
       testData.push({
         id: Date.now() + i + Math.random() * 1000,
-        documentNumber: `DOC-2025-${String(docNumber).padStart(4, '0')}`,
+        documentNumber: String(docNumber),
         documentDate: `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}-${String(docDate.getDate()).padStart(2, '0')}`,
         requiredDate: `${reqDate.getFullYear()}-${String(reqDate.getMonth() + 1).padStart(2, '0')}-${String(reqDate.getDate()).padStart(2, '0')}`,
         validityDate: `2025-12-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
