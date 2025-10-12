@@ -25,7 +25,19 @@ export default function TaskForm() {
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [notes, setNotes] = useState("")
-  const [documentNumber, setDocumentNumber] = useState("1")
+  const [documentNumber, setDocumentNumber] = useState(() => {
+    // localStorage'dan mevcut talepleri oku ve en yüksek numarayı bul
+    const existingRequests = JSON.parse(localStorage.getItem("purchaseRequests") || "[]")
+    let maxNumber = 0
+
+    existingRequests.forEach((req: any) => {
+      // Doküman numarasından sayıyı çıkar (örn: "5" veya "DOC-2025-0005" -> 5)
+      const num = parseInt(req.documentNumber.replace(/\D/g, '')) || 0
+      if (num > maxNumber) maxNumber = num
+    })
+
+    return String(maxNumber + 1)
+  })
   const [documentDate, setDocumentDate] = useState(() => {
     const today = new Date()
     return `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`
