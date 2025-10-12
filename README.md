@@ -1,30 +1,118 @@
-# Recreate UI
+# Satınalma Talep Tasarım
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Modern satınalma talep yönetim sistemi - React, TypeScript ve Vite ile geliştirildi.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/epirinc42-2039s-projects/v0-recreate-ui)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/Fx4Ol2Izn7w)
+[![Deployed on GitHub Pages](https://img.shields.io/badge/Deployed%20on-GitHub%20Pages-blue?style=for-the-badge&logo=github)](https://emrepirinc.github.io/SatinalmaTalepTasarim/)
+[![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 
-## Overview
+## 🚀 Canlı Demo
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+Uygulama şu adreste yayında:
 
-## Deployment
+**[https://emrepirinc.github.io/SatinalmaTalepTasarim/](https://emrepirinc.github.io/SatinalmaTalepTasarim/)**
 
-Your project is live at:
+## 📋 Özellikler
 
-**[https://vercel.com/epirinc42-2039s-projects/v0-recreate-ui](https://vercel.com/epirinc42-2039s-projects/v0-recreate-ui)**
+- Modern ve responsive kullanıcı arayüzü
+- Rol bazlı yetkilendirme sistemi (Admin, Talep Eden, Satınalmacı, Muhasebe)
+- Talep oluşturma ve takip sistemi
+- SAP entegrasyon desteği
+- Excel export özelliği
+- Sayfalama ve filtreleme
+- Detaylı popup görünümleri
+- Dosya yükleme ve indirme
 
-## Build your app
+## 🛠️ Teknolojiler
 
-Continue building your app on:
+- **Framework:** React 18
+- **Build Tool:** Vite 5
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** Radix UI
+- **Routing:** React Router v6
+- **Forms:** React Hook Form
+- **Icons:** Lucide React
+- **Excel Export:** xlsx
 
-**[https://v0.app/chat/projects/Fx4Ol2Izn7w](https://v0.app/chat/projects/Fx4Ol2Izn7w)**
+## 💻 Kurulum
 
-## How It Works
+### Gereksinimler
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+- Node.js 20 veya üzeri
+- npm
+
+### Adımlar
+
+1. Repoyu klonlayın:
+```bash
+git clone https://github.com/emrepirinc/SatinalmaTalepTasarim.git
+cd SatinalmaTalepTasarim
+```
+
+2. Bağımlılıkları yükleyin:
+```bash
+npm install
+```
+
+3. Geliştirme sunucusunu başlatın:
+```bash
+npm run dev
+```
+
+Uygulama `http://localhost:3000` adresinde çalışmaya başlayacaktır.
+
+## 📦 Build
+
+Production build oluşturmak için:
+
+```bash
+npm run build
+```
+
+Build çıktısı `dist/` klasöründe oluşturulacaktır.
+
+Local'de preview için:
+
+```bash
+npm run preview
+```
+
+## 🚢 Deployment
+
+Proje GitHub Pages üzerinde otomatik olarak deploy edilmektedir. `react` branch'ine yapılan her push, GitHub Actions workflow'u tarafından otomatik olarak deploy edilir.
+
+Workflow dosyası: `.github/workflows/deploy.yml`
+
+## 🔧 Geliştirme
+
+### Dizin Yapısı
+
+```
+src/
+├── components/     # React bileşenleri
+├── lib/           # Yardımcı fonksiyonlar
+├── types/         # TypeScript tip tanımları
+└── main.tsx       # Uygulama giriş noktası
+```
+
+### Branch Stratejisi
+
+- `react`: Ana geliştirme ve production branch'i
+- Tüm değişiklikler doğrudan `react` branch'ine push edilir
+
+## 📝 Demo Kullanıcılar
+
+Uygulama test için hazır demo kullanıcılar içermektedir:
+- Admin
+- Talep Eden
+- Satınalmacı
+- Muhasebe
+
+## 📄 Lisans
+
+Bu proje özel bir projedir.
+
+## 👤 Geliştirici
+
+Emre Pirinç - [@emrepirinc](https://github.com/emrepirinc)
