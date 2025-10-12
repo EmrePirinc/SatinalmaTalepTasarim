@@ -45,7 +45,13 @@ export default function TaskForm() {
     return `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`
   })
   const [requiredDate, setRequiredDate] = useState("")
-  const [validityDate, setValidityDate] = useState("")
+  const [validityDate, setValidityDate] = useState(() => {
+    // Otomatik olarak kayıt tarihinden 1 ay sonrası
+    const today = new Date()
+    const oneMonthLater = new Date(today)
+    oneMonthLater.setMonth(oneMonthLater.getMonth() + 1)
+    return `${String(oneMonthLater.getDate()).padStart(2, "0")}/${String(oneMonthLater.getMonth() + 1).padStart(2, "0")}/${oneMonthLater.getFullYear()}`
+  })
   const [requestSummary, setRequestSummary] = useState("")
   const [isUrgent, setIsUrgent] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -213,6 +219,10 @@ export default function TaskForm() {
   }
 
   const handleRowFieldChange = (rowId: number, field: string, value: string) => {
+    // Kalem Tanımı salt okunur olduğu için bu alanı değiştirmeyi engelle
+    if (field === "itemName") {
+      return
+    }
     setTableRows(tableRows.map((row) => (row.id === rowId ? { ...row, [field]: value } : row)))
   }
 
@@ -478,10 +488,11 @@ export default function TaskForm() {
                   <label className="text-sm font-medium text-card-foreground mb-2 block">
                     Geçerlilik Tarihi <span className="text-red-500">*</span>
                   </label>
-                  <SAPDateInput
+                  <Input
                     value={validityDate}
-                    onChange={(value) => setValidityDate(value)}
-                    className="bg-background border-border text-foreground"
+                    readOnly
+                    className="bg-muted border-border text-foreground cursor-not-allowed"
+                    title="Otomatik olarak kayıt tarihinden 1 ay sonrası"
                   />
                 </div>
               </div>
@@ -781,9 +792,10 @@ export default function TaskForm() {
                           <div className="flex items-center gap-1">
                             <Input
                               value={row.itemName}
-                              onChange={(e) => handleRowFieldChange(row.id, "itemName", e.target.value)}
-                              placeholder="Kalem tanımı..."
-                              className="h-8 text-xs bg-background border-border flex-1"
+                              readOnly
+                              placeholder="Kalem kodu seçilince otomatik dolar..."
+                              className="h-8 text-xs bg-muted border-border flex-1 cursor-not-allowed"
+                              title="Kalem Kodu seçildiğinde otomatik olarak dolar"
                             />
                             <Button
                               variant="ghost"
