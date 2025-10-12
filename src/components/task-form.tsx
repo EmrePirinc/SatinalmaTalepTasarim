@@ -246,15 +246,27 @@ export default function TaskForm() {
   const validateForm = () => {
     const errors: string[] = []
 
-    // Gerekli Tarih kontrolü (üst form)
+    // Üst form zorunlu alanları
+    if (!documentDate) {
+      errors.push("Belge Tarihi alanı zorunludur")
+    }
     if (!requiredDate) {
       errors.push("Gerekli Tarih alanı zorunludur")
+    }
+    if (!validityDate) {
+      errors.push("Geçerlilik Tarihi alanı zorunludur")
+    }
+    if (!requestSummary || !requestSummary.trim()) {
+      errors.push("Talep Özeti alanı zorunludur")
     }
 
     // Satırları kontrol et
     tableRows.forEach((row, index) => {
       if (!row.itemCode) {
         errors.push(`${index + 1}. satır: Kalem Kodu zorunludur`)
+      }
+      if (!row.itemName) {
+        errors.push(`${index + 1}. satır: Kalem Tanımı zorunludur`)
       }
       if (!row.requiredDate) {
         errors.push(`${index + 1}. satır: Gerekli Tarih zorunludur`)
@@ -464,7 +476,7 @@ export default function TaskForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="text-sm font-medium text-card-foreground mb-2 block">
-                    Geçerlilik Tarihi
+                    Geçerlilik Tarihi <span className="text-red-500">*</span>
                   </label>
                   <SAPDateInput
                     value={validityDate}
@@ -475,7 +487,9 @@ export default function TaskForm() {
               </div>
 
               <div className="mb-4">
-                <label className="text-sm font-medium text-card-foreground mb-2 block">Talep Özeti</label>
+                <label className="text-sm font-medium text-card-foreground mb-2 block">
+                  Talep Özeti <span className="text-red-500">*</span>
+                </label>
                 <Input
                   value={requestSummary}
                   onChange={(e) => setRequestSummary(e.target.value)}
@@ -711,7 +725,7 @@ export default function TaskForm() {
                           Kalem Kodu <span className="text-red-500">*</span>
                         </div>
                         <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
-                          Kalem Tanımı
+                          Kalem Tanımı <span className="text-red-500">*</span>
                         </div>
                         <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                           Gerekli Tarih <span className="text-red-500">*</span>
