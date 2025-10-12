@@ -31,8 +31,8 @@ export default function TaskForm() {
     let maxNumber = 0
 
     existingRequests.forEach((req: any) => {
-      // Doküman numarasından sayıyı çıkar (örn: "5" veya "DOC-2025-0005" -> 5)
-      const num = parseInt(req.documentNumber.replace(/\D/g, '')) || 0
+      // Doküman numarasını integer olarak parse et
+      const num = parseInt(req.documentNumber) || 0
       if (num > maxNumber) maxNumber = num
     })
 

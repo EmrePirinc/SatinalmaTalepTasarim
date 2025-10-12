@@ -316,8 +316,8 @@ export default function TalepListesi() {
     // Mevcut en yüksek doküman numarasını bul
     let maxDocNumber = 0
     existingData.forEach((req) => {
-      // Doküman numarasından sayıyı çıkar (örn: "5" veya "DOC-2025-0005" -> 5)
-      const num = parseInt(req.documentNumber.replace(/\D/g, '')) || 0
+      // Doküman numarasını integer olarak parse et
+      const num = parseInt(req.documentNumber) || 0
       if (num > maxDocNumber) maxDocNumber = num
     })
 
