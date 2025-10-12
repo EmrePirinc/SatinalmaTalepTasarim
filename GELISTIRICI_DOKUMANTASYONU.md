@@ -139,12 +139,16 @@ Formun kaydedilebilmesi için "Zorunlu" olarak işaretlenmiş tüm başlık ve s
 - **Detay Görüntüleme:** Listeden bir talebe tıklandığında, o talebin tüm başlık ve satır bilgilerini içeren bir detay penceresi açılmalıdır.
 
 > **[GÖRSEL EKLENECEK: Talep Detayları Penceresi]**
+> <img width="1920" height="1274" alt="image" src="https://github.com/user-attachments/assets/33122b28-958e-4e90-a9f3-9b9112b9158b" />
+
 > *Açıklama: Bu alana, bir talebe tıklandığında açılan ve talebin tüm başlık, satır ve not bilgilerini gösteren detay popup'ının ekran görüntüsü eklenmelidir.*
 
 - **Revize ve Reddetme Süreci:**
   1. Satınalmacı, bir talebi "Revize İste" veya "Reddet" butonları ile ve bir neden belirterek işleme alabilmelidir.
 
 > **[GÖRSEL EKLENECEK: Revize/Reddetme Penceresi]**
+> <img width="1920" height="911" alt="image" src="https://github.com/user-attachments/assets/56601d95-6a5d-4a48-a517-e59541211ace" />
+
 > *Açıklama: Bu alana, "Revize İste" veya "Reddet" butonuna tıklandığında açılan ve kullanıcıdan bir sebep girmesini isteyen popup penceresinin ekran görüntüsü eklenmelidir.*
 
   2. Talebin durumu buna göre ("Revize İstendi" veya "Reddedildi") güncellenmelidir.
