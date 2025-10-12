@@ -153,6 +153,20 @@ export default function Admin() {
     alert("Kullanıcı silindi!")
   }
 
+  const handleClearAllRequests = () => {
+    if (!confirm("⚠️ DİKKAT!\n\nTüm satınalma talepleri kalıcı olarak silinecektir.\nBu işlem geri alınamaz!\n\nDevam etmek istediğinize emin misiniz?")) {
+      return
+    }
+
+    // İkinci onay
+    if (!confirm("🚨 SON UYARI!\n\nTüm talep verileri silinecek ve doküman numarası 1'den başlayacak.\n\nEMİN MİSİNİZ?")) {
+      return
+    }
+
+    localStorage.removeItem("purchaseRequests")
+    alert("✅ Tüm talep verileri başarıyla temizlendi!\n\nYeni talepler 1 numarasından başlayacak.")
+  }
+
   const openEditDialog = (user: User) => {
     setSelectedUser(user)
     setFormData({
@@ -190,6 +204,14 @@ export default function Admin() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              onClick={handleClearAllRequests}
+              variant="destructive"
+              className="h-8 px-3 text-xs shadow-sm"
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+              <span className="hidden sm:inline">Tüm Talepleri Temizle</span>
+            </Button>
             <Button
               onClick={() => {
                 setFormData({ username: "", password: "", name: "", role: "user" })
