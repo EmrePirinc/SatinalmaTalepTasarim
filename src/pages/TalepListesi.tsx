@@ -386,7 +386,7 @@ export default function TalepListesi() {
       }
 
       // İlk 5 talebi "Satınalmacıda" yap ki butonlar test edilebilsin
-      const randomStatus = i <= 5 ? "Satınalmacıda" : statuses[Math.floor(Math.random() * statuses.length)]
+      const randomStatus: RequestStatus = i <= 5 ? "Satınalmacıda" : statuses[Math.floor(Math.random() * statuses.length)] as RequestStatus
       const randomDept = departments[Math.floor(Math.random() * departments.length)]
       const randomRequester = requesters[Math.floor(Math.random() * requesters.length)]
 

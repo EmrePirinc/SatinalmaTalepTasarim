@@ -15,7 +15,9 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nfix: Ken Burns efekti daha belirgin hale getirildi\n\n- Scale 1.15x → 1.2x artırıldı\n- Pan hareketi -4%/+4% → -8%/+8% artırıldı\n- Kamera akışı 2 kat daha belirgin\n- Resimlerin soldan sağa kayması artık net görülüyor\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(npm install)",
       "Bash(npm run dev)",
-      "Bash(git archive:*)"
+      "Bash(git archive:*)",
+      "Bash(gh run list:*)",
+      "Bash(npm run build)"
     ],
     "deny": [],
     "ask": []
