@@ -59,12 +59,17 @@ export const generateTestData = () => {
         file = new File([blob], `${randomItem.replace(/\s+/g, '_')}_belge.txt`, { type: 'text/plain' })
       }
 
+      // SAP formatı DD/MM/YYYY için tarih oluştur
+      const itemReqDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')
+      const itemReqMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')
+      const itemReqYear = '2025'
+
       items.push({
         id: j,
         departman: randomDept,
         itemCode: `ITM-${String(i).padStart(3, '0')}-${String(j).padStart(2, '0')}`,
         itemName: randomItem,
-        requiredDate: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+        requiredDate: `${itemReqDay}/${itemReqMonth}/${itemReqYear}`,
         quantity: String(Math.floor(Math.random() * 100) + 1),
         uomCode: ["AD", "KG", "LT", "MT", "M2"][Math.floor(Math.random() * 5)],
         vendor: randomVendor,
@@ -78,16 +83,32 @@ export const generateTestData = () => {
     const randomDept = departments[Math.floor(Math.random() * departments.length)]
     const randomRequester = requesters[Math.floor(Math.random() * requesters.length)]
 
-    const docDate = new Date(2025, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
-    const reqDate = new Date(docDate)
-    reqDate.setDate(reqDate.getDate() + Math.floor(Math.random() * 30) + 7)
+    // SAP formatı DD/MM/YYYY için tarihler oluştur
+    const docDay = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')
+    const docMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')
+    const docYear = '2025'
+
+    // Gerekli tarih belge tarihinden 7-37 gün sonra
+    const docDateObj = new Date(2025, parseInt(docMonth) - 1, parseInt(docDay))
+    const reqDateObj = new Date(docDateObj)
+    reqDateObj.setDate(reqDateObj.getDate() + Math.floor(Math.random() * 30) + 7)
+    const reqDay = String(reqDateObj.getDate()).padStart(2, '0')
+    const reqMonth = String(reqDateObj.getMonth() + 1).padStart(2, '0')
+    const reqYear = reqDateObj.getFullYear()
+
+    // Geçerlilik tarihi gerekli tarihten sonra
+    const validDateObj = new Date(reqDateObj)
+    validDateObj.setDate(validDateObj.getDate() + Math.floor(Math.random() * 60) + 30)
+    const validDay = String(validDateObj.getDate()).padStart(2, '0')
+    const validMonth = String(validDateObj.getMonth() + 1).padStart(2, '0')
+    const validYear = validDateObj.getFullYear()
 
     testData.push({
       id: Date.now() + i,
       documentNumber: `DOC-2025-${String(i).padStart(4, '0')}`,
-      documentDate: `${docDate.getFullYear()}-${String(docDate.getMonth() + 1).padStart(2, '0')}-${String(docDate.getDate()).padStart(2, '0')}`,
-      requiredDate: `${reqDate.getFullYear()}-${String(reqDate.getMonth() + 1).padStart(2, '0')}-${String(reqDate.getDate()).padStart(2, '0')}`,
-      validityDate: `2025-12-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+      documentDate: `${docDay}/${docMonth}/${docYear}`,
+      requiredDate: `${reqDay}/${reqMonth}/${reqYear}`,
+      validityDate: `${validDay}/${validMonth}/${validYear}`,
       requester: randomRequester,
       requesterRole: "Talep Açan",
       department: randomDept,

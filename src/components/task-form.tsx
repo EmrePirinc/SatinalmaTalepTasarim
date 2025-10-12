@@ -45,13 +45,7 @@ export default function TaskForm() {
     return `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`
   })
   const [requiredDate, setRequiredDate] = useState("")
-  const [validityDate, setValidityDate] = useState(() => {
-    // Otomatik olarak kayıt tarihinden 1 ay sonrası
-    const today = new Date()
-    const oneMonthLater = new Date(today)
-    oneMonthLater.setMonth(oneMonthLater.getMonth() + 1)
-    return `${String(oneMonthLater.getDate()).padStart(2, "0")}/${String(oneMonthLater.getMonth() + 1).padStart(2, "0")}/${oneMonthLater.getFullYear()}`
-  })
+  const [validityDate, setValidityDate] = useState("")
   const [requestSummary, setRequestSummary] = useState("")
   const [isUrgent, setIsUrgent] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -263,10 +257,9 @@ export default function TaskForm() {
     if (!requiredDate) {
       errors.push("Gerekli Tarih alanı zorunludur")
     }
-    // Geçerlilik Tarihi otomatik hesaplanan salt okunur alan olduğu için validasyon hatası vermesin
-    // if (!validityDate) {
-    //   errors.push("Geçerlilik Tarihi alanı zorunludur")
-    // }
+    if (!validityDate) {
+      errors.push("Geçerlilik Tarihi alanı zorunludur")
+    }
     if (!requestSummary || !requestSummary.trim()) {
       errors.push("Talep Özeti alanı zorunludur")
     }
@@ -448,16 +441,21 @@ export default function TaskForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="text-sm font-medium text-card-foreground mb-2 block">Doküman Numarası</label>
+                  <label className="text-sm font-medium text-card-foreground mb-2 block">
+                    Doküman Numarası <span className="text-red-500">*</span>
+                  </label>
                   <Input
                     value={documentNumber}
-                    onChange={(e) => setDocumentNumber(e.target.value)}
-                    className="bg-background border-border text-foreground"
+                    readOnly
+                    className="bg-muted border-border text-foreground cursor-not-allowed"
+                    title="SAP tarafından otomatik atanır"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-card-foreground mb-2 block">Talep Eden Adı Soyadı</label>
-                  <Input value={currentUser?.name || "Selim Aksu"} readOnly className="bg-muted border-border text-foreground" />
+                  <label className="text-sm font-medium text-card-foreground mb-2 block">
+                    Talep Eden Adı Soyadı <span className="text-red-500">*</span>
+                  </label>
+                  <Input value={currentUser?.name || "Selim Aksu"} readOnly className="bg-muted border-border text-foreground cursor-not-allowed" />
                 </div>
               </div>
 
@@ -489,11 +487,10 @@ export default function TaskForm() {
                   <label className="text-sm font-medium text-card-foreground mb-2 block">
                     Geçerlilik Tarihi <span className="text-red-500">*</span>
                   </label>
-                  <Input
+                  <SAPDateInput
                     value={validityDate}
-                    readOnly
-                    className="bg-muted border-border text-foreground cursor-not-allowed"
-                    title="Otomatik olarak kayıt tarihinden 1 ay sonrası"
+                    onChange={(value) => setValidityDate(value)}
+                    className="bg-background border-border text-foreground"
                   />
                 </div>
               </div>
