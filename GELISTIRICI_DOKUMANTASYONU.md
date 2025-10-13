@@ -1,5 +1,3 @@
-> **Not:** Bu doküman, satınalma talebi yönetimi uygulamasının fonksiyonel gereksinimlerini ve iş kurallarını tanımlamak amacıyla oluşturulmuştur. Mevcut bir kod tabanını açıklamamaktadır; bunun yerine, projeyi sıfırdan geliştirecek bir yazılımcı için bir kılavuz niteliğindedir. Geliştirici, burada belirtilen işlevselliği, kendi tercih ettiği teknoloji ve mimari yaklaşımlarla hayata geçirebilir.
-
 # Satınalma Talep Yönetim Sistemi - Fonksiyonel Gereksinimler
 
 ## 1. Projenin Amacı ve Genel Bakış
@@ -21,8 +19,6 @@ Bu ekran, yeni satınalma talepleri oluşturmak veya mevcut talepleri düzenleme
 
 > **[GÖRSEL EKLENECEK: Talep Formu Genel Görünüm]**
 <img width="1794" height="896" alt="image" src="https://github.com/user-attachments/assets/1cec00ee-7ca1-469c-926b-a7cec0b20cb9" />
-
-> *Açıklama: Bu alana, başlık alanları ve birkaç satır içeren talep formunun tam sayfa ekran görüntüsü eklenmelidir. Formun genel yerleşimi ve alanları bu görselde net bir şekilde görülebilmelidir.*
 
 **Sayfanın Amacı:** Kullanıcının gerekli tüm bilgileri girerek bir satınalma talebi oluşturmasını sağlamak.
 
