@@ -144,8 +144,6 @@ Formun kaydedilebilmesi için "Zorunlu" olarak işaretlenmiş tüm başlık ve s
 > **[GÖRSEL EKLENECEK: Revize/Reddetme Penceresi]**
 > <img width="1920" height="911" alt="image" src="https://github.com/user-attachments/assets/56601d95-6a5d-4a48-a517-e59541211ace" />
 
-> *Açıklama: Bu alana, "Revize İste" veya "Reddet" butonuna tıklandığında açılan ve kullanıcıdan bir sebep girmesini isteyen popup penceresinin ekran görüntüsü eklenmelidir.*
-
   2. Talebin durumu buna göre ("Revize İstendi" veya "Reddedildi") güncellenmelidir.
   3. Talep sahibi, durumu "Revize İstendi" olan talebi için detay penceresinde "Düzenle ve Tekrar Gönder" butonu görmelidir.
   4. Bu butona tıkladığında, talep formu bu talebin bilgileriyle dolu şekilde açılmalı ve düzenlemeye olanak tanımalıdır.
