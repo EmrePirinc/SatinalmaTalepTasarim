@@ -50,7 +50,7 @@ Bu ekran, yeni satınalma talepleri oluşturmak veya mevcut talepleri düzenleme
 
 | Web Alanı Adı | SAP Alanı | Zorunlu | Salt Okunur | İş Kuralları ve Notlar |
 | :--- | :--- | :---: | :---: | :--- |
-| **Kalem Kodu** | `OITM.ItemCode` | Evet | Hayır | Bir listeden seçilebilir veya manuel girilebilir olmalıdır. |
+| **Kalem Kodu** | `OITM.ItemCode` | Evet | Evet | Bir listeden seçilebilir veya manuel girilebilir olmalıdır. |
 | **Kalem Tanımı**| `OITM.ItemName` | Evet | Evet | Kalem Kodu seçildiğinde sistem tarafından otomatik olarak doldurulmalıdır. |
 | **Gerekli Tarih**| `PRQ1.PQTRegdate`| Evet | Hayır | Her satır için ayrı tarih girilebilmelidir. Yeni satır eklendiğinde, başlık "Gerekli Tarih" alanından bu değeri almalıdır. |
 | **Miktar** | `PRQ1.Quantity` | Evet | Hayır | Sayısal bir değer girilmelidir. |
