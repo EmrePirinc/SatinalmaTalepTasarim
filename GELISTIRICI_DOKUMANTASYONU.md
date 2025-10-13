@@ -99,7 +99,7 @@ Sistemde üç temel kullanıcı rolü bulunmalıdır:
 | :--- | :--- | :--- |
 | **user** (Talep Açan) | Standart kullanıcı. | - Yeni talep oluşturabilir.<br>- Talep listesinde sadece kendi oluşturduğu talepleri görebilir.<br>- Durumu "Revize İstendi" olan kendi talebini düzenleyebilir. |
 | **purchaser** (Satınalmacı) | Onay ve işlem yetkisine sahip kullanıcı. | - Yeni talep oluşturabilir.<br>- Talep listesinde tüm kullanıcıların taleplerini görebilir.<br>- Taleplerin durumunu "Reddedildi" veya "Revize İstendi" olarak güncelleyebilir. |
-| **admin** (Yönetici) | Tüm yetkilere sahip kullanıcı. | - `purchaser` ile aynı yetkilere sahiptir. Ek olarak ise Kullanıcı Yönetimi ekranında yetkileri değiştirebilir. |
+| **admin** (Yönetici) | Tüm yetkilere sahip kullanıcı. | - `purchaser` ile aynı yetkilere sahiptir. Ek olarak ise Kullanıcı Yönetimi ekranında yetkili kullanıcıları ekleyip çıkarabilir. |
 
 ---
 
