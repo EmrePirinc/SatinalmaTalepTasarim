@@ -17,7 +17,6 @@ Bu proje, SAP sistemiyle entegre çalışacak web tabanlı bir satınalma talebi
 
 Bu ekran, yeni satınalma talepleri oluşturmak veya mevcut talepleri düzenlemek için kullanılır.
 
-> **[GÖRSEL EKLENECEK: Talep Formu Genel Görünüm]**
 <img width="1794" height="896" alt="image" src="https://github.com/user-attachments/assets/1cec00ee-7ca1-469c-926b-a7cec0b20cb9" />
 
 **Sayfanın Amacı:** Kullanıcının gerekli tüm bilgileri girerek bir satınalma talebi oluşturmasını sağlamak.
