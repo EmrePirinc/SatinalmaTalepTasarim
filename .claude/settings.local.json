@@ -25,7 +25,10 @@
       "Bash(git checkout:*)",
       "Bash(node:*)",
       "Bash(start http://localhost:5173)",
-      "Bash(start http://localhost:3000)"
+      "Bash(start http://localhost:3000)",
+      "Bash(gh repo view:*)",
+      "Bash(git config:*)",
+      "Bash(chcp 65001)"
     ],
     "deny": [],
     "ask": []
