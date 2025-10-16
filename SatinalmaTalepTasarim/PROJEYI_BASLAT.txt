@@ -1,0 +1,66 @@
+🚀 PROJEYI BAŞLATMA TALİMATI
+================================
+
+📂 ADIM 1: Klasöre Git
+-----------------------
+Windows Explorer'da şu klasörü aç:
+React-AlanEsleme\SatinalmaTalepTasarim
+
+
+📝 ADIM 2: Terminal Aç
+-----------------------
+Klasörde boş bir alana SAĞ TIKLA ve seç:
+- "Terminal'de Aç" veya
+- "PowerShell penceresini buradan aç" veya
+- "Komut İstemi'ni buradan aç"
+
+
+⚡ ADIM 3: Komutu Çalıştır
+--------------------------
+Açılan terminal penceresine şu komutu yaz:
+
+    npm run dev:full
+
+Enter tuşuna bas.
+
+
+✅ ADIM 4: Tarayıcıda Aç
+------------------------
+Birkaç saniye sonra tarayıcında şu adresi aç:
+
+    http://localhost:3000
+
+
+🔑 GİRİŞ BİLGİLERİ
+-------------------
+Admin:
+  Kullanıcı Adı: admin
+  Şifre: admin123
+
+Normal Kullanıcı:
+  Kullanıcı Adı: user
+  Şifre: user123
+
+
+⚠️ SORUN GİDERME
+-----------------
+Eğer "npm: komut bulunamadı" hatası alırsan:
+
+1. Node.js yüklü mü kontrol et:
+   node --version
+
+2. Yüklü değilse: https://nodejs.org adresinden indir
+
+
+🛑 DURDURMAK İÇİN
+-----------------
+Terminal penceresinde:
+  CTRL + C tuşlarına bas
+  (iki kere basılması gerekebilir)
+
+
+═══════════════════════════════════════════
+💡 ALTERNATIF: BASLATMA_SCRIPT.bat dosyasına 
+   çift tıklayarak da başlatabilirsin!
+═══════════════════════════════════════════
+
