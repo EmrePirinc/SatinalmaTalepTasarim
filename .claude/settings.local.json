@@ -22,7 +22,10 @@
       "Bash(git init:*)",
       "Bash(git remote add:*)",
       "Bash(git branch:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(node:*)",
+      "Bash(start http://localhost:5173)",
+      "Bash(start http://localhost:3000)"
     ],
     "deny": [],
     "ask": []
