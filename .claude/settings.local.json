@@ -19,7 +19,10 @@
       "Bash(taskkill:*)",
       "Bash(npx kill-port:*)",
       "Bash(timeout /t 2)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
