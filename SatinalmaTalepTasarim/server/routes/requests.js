@@ -182,7 +182,7 @@ router.put('/:id', (req, res) => {
       department,
       U_AcilMi,
       U_TalepOzeti,
-      status,
+      U_TalepDurum,
       U_RevizeNedeni,
       U_RedNedeni,
       Comments,
@@ -242,7 +242,7 @@ router.put('/:id', (req, res) => {
       }
     });
 
-    updateRequest(id, { DocNum, TaxDate, Reqdate, DocDueDate, department, U_AcilMi, U_TalepOzeti, status, U_RevizeNedeni, U_RedNedeni, Comments }, items);
+    updateRequest(id, { DocNum, TaxDate, Reqdate, DocDueDate, department, U_AcilMi, U_TalepOzeti, U_TalepDurum, U_RevizeNedeni, U_RedNedeni, Comments }, items);
 
     res.json({ success: true });
   } catch (error) {

@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
 import {
@@ -20,12 +21,6 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import {
   Package,
   Bell,
   Calendar,
@@ -35,7 +30,6 @@ import {
   Menu,
   Eye,
   LogOut,
-  Info,
   Download,
 } from "lucide-react"
 import * as XLSX from "xlsx"
@@ -86,6 +80,8 @@ type PurchaseRequest = {
   U_AcilMi?: boolean // OPRQ.U_AcilMi
   U_TalepOzeti?: string // OPRQ.U_TalepOzeti
   Comments?: string // OPRQ.Comments
+  U_RedNedeni?: string // Red nedeni
+  U_RevizeNedeni?: string // Revize nedeni
   itemCount: number
   items?: RequestItem[]
   createdAt?: string
@@ -312,7 +308,9 @@ export default function TalepListesi() {
       }
 
       // Listeyi yeniden yükle
-      await fetchRequestsFromBackend()
+      if (currentUser) {
+        await fetchRequestsFromBackend(currentUser)
+      }
 
       alert("Talep reddedildi!")
       setRejectReason("")
@@ -353,7 +351,9 @@ export default function TalepListesi() {
       }
 
       // Listeyi yeniden yükle
-      await fetchRequestsFromBackend()
+      if (currentUser) {
+        await fetchRequestsFromBackend(currentUser)
+      }
 
       alert("Revize talebi gönderildi!")
       setReviseReason("")
@@ -943,33 +943,36 @@ export default function TalepListesi() {
 
       {/* Kalem Detayları Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-[98vw] md:max-w-7xl max-h-[95vh] overflow-y-auto">
-          <DialogHeader className="border-b-2 pb-4" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
-            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="border-b-2 pb-3 flex-shrink-0" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
+            <DialogTitle className="flex items-center gap-2 text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
               <span>📋 Doküman No: {selectedRequest?.DocNum}</span>
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              Satınalma talebinin detaylı bilgileri ve kalem listesi
+            </DialogDescription>
           </DialogHeader>
           {selectedRequest && (
-            <div className="space-y-6 pt-4">
+            <div className="space-y-4 pt-3 overflow-y-auto flex-1">
               {/* Talep Özeti - Başlık */}
               {selectedRequest.U_TalepOzeti && (
-                <div className="relative overflow-hidden rounded-xl shadow-md p-6" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)", borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>📝 Talep Özeti</span>
+                <div className="relative overflow-hidden rounded-lg shadow-sm p-4" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)", borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>📝 Talep Özeti</span>
                   </div>
-                  <p className="text-lg font-semibold text-gray-800 leading-relaxed">{selectedRequest.U_TalepOzeti}</p>
+                  <p className="text-base font-semibold text-gray-800 leading-relaxed">{selectedRequest.U_TalepOzeti}</p>
                 </div>
               )}
 
               {/* Durum ve Acil Talep Badges */}
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold border-2 min-w-[160px] justify-center ${statusColors[selectedRequest.U_TalepDurum]}`}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold border ${statusColors[selectedRequest.U_TalepDurum]}`}
                 >
                   {selectedRequest.U_TalepDurum}
                 </span>
                 {selectedRequest.U_AcilMi && (
-                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-bold shadow-lg min-w-[160px] justify-center border-2 border-red-600">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-red-500 text-white text-xs font-bold border border-red-600">
                     <span>⚠️</span>
                     <span>ACİL TALEP</span>
                   </span>
@@ -977,127 +980,112 @@ export default function TalepListesi() {
               </div>
 
               {/* Genel Bilgiler */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-5 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">👤</span>
-                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Talep Eden</span>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className="text-lg">👤</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Talep Eden</span>
                   </div>
-                  <p className="text-lg font-bold text-gray-800 ml-8">{selectedRequest.Reqname}</p>
+                  <p className="text-sm font-bold text-gray-800">{selectedRequest.Reqname}</p>
                 </div>
-                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-5 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">🏢</span>
-                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Departman</span>
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className="text-lg">🏢</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Departman</span>
                   </div>
-                  <p className="text-lg font-bold text-gray-800 ml-8">{selectedRequest.items && selectedRequest.items.length > 0 ? selectedRequest.items[0].OcrCode : "-"}</p>
+                  <p className="text-sm font-bold text-gray-800">{selectedRequest.items && selectedRequest.items.length > 0 ? selectedRequest.items[0].OcrCode : "-"}</p>
                 </div>
-                <div className={`rounded-xl shadow-md border-2 p-5 hover:shadow-lg transition-shadow ${
+                <div className={`rounded-lg shadow-sm border p-3 ${
                   selectedRequest.U_AcilMi
                     ? 'bg-red-50 border-red-200'
-                    : 'bg-white border-gray-100'
+                    : 'bg-white border-gray-200'
                 }`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{selectedRequest.U_AcilMi ? '⚠️' : '✅'}</span>
-                    <span className={`text-xs font-bold uppercase tracking-wider ${
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className="text-lg">{selectedRequest.U_AcilMi ? '⚠️' : '✅'}</span>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${
                       selectedRequest.U_AcilMi ? 'text-red-600' : 'text-green-600'
-                    }`}>Aciliyet Durumu</span>
+                    }`}>Aciliyet</span>
                   </div>
-                  <p className={`text-lg font-bold ml-8 ${
+                  <p className={`text-sm font-bold ${
                     selectedRequest.U_AcilMi ? 'text-red-700' : 'text-green-700'
                   }`}>
-                    {selectedRequest.U_AcilMi ? 'ACİL TALEP' : 'Normal'}
+                    {selectedRequest.U_AcilMi ? 'ACİL' : 'Normal'}
                   </p>
                 </div>
               </div>
 
               {/* Tarihler Bölümü */}
-              <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6">
-                <div className="flex items-center gap-3 mb-5">
-                  <Calendar className="w-6 h-6" style={{ color: "rgba(237, 124, 30)" }} />
-                  <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Tarihler</span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="w-5 h-5 text-gray-400 cursor-help hover:text-gray-600 transition-colors" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs bg-gray-900 text-white p-4 rounded-lg">
-                        <p className="text-sm leading-relaxed">
-                          <strong>📄 Belge Tarihi:</strong> Talebin belge üzerindeki tarihi<br />
-                          <strong>⏰ Gerekli Tarih:</strong> Malzemenin ihtiyaç duyulduğu tarih<br />
-                          <strong>💾 Kayıt Tarihi:</strong> Talebin sisteme girildiği tarih<br />
-                          <strong>✅ Geçerlilik Tarihi:</strong> Talebin geçerli olduğu son tarih
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar className="w-4 h-4" style={{ color: "rgba(237, 124, 30)" }} />
+                  <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Tarihler</span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-                  <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">📄 Belge Tarihi (TaxDate)</span>
-                    <p className="text-lg font-bold text-gray-800">{formatDate(selectedRequest.TaxDate)}</p>
+                <div className="grid grid-cols-4 gap-3">
+                  <div className="flex flex-col gap-1 p-2 rounded-md bg-gray-50">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">📄 Belge</span>
+                    <p className="text-sm font-bold text-gray-800">{formatDate(selectedRequest.TaxDate)}</p>
                   </div>
-                  <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-orange-50 to-orange-100">
-                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>⏰ Gerekli Tarih (Reqdate)</span>
-                    <p className="text-lg font-bold" style={{ color: "rgba(237, 124, 30)" }}>{formatDate(selectedRequest.Reqdate)}</p>
+                  <div className="flex flex-col gap-1 p-2 rounded-md bg-orange-50">
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>⏰ Gerekli</span>
+                    <p className="text-sm font-bold" style={{ color: "rgba(237, 124, 30)" }}>{formatDate(selectedRequest.Reqdate)}</p>
                   </div>
-                  <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100">
-                    <span className="text-xs font-bold uppercase tracking-wider text-gray-500">💾 Kayıt Tarihi (DocDate)</span>
-                    <p className="text-lg font-bold text-gray-800">{formatDate(selectedRequest.DocDate)}</p>
+                  <div className="flex flex-col gap-1 p-2 rounded-md bg-gray-50">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">💾 Kayıt</span>
+                    <p className="text-sm font-bold text-gray-800">{formatDate(selectedRequest.DocDate)}</p>
                   </div>
-                  <div className="flex flex-col gap-2 p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100">
-                    <span className="text-xs font-bold uppercase tracking-wider text-green-700">✅ Geçerlilik Tarihi (DocDueDate)</span>
-                    <p className="text-lg font-bold text-green-800">{formatDate(selectedRequest.DocDueDate)}</p>
+                  <div className="flex flex-col gap-1 p-2 rounded-md bg-green-50">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-green-700">✅ Geçerlilik</span>
+                    <p className="text-sm font-bold text-green-800">{formatDate(selectedRequest.DocDueDate)}</p>
                   </div>
                 </div>
               </div>
 
               {/* Kalem Listesi */}
               {selectedRequest.items && selectedRequest.items.length > 0 && (
-                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6">
-                  <div className="flex items-center gap-3 mb-5">
-                    <Package className="w-6 h-6" style={{ color: "rgba(237, 124, 30)" }} />
-                    <h4 className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Kalem Listesi</h4>
-                    <span className="px-4 py-1.5 rounded-full text-sm font-bold uppercase shadow-sm" style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}>
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Package className="w-4 h-4" style={{ color: "rgba(237, 124, 30)" }} />
+                    <h4 className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Kalem Listesi</h4>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase" style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", color: "rgba(237, 124, 30)" }}>
                       {selectedRequest.items.length} Kalem
                     </span>
                   </div>
-                  <div className="border-2 rounded-lg overflow-hidden shadow-sm" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
+                  <div className="border rounded-md overflow-x-auto" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
                     <Table>
                       <TableHeader style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.1) 0%, rgba(237, 124, 30, 0.05) 100%)" }}>
                         <TableRow>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Kalem Kodu (ItemCode)</TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Kalem Tanımı (ItemName)</TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Departman (OcrCode)</TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Miktar (Quantity)</TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Birim (UomCode)</TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Satıcı (VendorCode)</TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Gerekli Tarih (PQTRegdate)</TableHead>
-                          <TableHead className="font-bold" style={{ color: "rgba(237, 124, 30)" }}>Açıklama (FreeTxt)</TableHead>
-                          <TableHead className="font-bold text-center" style={{ color: "rgba(237, 124, 30)" }}>Ek Dosya</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Kalem Kodu</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Kalem Tanımı</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Departman</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Miktar</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Birim</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Satıcı</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Gerekli Tarih</TableHead>
+                          <TableHead className="font-bold text-xs p-2" style={{ color: "rgba(237, 124, 30)" }}>Açıklama</TableHead>
+                          <TableHead className="font-bold text-xs p-2 text-center" style={{ color: "rgba(237, 124, 30)" }}>Ek Dosya</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {selectedRequest.items.map((item) => (
                           <TableRow key={item.id}>
-                            <TableCell className="font-medium">
+                            <TableCell className="font-medium text-xs p-2">
                               {item.isDummy && <span className="text-orange-600 mr-1" title="Dummy Kalem">🔸</span>}
                               {item.ItemCode}
                             </TableCell>
-                            <TableCell>{item.ItemName}</TableCell>
-                            <TableCell>{item.OcrCode}</TableCell>
-                            <TableCell>{item.Quantity}</TableCell>
-                            <TableCell>{item.UomCode}</TableCell>
-                            <TableCell>{item.VendorCode || "-"}</TableCell>
-                            <TableCell>{formatDate(item.PQTRegdate)}</TableCell>
-                            <TableCell className="max-w-xs">
+                            <TableCell className="text-xs p-2">{item.ItemName}</TableCell>
+                            <TableCell className="text-xs p-2">{item.OcrCode}</TableCell>
+                            <TableCell className="text-xs p-2">{item.Quantity}</TableCell>
+                            <TableCell className="text-xs p-2">{item.UomCode}</TableCell>
+                            <TableCell className="text-xs p-2">{item.VendorCode || "-"}</TableCell>
+                            <TableCell className="text-xs p-2">{formatDate(item.PQTRegdate)}</TableCell>
+                            <TableCell className="text-xs p-2 max-w-[200px] truncate">
                               {item.FreeTxt ? (
-                                <div className="text-sm text-gray-700">{item.FreeTxt}</div>
+                                <span className="text-gray-700" title={item.FreeTxt}>{item.FreeTxt}</span>
                               ) : (
                                 <span className="text-gray-400">-</span>
                               )}
                             </TableCell>
-                            <TableCell className="text-center">
+                            <TableCell className="text-xs p-2 text-center">
                               {(item.file || item.fileData) ? (
                                 <button
                                   onClick={() => {
@@ -1123,7 +1111,7 @@ export default function TalepListesi() {
                                       URL.revokeObjectURL(url)
                                     }
                                   }}
-                                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors hover:opacity-80"
+                                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-colors hover:opacity-80"
                                   style={{
                                     backgroundColor: "rgba(237, 124, 30, 0.1)",
                                     color: "rgba(237, 124, 30)",
@@ -1132,7 +1120,7 @@ export default function TalepListesi() {
                                   title={`İndir: ${item.file?.name || item.fileData?.name}`}
                                 >
                                   <span>📎</span>
-                                  <span className="max-w-[100px] truncate">{item.file?.name || item.fileData?.name}</span>
+                                  <span className="max-w-[80px] truncate">{item.file?.name || item.fileData?.name}</span>
                                 </button>
                               ) : (
                                 <span className="text-gray-400">-</span>
@@ -1148,13 +1136,13 @@ export default function TalepListesi() {
 
               {/* Notlar */}
               {selectedRequest.Comments && (
-                <div className="bg-white rounded-xl shadow-md border-2 border-gray-100 p-6" style={{ borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-2xl">📝</span>
-                    <span className="text-lg font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Açıklamalar ve Notlar (Comments)</span>
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3" style={{ borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">📝</span>
+                    <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Açıklamalar ve Notlar</span>
                   </div>
-                  <div className="p-5 rounded-lg" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.05) 0%, rgba(237, 124, 30, 0.02) 100%)", border: "1px solid rgba(237, 124, 30, 0.1)" }}>
-                    <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">{selectedRequest.Comments}</p>
+                  <div className="p-3 rounded-md text-sm text-gray-800 leading-relaxed whitespace-pre-wrap" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.05) 0%, rgba(237, 124, 30, 0.02) 100%)", border: "1px solid rgba(237, 124, 30, 0.1)" }}>
+                    {selectedRequest.Comments}
                   </div>
                 </div>
               )}
@@ -1162,18 +1150,18 @@ export default function TalepListesi() {
           )}
           {/* Satınalmacı ve Admin Butonları */}
           {selectedRequest && (currentUser?.role === "purchaser" || currentUser?.role === "admin") && (selectedRequest.U_TalepDurum === "Satınalmacıda" || selectedRequest.U_TalepDurum === "Satınalma Talebi") && (
-            <DialogFooter className="gap-2">
+            <DialogFooter className="gap-2 flex-shrink-0 pt-3 border-t">
               <Button
                 onClick={handleRejectClick}
                 variant="destructive"
-                className="text-sm"
+                className="text-sm h-9"
               >
                 Reddet
               </Button>
               <Button
                 onClick={handleReviseClick}
                 variant="outline"
-                className="text-sm"
+                className="text-sm h-9"
               >
                 Revize İste
               </Button>
@@ -1182,10 +1170,10 @@ export default function TalepListesi() {
 
           {/* Talep Sahibi - Revize Durumu Butonu */}
           {selectedRequest && currentUser?.role === "user" && selectedRequest.U_TalepDurum === "Revize İstendi" && selectedRequest.Reqname === currentUser?.name && (
-            <DialogFooter className="gap-2">
+            <DialogFooter className="gap-2 flex-shrink-0 pt-3 border-t">
               <Button
                 onClick={handleEditAndResubmit}
-                className="text-sm"
+                className="text-sm h-9"
                 style={{ backgroundColor: "rgba(237, 124, 30)" }}
               >
                 Düzenle ve Tekrar Gönder
@@ -1198,40 +1186,44 @@ export default function TalepListesi() {
       {/* Reddetme Dialog'u */}
       <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
         <DialogContent className="max-w-md">
-          <DialogHeader className="border-b pb-4">
-            <DialogTitle className="text-xl font-bold text-red-600 flex items-center gap-2">
+          <DialogHeader className="border-b pb-3">
+            <DialogTitle className="text-lg font-bold text-red-600 flex items-center gap-2">
               <span>❌</span>
               <span>Talebi Reddet</span>
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              Satınalma talebini reddetme formu
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-              <p className="text-sm text-red-800">
-                <strong>Doküman No:</strong> {selectedRequest?.documentNumber}
+          <div className="space-y-3 pt-3">
+            <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded">
+              <p className="text-xs text-red-800">
+                <strong>Doküman No:</strong> {selectedRequest?.DocNum}
               </p>
-              <p className="text-sm text-red-800">
-                <strong>Talep Eden:</strong> {selectedRequest?.requester}
+              <p className="text-xs text-red-800">
+                <strong>Talep Eden:</strong> {selectedRequest?.Reqname}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
+              <label className="text-xs font-medium text-gray-700 mb-1.5 block">
                 Reddetme Sebebi <span className="text-red-500">*</span>
               </label>
               <Textarea
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="Talebin neden reddedildiğini açıklayınız..."
-                className="min-h-[120px] resize-none"
+                className="min-h-[100px] resize-none text-sm"
               />
             </div>
           </div>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 pt-3">
             <Button
               variant="outline"
               onClick={() => {
                 setRejectReason("")
                 setIsRejectDialogOpen(false)
               }}
+              className="text-sm h-9"
             >
               İptal
             </Button>
@@ -1239,6 +1231,7 @@ export default function TalepListesi() {
               variant="destructive"
               onClick={handleRejectConfirm}
               disabled={!rejectReason.trim()}
+              className="text-sm h-9"
             >
               Reddet
             </Button>
@@ -1249,40 +1242,44 @@ export default function TalepListesi() {
       {/* Revize Dialog'u */}
       <Dialog open={isReviseDialogOpen} onOpenChange={setIsReviseDialogOpen}>
         <DialogContent className="max-w-md">
-          <DialogHeader className="border-b pb-4">
-            <DialogTitle className="text-xl font-bold flex items-center gap-2" style={{ color: "rgba(237, 124, 30)" }}>
+          <DialogHeader className="border-b pb-3">
+            <DialogTitle className="text-lg font-bold flex items-center gap-2" style={{ color: "rgba(237, 124, 30)" }}>
               <span>🔄</span>
               <span>Revize İste</span>
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              Satınalma talebinde revize talep etme formu
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div className="border-l-4 p-4 rounded" style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", borderColor: "rgba(237, 124, 30)" }}>
-              <p className="text-sm" style={{ color: "rgba(237, 124, 30)" }}>
-                <strong>Doküman No:</strong> {selectedRequest?.documentNumber}
+          <div className="space-y-3 pt-3">
+            <div className="border-l-4 p-3 rounded" style={{ backgroundColor: "rgba(237, 124, 30, 0.1)", borderColor: "rgba(237, 124, 30)" }}>
+              <p className="text-xs" style={{ color: "rgba(237, 124, 30)" }}>
+                <strong>Doküman No:</strong> {selectedRequest?.DocNum}
               </p>
-              <p className="text-sm" style={{ color: "rgba(237, 124, 30)" }}>
-                <strong>Talep Eden:</strong> {selectedRequest?.requester}
+              <p className="text-xs" style={{ color: "rgba(237, 124, 30)" }}>
+                <strong>Talep Eden:</strong> {selectedRequest?.Reqname}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
+              <label className="text-xs font-medium text-gray-700 mb-1.5 block">
                 Revize Sebebi <span className="text-red-500">*</span>
               </label>
               <Textarea
                 value={reviseReason}
                 onChange={(e) => setReviseReason(e.target.value)}
                 placeholder="Hangi değişikliklerin yapılmasını istiyorsunuz?"
-                className="min-h-[120px] resize-none"
+                className="min-h-[100px] resize-none text-sm"
               />
             </div>
           </div>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 pt-3">
             <Button
               variant="outline"
               onClick={() => {
                 setReviseReason("")
                 setIsReviseDialogOpen(false)
               }}
+              className="text-sm h-9"
             >
               İptal
             </Button>
@@ -1290,6 +1287,7 @@ export default function TalepListesi() {
               onClick={handleReviseConfirm}
               disabled={!reviseReason.trim()}
               style={{ backgroundColor: "rgba(237, 124, 30)" }}
+              className="text-sm h-9"
             >
               Revize İste
             </Button>

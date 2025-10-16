@@ -46,11 +46,37 @@ export default function TaskForm() {
   const isFirstRender = useRef(true)
   const previousReqdate = useRef("")
 
+  // Geçerlilik Tarihi (DocDueDate) otomatik hesaplama: TaxDate + 1 ay
+  useEffect(() => {
+    if (!taxDate) return
+
+    try {
+      // TaxDate formatı: DD/MM/YYYY
+      const [day, month, year] = taxDate.split('/')
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+
+      // 1 ay ekle
+      date.setMonth(date.getMonth() + 1)
+
+      // DD/MM/YYYY formatına çevir
+      const newDocDueDate = `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`
+      setDocDueDate(newDocDueDate)
+    } catch (error) {
+      console.warn('DocDueDate otomatik hesaplama hatası:', error)
+    }
+  }, [taxDate])
+
   // Başlık Gerekli Tarih (Reqdate) değiştiğinde satırları güncelle
   useEffect(() => {
     // İlk render'da veya reqdate değişmediyse kontrol etme
     if (isFirstRender.current || previousReqdate.current === reqdate) {
       isFirstRender.current = false
+      previousReqdate.current = reqdate
+      return
+    }
+
+    // Edit modda uyarı gösterme (kullanıcı henüz form yüklemesini tamamlıyor)
+    if (isEditMode) {
       previousReqdate.current = reqdate
       return
     }
@@ -84,7 +110,7 @@ export default function TaskForm() {
     })
 
     previousReqdate.current = reqdate
-  }, [reqdate])
+  }, [reqdate, isEditMode])
 
   useEffect(() => {
     // userId'yi localStorage'dan oku
@@ -272,9 +298,7 @@ export default function TaskForm() {
     if (!reqdate) {
       errors.push("Gerekli Tarih alanı zorunludur")
     }
-    if (!docDueDate) {
-      errors.push("Geçerlilik Tarihi alanı zorunludur")
-    }
+    // DocDueDate otomatik hesaplandığı için validasyon gerektirmiyor
     if (!uTalepOzeti || !uTalepOzeti.trim()) {
       errors.push("Talep Özeti alanı zorunludur")
     }
@@ -285,11 +309,11 @@ export default function TaskForm() {
         const [day, month, year] = dateStr.split('/')
         return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
       }
-      
+
       try {
         const belgeDate = parseTaxDate(taxDate)
         const gerekliDate = parseTaxDate(reqdate)
-        
+
         if (gerekliDate <= belgeDate) {
           errors.push("Gerekli Tarih, Belge Tarihinden ileri bir tarih olmalıdır")
         }
@@ -525,11 +549,14 @@ export default function TaskForm() {
                 <div>
                   <label className="text-sm font-medium text-card-foreground mb-2 block">
                     Geçerlilik Tarihi (OPRQ.DocDueDate) <span className="text-red-500">*</span>
+                    <span className="text-xs text-muted-foreground ml-2">(Otomatik hesaplanır: Belge Tarihi + 1 ay)</span>
                   </label>
-                  <SAPDateInput
+                  <Input
                     value={docDueDate}
-                    onChange={(value) => setDocDueDate(value)}
-                    className="bg-background border-border text-foreground"
+                    readOnly
+                    disabled
+                    className="bg-muted border-border text-foreground cursor-not-allowed"
+                    title="Otomatik hesaplanır (Belge Tarihi + 1 ay)"
                   />
                 </div>
               </div>
