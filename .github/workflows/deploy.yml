@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - react
+      - react-alan-esleme
 
   workflow_dispatch:
 
