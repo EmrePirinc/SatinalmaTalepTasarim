@@ -147,3 +147,108 @@ Formun kaydedilebilmesi için "Zorunlu" olarak işaretlenmiş tüm başlık ve s
   2. Talebin durumu buna göre ("Revize İstendi" veya "Reddedildi") güncellenmelidir.
   3. Talep sahibi, durumu "Revize İstendi" olan talebi için detay penceresinde "Düzenle ve Tekrar Gönder" butonu görmelidir.
   4. Bu butona tıkladığında, talep formu bu talebin bilgileriyle dolu şekilde açılmalı ve düzenlemeye olanak tanımalıdır.
+
+
+**NOT**
+ Talep Listesi ekranında kullanılan tüm alanları ve fonksiyonları tablo halinde hazırladım:
+
+  📊 STATE ALANLARI (useState)
+
+  | Alan Adı           | Tip                    | Kullanım Amacı                                               |
+  |--------------------|------------------------|--------------------------------------------------------------|
+  | currentUser        | any                    | Giriş yapmış kullanıcının bilgilerini tutar (id, name, role) |
+  | isSidebarOpen      | boolean                | Sidebar'ın açık/kapalı durumunu kontrol eder                 |
+  | searchQuery        | string                 | Genel arama kutusundaki değeri tutar                         |
+  | requests           | PurchaseRequest[]      | Backend'den gelen tüm satınalma taleplerini tutar            |
+  | selectedRequest    | PurchaseRequest | null | Detay modalında gösterilecek seçili talebi tutar             |
+  | isDetailDialogOpen | boolean                | Talep detay modalının açık/kapalı durumu                     |
+  | isRejectDialogOpen | boolean                | Reddetme modalının açık/kapalı durumu                        |
+  | isReviseDialogOpen | boolean                | Revize modalının açık/kapalı durumu                          |
+  | rejectReason       | string                 | Reddetme sebebi text alanı                                   |
+  | reviseReason       | string                 | Revize sebebi text alanı                                     |
+  | filters            | object                 | Tüm tablo kolonları için filtre değerlerini tutar            |
+  | currentPage        | number                 | Sayfalama için aktif sayfa numarası                          |
+  | itemsPerPage       | number                 | Sayfada gösterilecek kayıt sayısı (10, 20, 50, 100)          |
+
+  🔧 FONKSIYONLAR
+
+  | Fonksiyon Adı             | Parametreler                | Kullanım Amacı
+                                       |
+  |---------------------------|-----------------------------|-------------------------------------------------------
+  -------------------------------------|
+  | formatDate                | dateStr: string | undefined | Tarih formatını YYYY-MM-DD veya DD.MM.YYYY'den
+  DD/MM/YYYY'ye çevirir                       |
+  | fetchCurrentUser          | -                           | localStorage'dan userId'yi alıp backend'den kullanıcı
+  bilgilerini çeker                    |
+  | fetchRequestsFromBackend  | user: any                   | Backend API'den talepleri çeker, SAP formatına uygun
+  şekilde parse eder ve state'e yazar   |
+  | filteredRequests          | -                           | useMemo ile hesaplanan, searchQuery ve filters'a göre
+  filtrelenmiş talep listesi           |
+  | paginatedRequests         | -                           | useMemo ile hesaplanan, sayfalama uygulanmış talep
+  listesi                                 |
+  | handleLogout              | -                           | localStorage'ı temizleyip login sayfasına yönlendirir
+                                       |
+  | handleViewDetails         | request: PurchaseRequest    | Seçili talebi state'e atar ve detay modalını açar
+                                       |
+  | handleRejectClick         | -                           | Reddetme modalını açar
+                                       |
+  | handleRejectConfirm       | -                           | Talebi "Reddedildi" durumuna getirir, backend'e PUT
+  request gönderir                       |
+  | handleReviseClick         | -                           | Revize modalını açar
+                                       |
+  | handleReviseConfirm       | -                           | Talebi "Revize İstendi" durumuna getirir, backend'e
+  PUT request gönderir                   |
+  | handleEditAndResubmit     | -                           | Revize edilen talebi düzenlemek için ana form
+  sayfasına yönlendirir                        |
+  | handleExportToExcel       | -                           | Filtrelenmiş talep listesinin tamamını ExcelJS ile
+  stilize edilmiş Excel dosyasına çevirir |
+  | handleExportDetailToExcel | request: PurchaseRequest    | Seçili talebin detayını (header + items) iki bölümlü
+  Excel dosyasına çevirir               |
+
+  📦 TYPE TANIMLAMALARI
+
+  | Type Adı        | Alanlar                                              | Kullanım Amacı
+         |
+  |-----------------|------------------------------------------------------|----------------------------------------
+  -------|
+  | RequestStatus   | 11 farklı durum (Satınalmacıda, Revize İstendi, vb.) | Talebin iş akışındaki durumunu tanımlar
+         |
+  | RequestItem     | OcrCode, ItemCode, ItemName, Quantity, UomCode, vb.  | SAP PRQ1 tablosu kalem satırı (line
+  item)     |
+  | PurchaseRequest | DocNum, Reqname, U_TalepDurum, items[], vb.          | SAP OPRQ tablosu ana talep bilgileri
+  (header) |
+  | statusColors    | Record<RequestStatus, string>                        | Her durum için TailwindCSS renk
+  class'ları    |
+
+  🎨 COMPUTED/DERIVED VALUES
+
+  | Değişken Adı | Hesaplama                                         | Kullanım Amacı               |
+  |--------------|---------------------------------------------------|------------------------------|
+  | totalPages   | Math.ceil(filteredRequests.length / itemsPerPage) | Toplam sayfa sayısı          |
+  | startIndex   | (currentPage - 1) * itemsPerPage                  | Sayfadaki ilk kaydın index'i |
+  | endIndex     | startIndex + itemsPerPage                         | Sayfadaki son kaydın index'i |
+
+  🔗 API ENDPOINTLERİ
+
+  | Endpoint                                               | Method | Kullanım Amacı                           |
+  |--------------------------------------------------------|--------|------------------------------------------|
+  | http://localhost:3001/api/auth/me/${userId}            | GET    | Kullanıcı bilgilerini çeker              |
+  | http://localhost:3001/api/requests?userId=X&userRole=Y | GET    | Kullanıcıya özel talep listesini çeker   |
+  | http://localhost:3001/api/requests/${id}               | PUT    | Talep durumunu günceller (Reddet/Revize) |
+
+  📋 FİLTRE ALANLARI (filters object)
+
+  | Alan Adı     | SAP Karşılığı            | Filtre Tipi             |
+  |--------------|--------------------------|-------------------------|
+  | DocNum       | OPRQ.DocNum              | Text input              |
+  | U_TalepOzeti | OPRQ.U_TalepOzeti        | Text input              |
+  | Reqname      | OPRQ.Reqname             | Text input              |
+  | OcrCode      | PRQ1.OcrCode (items'dan) | Text input              |
+  | TaxDate      | OPRQ.TaxDate             | Date input              |
+  | Reqdate      | OPRQ.Reqdate             | Date input              |
+  | DocDueDate   | OPRQ.DocDueDate          | Date input              |
+  | DocDate      | OPRQ.DocDate             | Text input (DD/MM/YYYY) |
+  | U_TalepDurum | OPRQ.U_TalepDurum        | Select dropdown         |
+
+  Bu tablo, Talep Listesi ekranındaki tüm veri yapısını, fonksiyonları ve kullanım amaçlarını göstermektedir.
+  Herhangi bir alanın detayına ihtiyacınız olursa sorabilirsiniz!
