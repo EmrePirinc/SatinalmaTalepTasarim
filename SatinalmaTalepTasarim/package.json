@@ -50,6 +50,7 @@
     "cors": "^2.8.5",
     "date-fns": "4.1.0",
     "embla-carousel-react": "latest",
+    "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "input-otp": "latest",
     "lucide-react": "^0.454.0",

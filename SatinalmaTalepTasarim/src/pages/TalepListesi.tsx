@@ -33,6 +33,7 @@ import {
   Download,
 } from "lucide-react"
 import * as XLSX from "xlsx"
+import ExcelJS from "exceljs"
 
 type RequestStatus =
   | "Satınalmacıda"
@@ -374,107 +375,308 @@ export default function TalepListesi() {
     navigate("/", { state: { editingRequest: selectedRequest } })
   }
 
-  const handleExportToExcel = () => {
-    // Excel için detaylı veri hazırlama - her kalem için ayrı satır
-    const excelData: any[] = []
+  const handleExportToExcel = async () => {
+    // ExcelJS workbook oluştur
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('Talep Listesi')
 
-    filteredRequests.forEach((request: any) => {
-      if (request.items && request.items.length > 0) {
-        // Her kalem için ayrı satır oluştur
-        request.items.forEach((item: any, index: number) => {
-          excelData.push({
-            "Doküman No": request.DocNum,
-            "Talep Özeti": request.U_TalepOzeti || "-",
-            "Talep Eden": request.Reqname,
-            "Talep Eden Departmanı": item.OcrCode || "-",
-            "Belge Tarihi": formatDate(request.TaxDate),
-            "Gerekli Tarih (Genel)": formatDate(request.Reqdate),
-            "Geçerlilik Tarihi": request.DocDueDate ? formatDate(request.DocDueDate) : "-",
-            "Kayıt Tarihi": formatDate(request.DocDate),
-            "Acil": request.U_AcilMi ? "Evet" : "Hayır",
-            "Durum": request.U_TalepDurum,
-            "Açıklamalar ve Notlar": request.Comments || "-",
-            // Kalem detayları
-            "Satır No": index + 1,
-            "Kalem Kodu": item.ItemCode,
-            "Kalem Tanımı": item.ItemName,
-            "Kalem Departmanı": item.OcrCode,
-            "Kalem Gerekli Tarih": formatDate(item.PQTRegdate),
-            "Miktar": item.Quantity,
-            "Birim": item.UomCode,
-            "Satıcı": item.VendorCode || "-",
-            "Kalem Açıklaması": item.FreeTxt || "-",
-            "Ek Dosya": (item.file || item.fileData) ? (item.file?.name || item.fileData?.name) : "-",
-          })
-        })
-      } else {
-        // Kalem yoksa sadece talep bilgilerini ekle
-        excelData.push({
-          "Doküman No": request.DocNum,
-          "Talep Özeti": request.U_TalepOzeti || "-",
-          "Talep Eden": request.Reqname,
-          "Talep Eden Departmanı": "-",
-          "Belge Tarihi": formatDate(request.TaxDate),
-          "Gerekli Tarih (Genel)": formatDate(request.Reqdate),
-          "Geçerlilik Tarihi": request.DocDueDate ? formatDate(request.DocDueDate) : "-",
-          "Kayıt Tarihi": formatDate(request.DocDate),
-          "Acil": request.U_AcilMi ? "Evet" : "Hayır",
-          "Durum": request.U_TalepDurum,
-          "Açıklamalar ve Notlar": request.Comments || "-",
-          "Satır No": "-",
-          "Kalem Kodu": "-",
-          "Kalem Tanımı": "-",
-          "Kalem Departmanı": "-",
-          "Kalem Gerekli Tarih": "-",
-          "Miktar": "-",
-          "Birim": "-",
-          "Satıcı": "-",
-          "Kalem Açıklaması": "-",
-          "Ek Dosya": "-",
-        })
+    // Başlık satırını ekle
+    worksheet.columns = [
+      { header: 'Doküman No', key: 'DocNum', width: 15 },
+      { header: 'Talep Özeti', key: 'U_TalepOzeti', width: 35 },
+      { header: 'Talep Eden', key: 'Reqname', width: 20 },
+      { header: 'Belge Tarihi', key: 'TaxDate', width: 15 },
+      { header: 'Gerekli Tarih', key: 'Reqdate', width: 15 },
+      { header: 'Geçerlilik Tarihi', key: 'DocDueDate', width: 15 },
+      { header: 'Kayıt Tarihi', key: 'DocDate', width: 15 },
+      { header: 'Acil', key: 'U_AcilMi', width: 10 },
+      { header: 'Durum', key: 'U_TalepDurum', width: 20 },
+    ]
+
+    // Başlık satırını stillendir
+    const headerRow = worksheet.getRow(1)
+    headerRow.height = 25
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFED7C1E' } // Turuncu
+      }
+      cell.font = {
+        bold: true,
+        color: { argb: 'FFFFFFFF' },
+        size: 12
+      }
+      cell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center'
+      }
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } },
+        left: { style: 'thin', color: { argb: 'FF000000' } },
+        bottom: { style: 'thin', color: { argb: 'FF000000' } },
+        right: { style: 'thin', color: { argb: 'FF000000' } }
       }
     })
 
-    // Worksheet oluştur
-    const ws = XLSX.utils.json_to_sheet(excelData)
+    // Veri satırlarını ekle
+    filteredRequests.forEach((request: any, index: number) => {
+      const row = worksheet.addRow({
+        DocNum: request.DocNum,
+        U_TalepOzeti: request.U_TalepOzeti || "-",
+        Reqname: request.Reqname,
+        TaxDate: formatDate(request.TaxDate),
+        Reqdate: formatDate(request.Reqdate),
+        DocDueDate: request.DocDueDate ? formatDate(request.DocDueDate) : "-",
+        DocDate: formatDate(request.DocDate),
+        U_AcilMi: request.U_AcilMi ? "Evet" : "Hayır",
+        U_TalepDurum: request.U_TalepDurum,
+      })
 
-    // Kolon genişliklerini ayarla
-    const columnWidths = [
-      { wch: 15 }, // Doküman No
-      { wch: 30 }, // Talep Özeti
-      { wch: 20 }, // Talep Eden
-      { wch: 15 }, // Talep Eden Departmanı
-      { wch: 15 }, // Belge Tarihi
-      { wch: 18 }, // Gerekli Tarih (Genel)
-      { wch: 18 }, // Geçerlilik Tarihi
-      { wch: 15 }, // Kayıt Tarihi
-      { wch: 10 }, // Acil
-      { wch: 20 }, // Durum
-      { wch: 40 }, // Açıklamalar ve Notlar
-      { wch: 10 }, // Satır No
-      { wch: 20 }, // Kalem Kodu
-      { wch: 25 }, // Kalem Tanımı
-      { wch: 15 }, // Kalem Departmanı
-      { wch: 18 }, // Kalem Gerekli Tarih
-      { wch: 10 }, // Miktar
-      { wch: 10 }, // Birim
-      { wch: 15 }, // Satıcı
-      { wch: 35 }, // Kalem Açıklaması
-      { wch: 20 }, // Ek Dosya
-    ]
-    ws["!cols"] = columnWidths
+      // Zebra deseni
+      const isEvenRow = (index % 2) === 0
+      row.height = 20
 
-    // Workbook oluştur
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Talep Detayları")
+      row.eachCell((cell, colNumber) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: isEvenRow ? 'FFF9FAFB' : 'FFFFFFFF' }
+        }
+        cell.font = {
+          size: 11,
+          color: { argb: 'FF1F2937' }
+        }
+        cell.alignment = {
+          vertical: 'middle',
+          horizontal: colNumber === 2 ? 'left' : 'center' // Talep Özeti sola hizalı
+        }
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+          left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+          bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+          right: { style: 'thin', color: { argb: 'FFE5E7EB' } }
+        }
+      })
+    })
 
-    // Dosya adı oluştur (tarih içeren)
+    // Dosya adı oluştur
     const today = new Date()
     const dateStr = `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`
-    const fileName = `Satinalma_Talep_Detaylari_${dateStr}.xlsx`
+    const fileName = `Satinalma_Talep_Listesi_${dateStr}.xlsx`
 
     // Excel dosyasını indir
-    XLSX.writeFile(wb, fileName)
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const handleExportDetailToExcel = async (request: PurchaseRequest) => {
+    // ExcelJS workbook oluştur
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet('Talep Detayı')
+
+    // ===== BÖLÜM 1: TURUNCU BAŞLIKLAR VE GENEl BİLGİLER =====
+    // 1. Satır: Turuncu başlıklar (genel bilgiler)
+    const generalHeaders = [
+      'Doküman No', 'Talep Özeti', 'Talep Eden', 'Belge Tarihi', 'Gerekli Tarih',
+      'Geçerlilik Tarihi', 'Kayıt Tarihi', 'Acil', 'Durum',
+      'Açıklamalar', 'Revize Nedeni', 'Red Nedeni'
+    ]
+
+    const generalHeaderRow = worksheet.addRow(generalHeaders)
+    generalHeaderRow.height = 30
+
+    // Turuncu başlık stilini uygula
+    generalHeaders.forEach((header, index) => {
+      const col = index + 1
+      const cell = generalHeaderRow.getCell(col)
+
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFED7C1E' } // Turuncu
+      }
+      cell.font = {
+        bold: true,
+        color: { argb: 'FFFFFFFF' },
+        size: 12
+      }
+      cell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true
+      }
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } },
+        left: { style: 'thin', color: { argb: 'FF000000' } },
+        bottom: { style: 'thin', color: { argb: 'FF000000' } },
+        right: { style: 'thin', color: { argb: 'FF000000' } }
+      }
+    })
+
+    // 2. Satır: Genel bilgilerin değerleri
+    const generalDataRow = worksheet.addRow([
+      request.DocNum,
+      request.U_TalepOzeti || "-",
+      request.Reqname,
+      formatDate(request.TaxDate),
+      formatDate(request.Reqdate),
+      request.DocDueDate ? formatDate(request.DocDueDate) : "-",
+      formatDate(request.DocDate),
+      request.U_AcilMi ? "Evet" : "Hayır",
+      request.U_TalepDurum,
+      request.Comments || "-",
+      request.U_RevizeNedeni || "-",
+      request.U_RedNedeni || "-"
+    ])
+    generalDataRow.height = 25
+
+    // Genel veri satırını stillendir
+    generalDataRow.eachCell((cell, colNumber) => {
+      const isNotesColumn = colNumber >= 10 && colNumber <= 12
+
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFFFFFFF' }
+      }
+      cell.font = {
+        size: 11,
+        color: { argb: 'FF1F2937' }
+      }
+      cell.alignment = {
+        vertical: 'top',
+        horizontal: (colNumber === 2 || isNotesColumn) ? 'left' : 'center',
+        wrapText: isNotesColumn
+      }
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+        left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+        bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+        right: { style: 'thin', color: { argb: 'FFE5E7EB' } }
+      }
+    })
+
+    // 3. Satır: Boş satır
+    worksheet.addRow([])
+
+    // ===== BÖLÜM 2: MAVİ BAŞLIKLAR VE KALEM DETAYLARı =====
+    // 4. Satır: Mavi başlıklar (kalem detayları)
+    const itemHeaders = [
+      'Satır No', 'Kalem Kodu', 'Kalem Tanımı', 'Departman',
+      'Miktar', 'Birim', 'Satıcı', 'Kalem Gerekli Tarih', 'Kalem Açıklaması', 'Ek Dosya'
+    ]
+
+    const itemHeaderRow = worksheet.addRow(itemHeaders)
+    itemHeaderRow.height = 30
+
+    // Mavi başlık stilini uygula
+    itemHeaders.forEach((header, index) => {
+      const col = index + 1
+      const cell = itemHeaderRow.getCell(col)
+
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF3B82F6' } // Mavi
+      }
+      cell.font = {
+        bold: true,
+        color: { argb: 'FFFFFFFF' },
+        size: 12
+      }
+      cell.alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true
+      }
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FF000000' } },
+        left: { style: 'thin', color: { argb: 'FF000000' } },
+        bottom: { style: 'thin', color: { argb: 'FF000000' } },
+        right: { style: 'thin', color: { argb: 'FF000000' } }
+      }
+    })
+
+    // Kolon genişliklerini ayarla
+    worksheet.columns = [
+      { key: 'col1', width: 10 },  // Satır No
+      { key: 'col2', width: 20 },  // Kalem Kodu
+      { key: 'col3', width: 30 },  // Kalem Tanımı
+      { key: 'col4', width: 15 },  // Departman
+      { key: 'col5', width: 10 },  // Miktar
+      { key: 'col6', width: 10 },  // Birim
+      { key: 'col7', width: 20 },  // Satıcı
+      { key: 'col8', width: 18 },  // Kalem Gerekli Tarih
+      { key: 'col9', width: 35 },  // Kalem Açıklaması
+      { key: 'col10', width: 20 }  // Ek Dosya
+    ]
+
+    // 5. Satır ve sonrası: Kalem verileri
+    const items = (request.items && request.items.length > 0) ? request.items : [{}]
+
+    items.forEach((item: any, index: number) => {
+      const itemRowData = [
+        item.ItemCode ? index + 1 : "-",
+        item.ItemCode || "-",
+        item.ItemName || "-",
+        item.OcrCode || "-",
+        item.Quantity || "-",
+        item.UomCode || "-",
+        item.VendorCode || "-",
+        item.PQTRegdate ? formatDate(item.PQTRegdate) : "-",
+        item.FreeTxt || "-",
+        (item.file || item.fileData) ? (item.file?.name || item.fileData?.name) : "-"
+      ]
+
+      const row = worksheet.addRow(itemRowData)
+      row.height = 25
+
+      // Zebra deseni
+      const isEvenRow = (index % 2) === 0
+
+      row.eachCell((cell, colNumber) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: isEvenRow ? 'FFF9FAFB' : 'FFFFFFFF' }
+        }
+        cell.font = {
+          size: 11,
+          color: { argb: 'FF1F2937' }
+        }
+        cell.alignment = {
+          vertical: 'top',
+          horizontal: (colNumber === 3 || colNumber === 9) ? 'left' : 'center', // Tanım ve Açıklama sola
+          wrapText: colNumber === 9 // Açıklama için text wrap
+        }
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+          left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+          bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+          right: { style: 'thin', color: { argb: 'FFE5E7EB' } }
+        }
+      })
+    })
+
+    // Dosya adı oluştur
+    const fileName = `Talep_${request.DocNum}_Detay.xlsx`
+
+    // Excel dosyasını indir
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   return (
@@ -611,10 +813,10 @@ export default function TalepListesi() {
                     position: relative;
                   }
                 `}} />
-                <div className="overflow-hidden min-w-[1520px]">
+                <div className="overflow-hidden min-w-[1400px]">
                   {/* Filter Row - Compact */}
                   <div className="bg-gray-50 border-b border-gray-200 sticky top-0 z-20">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_70px_130px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_70px_130px_80px]">
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
                           placeholder="Filtrele..."
@@ -638,21 +840,6 @@ export default function TalepListesi() {
                           value={filters.Reqname}
                           onChange={(e) => setFilters({ ...filters, Reqname: e.target.value })}
                         />
-                      </div>
-                      <div className="px-1.5 py-1.5 border-r border-gray-200">
-                        <select
-                          className="h-7 text-[11px] bg-white border border-gray-200 rounded-md px-1 w-full"
-                          value={filters.OcrCode}
-                          onChange={(e) => setFilters({ ...filters, OcrCode: e.target.value })}
-                        >
-                          <option value="">Tümü</option>
-                          <option value="Konsol">Konsol</option>
-                          <option value="Bakır">Bakır</option>
-                          <option value="İzole">İzole</option>
-                          <option value="Yönetim">Yönetim</option>
-                          <option value="Bakımhane">Bakımhane</option>
-                          <option value="Depo">Depo</option>
-                        </select>
                       </div>
                       <div className="px-1.5 py-1.5 border-r border-gray-200">
                         <Input
@@ -751,7 +938,7 @@ export default function TalepListesi() {
 
                   {/* Header Row */}
                   <div className="bg-[#ECF2FF] border-b border-border sticky top-[40px] z-10">
-                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_70px_130px_80px]">
+                    <div className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_70px_130px_80px]">
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Doküman No (DocNum)
                       </div>
@@ -760,9 +947,6 @@ export default function TalepListesi() {
                       </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Talep Eden (Reqname)
-                      </div>
-                      <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
-                        Departman (OcrCode)
                       </div>
                       <div className="px-3 py-3 border-r border-border text-sm font-medium text-[#181C14]">
                         Belge Tarihi (TaxDate)
@@ -788,13 +972,12 @@ export default function TalepListesi() {
                   {paginatedRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_120px_70px_130px_80px] border-b border-border bg-white hover:bg-orange-50 transition-colors cursor-pointer"
+                      className="grid grid-cols-[130px_minmax(180px,1fr)_150px_120px_120px_120px_120px_70px_130px_80px] border-b border-border bg-white hover:bg-orange-50 transition-colors cursor-pointer"
                       onClick={() => handleViewDetails(request)}
                     >
                       <div className="px-3 py-3 border-r border-border text-sm">{request.DocNum}</div>
                       <div className="px-3 py-3 border-r border-border text-sm truncate">{request.U_TalepOzeti || "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.Reqname}</div>
-                      <div className="px-3 py-3 border-r border-border text-sm">{request.items && request.items.length > 0 ? request.items[0].OcrCode : "-"}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.TaxDate)}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{formatDate(request.Reqdate)}</div>
                       <div className="px-3 py-3 border-r border-border text-sm">{request.DocDueDate ? formatDate(request.DocDueDate) : "-"}</div>
@@ -947,9 +1130,22 @@ export default function TalepListesi() {
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader className="border-b-2 pb-3 flex-shrink-0" style={{ borderColor: "rgba(237, 124, 30, 0.2)" }}>
-            <DialogTitle className="flex items-center gap-2 text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
-              <span>📋 Doküman No: {selectedRequest?.DocNum}</span>
-            </DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="flex items-center gap-2 text-xl font-bold" style={{ color: "rgba(237, 124, 30)" }}>
+                <span>📋 Doküman No: {selectedRequest?.DocNum}</span>
+              </DialogTitle>
+              {selectedRequest && (
+                <Button
+                  onClick={() => handleExportDetailToExcel(selectedRequest)}
+                  className="flex items-center gap-2 text-sm font-medium h-9"
+                  style={{ backgroundColor: "rgba(237, 124, 30)", borderColor: "rgba(237, 124, 30)" }}
+                  title="Detayı Excel'e Aktar"
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="hidden sm:inline">Excel'e Aktar</span>
+                </Button>
+              )}
+            </div>
             <DialogDescription className="sr-only">
               Satınalma talebinin detaylı bilgileri ve kalem listesi
             </DialogDescription>
@@ -982,20 +1178,13 @@ export default function TalepListesi() {
               </div>
 
               {/* Genel Bilgiler */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <span className="text-lg">👤</span>
                     <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Talep Eden</span>
                   </div>
                   <p className="text-sm font-bold text-gray-800">{selectedRequest.Reqname}</p>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="text-lg">🏢</span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(237, 124, 30)" }}>Departman</span>
-                  </div>
-                  <p className="text-sm font-bold text-gray-800">{selectedRequest.items && selectedRequest.items.length > 0 ? selectedRequest.items[0].OcrCode : "-"}</p>
                 </div>
                 <div className={`rounded-lg shadow-sm border p-3 ${
                   selectedRequest.U_AcilMi
