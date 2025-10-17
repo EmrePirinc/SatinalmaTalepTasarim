@@ -196,6 +196,8 @@ export default function TalepListesi() {
         U_AcilMi: req.U_AcilMi,
         U_TalepOzeti: req.U_TalepOzeti,
         Comments: req.Comments,
+        U_RedNedeni: req.U_RedNedeni,
+        U_RevizeNedeni: req.U_RevizeNedeni,
         itemCount: req.itemCount || req.items?.length || 0,
         createdAt: req.createdAt,
         updatedAt: req.updatedAt,
@@ -1134,18 +1136,41 @@ export default function TalepListesi() {
                 </div>
               )}
 
-              {/* Notlar */}
-              {selectedRequest.Comments && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3" style={{ borderLeft: "4px solid rgba(237, 124, 30, 1)" }}>
+              {/* Notlar - 3 Bölüm Yan Yana */}
+              <div className="grid grid-cols-3 gap-3">
+                {/* 1. Açıklamalar */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3" style={{ borderTop: "4px solid rgba(237, 124, 30, 1)" }}>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-lg">📝</span>
-                    <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Açıklamalar ve Notlar</span>
+                    <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(237, 124, 30)" }}>Açıklamalar</span>
                   </div>
-                  <div className="p-3 rounded-md text-sm text-gray-800 leading-relaxed whitespace-pre-wrap" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.05) 0%, rgba(237, 124, 30, 0.02) 100%)", border: "1px solid rgba(237, 124, 30, 0.1)" }}>
-                    {selectedRequest.Comments}
+                  <div className="p-3 rounded-md text-sm text-gray-800 leading-relaxed whitespace-pre-wrap min-h-[100px]" style={{ background: "linear-gradient(135deg, rgba(237, 124, 30, 0.05) 0%, rgba(237, 124, 30, 0.02) 100%)", border: "1px solid rgba(237, 124, 30, 0.1)" }}>
+                    {selectedRequest.Comments || "-"}
                   </div>
                 </div>
-              )}
+
+                {/* 2. Revize Nedeni */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3" style={{ borderTop: "4px solid rgba(255, 165, 0, 1)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">🔄</span>
+                    <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(255, 165, 0)" }}>Revize Nedeni</span>
+                  </div>
+                  <div className="p-3 rounded-md text-sm text-gray-800 leading-relaxed whitespace-pre-wrap min-h-[100px]" style={{ background: "linear-gradient(135deg, rgba(255, 165, 0, 0.05) 0%, rgba(255, 165, 0, 0.02) 100%)", border: "1px solid rgba(255, 165, 0, 0.1)" }}>
+                    {selectedRequest.U_RevizeNedeni || "-"}
+                  </div>
+                </div>
+
+                {/* 3. Red Nedeni */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3" style={{ borderTop: "4px solid rgba(220, 38, 38, 1)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">❌</span>
+                    <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "rgba(220, 38, 38)" }}>Red Nedeni</span>
+                  </div>
+                  <div className="p-3 rounded-md text-sm text-gray-800 leading-relaxed whitespace-pre-wrap min-h-[100px]" style={{ background: "linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(220, 38, 38, 0.02) 100%)", border: "1px solid rgba(220, 38, 38, 0.1)" }}>
+                    {selectedRequest.U_RedNedeni || "-"}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
           {/* Satınalmacı ve Admin Butonları */}
