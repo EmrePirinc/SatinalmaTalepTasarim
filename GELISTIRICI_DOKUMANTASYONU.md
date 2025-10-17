@@ -150,7 +150,6 @@ Formun kaydedilebilmesi için "Zorunlu" olarak işaretlenmiş tüm başlık ve s
 
 
 **NOT**
- Talep Listesi ekranında kullanılan tüm alanları ve fonksiyonları tablo halinde hazırladım:
 
   📊 STATE ALANLARI (useState)
 
