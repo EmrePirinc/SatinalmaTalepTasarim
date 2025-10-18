@@ -32,7 +32,6 @@ import {
   LogOut,
   Download,
 } from "lucide-react"
-import * as XLSX from "xlsx"
 import ExcelJS from "exceljs"
 
 type RequestStatus =
@@ -493,7 +492,7 @@ export default function TalepListesi() {
     generalHeaderRow.height = 30
 
     // Turuncu başlık stilini uygula
-    generalHeaders.forEach((header, index) => {
+    generalHeaders.forEach((_header, index) => {
       const col = index + 1
       const cell = generalHeaderRow.getCell(col)
 
@@ -577,7 +576,7 @@ export default function TalepListesi() {
     itemHeaderRow.height = 30
 
     // Mavi başlık stilini uygula
-    itemHeaders.forEach((header, index) => {
+    itemHeaders.forEach((_header, index) => {
       const col = index + 1
       const cell = itemHeaderRow.getCell(col)
 
